@@ -4,6 +4,82 @@ const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/clien
 const bucketName = "wait-times-data";
 const client = new S3Client();
 
+exports.disneylandparis = async () => {
+  // Get file from S3 for the given destination.
+  let dest = {
+    "id": "e8d0207f-da8a-4048-bec8-117aa946b2c2",
+    "name": "Disneyland Paris",
+    "slug": "disneylandparis",
+    "parks": [
+      {
+        "id": "ca888437-ebb4-4d50-aed2-d227f7096968",
+        "name": "Walt Disney Studios Park"
+      },
+      {
+        "id": "dae968d5-630d-4719-8b06-3d107e944401",
+        "name": "Disneyland Park"
+      }
+    ]
+  };
+  
+  await dataUpdate(dest);
+};
+
+exports.tokyodisneyresort = async () => {
+  // Get file from S3 for the given destination.
+  let dest = {
+    "id": "faff60df-c766-4470-8adb-dee78e813f42",
+    "name": "Tokyo Disney Resort",
+    "slug": "tokyodisneyresort",
+    "parks": [
+      {
+        "id": "67b290d5-3478-4f23-b601-2f8fb71ba803",
+        "name": "Tokyo DisneySea"
+      },
+      {
+        "id": "3cc919f1-d16d-43e0-8c3f-1dd269bd1a42",
+        "name": "Tokyo Disneyland"
+      }
+    ]
+  };
+  
+  await dataUpdate(dest);
+};
+
+exports.shanghaidisneyresort = async () => {
+  // Get file from S3 for the given destination.
+  let dest = {
+    "id": "6e1464ca-1e9b-49c3-8937-c5c6f6675057",
+    "name": "Shanghai Disney Resort",
+    "slug": "shanghaidisneyresort",
+    "parks": [
+      {
+        "id": "ddc4357c-c148-4b36-9888-07894fe75e83",
+        "name": "Shanghai Disneyland"
+      }
+    ]
+  };
+  
+  await dataUpdate(dest);
+};
+
+exports.hongkongdisneylandpark = async () => {
+  // Get file from S3 for the given destination.
+  let dest = {
+    "id": "abcfffe7-01f2-4f92-ae61-5093346f5a68",
+    "name": "Hong Kong Disneyland Parks",
+    "slug": "hongkongdisneylandpark",
+    "parks": [
+      {
+        "id": "bd0eb47b-2f02-4d4d-90fa-cb3a68988e3b",
+        "name": "Hong Kong Disneyland Park"
+      }
+    ]
+  };
+  
+  await dataUpdate(dest);
+};
+
 exports.disneylandresort = async () => {
   // Get file from S3 for the given destination.
   let dest = {

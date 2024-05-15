@@ -25,6 +25,10 @@ const slugs = [
   'disneylandresort',
   'universalstudios',
   'universalorlando',
+  'disneylandparis',
+  'tokyodisneyresort',
+  'shanghaidisneyresort',
+  'hongkongdisneylandpark'
 ];
 
 export const DataProvider = ({ children }: any) => {

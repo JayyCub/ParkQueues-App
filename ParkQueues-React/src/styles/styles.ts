@@ -326,5 +326,15 @@ export const styles = StyleSheet.create({
     borderStyle: "solid",
     borderBottomWidth: 2,
     borderColor: platform_style.statusBar.fontColor,
+  },
+  destinationSectionView: {
+    width: "92%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+    // marginBottom: 10,
+    borderStyle: "solid",
+    borderBottomWidth: 2,
+    borderColor: platform_style.statusBar.fontColor,
   }
 });

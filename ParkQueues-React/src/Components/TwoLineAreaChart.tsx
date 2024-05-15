@@ -64,6 +64,9 @@ export default function SingleLineAreaChart({ data, timezone }: { data: DataItem
     let start = chartPressState.y.start.value.value.toFixed(0);
     let end = chartPressState.y.end.value.value.toFixed(0);
 
+    if (start === 'NaN') start = "Closed"
+    if (end === 'NaN') end = "Closed"
+
     return `${start} - ${end}`;
   });
 
@@ -135,22 +138,13 @@ export default function SingleLineAreaChart({ data, timezone }: { data: DataItem
         >
           {({ chartBounds, points }) => (
             <>
-              <StockArea
-                colorPrefix={colorPrefix}
+              <LineArea
+                lineVal={true}
                 points={points.end}
-                isWindowActive={isChartPressActive}
-                isDeltaPositive={isDeltaPositive}
-                startX={chartPressState.x.position}
-                endX={chartPressState.x.position} // Since it's single press, start and end are same
-                {...chartBounds}
-              />
-              <StockArea
-                colorPrefix={colorPrefix}
+                {...chartBounds}              />
+              <LineArea
+                lineVal={false}
                 points={points.start}
-                isWindowActive={isChartPressActive}
-                isDeltaPositive={isDeltaPositive}
-                startX={chartPressState.x.position}
-                endX={chartPressState.x.position} // Since it's single press, start and end are same
                 {...chartBounds}
               />
             </>
@@ -162,19 +156,8 @@ export default function SingleLineAreaChart({ data, timezone }: { data: DataItem
 }
 
 
-const StockArea =
-  ({
-     points,
-     top,
-     bottom,
-   }: {
-  colorPrefix: "dark" | "light";
-  points: PointsArray;
-  isWindowActive: boolean;
-  isDeltaPositive: SharedValue<boolean>;
-  startX: SharedValue<number>;
-  endX: SharedValue<number>;
-} & ChartBounds) => {
+const LineArea =
+  ({points, top, bottom, lineVal}: { points: PointsArray, lineVal: boolean } & ChartBounds) => {
   const { path: areaPath } = useAreaPath(points, bottom);
   const { path: linePath } = useLinePath(points);
 
@@ -184,7 +167,9 @@ const StockArea =
         <LinearGradient
           start={vec(0, 0)}
           end={vec(top, bottom)}
-          colors={["#63eeff", "#effeff"]}
+          colors={lineVal ?
+            ["#63eeff", "#effeff"] :
+            ["#2d9ff1", "#effeff"]}
         />
       </Path>
       <Path

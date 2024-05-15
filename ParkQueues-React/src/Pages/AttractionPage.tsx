@@ -6,7 +6,6 @@ import LiveDataComponent from "../Components/LiveDataComponent";
 import {QueueType} from "../Data/Queue";
 import SingleLineAreaChart from "../Components/SingleLineAreaChart";
 import TwoLineAreaChart from "../Components/TwoLineAreaChart";
-import WebSingleLineAreaChart from "../Components/WebSingleLineAreaChart";
 
 const AttractionPage = ({ route }: any) => {
   const [attr] = useState<Attraction>(route.params?.attr);
@@ -15,6 +14,17 @@ const AttractionPage = ({ route }: any) => {
     high: number | undefined,
     date: number,
   }[] = [];
+
+  let historicSingleRider: {
+    high: number | undefined,
+    date: number,
+  }[] = [];
+
+  let historicStatus: {
+    high: number | undefined,
+    date: number,
+  }[] = [];
+
 
   let historicBoardingGroup: {
     start: number | undefined,
@@ -26,6 +36,18 @@ const AttractionPage = ({ route }: any) => {
     if (val.queue.STANDBY !== undefined) {
       if (val.queue.STANDBY.waitTime !== null) {
         return val.queue.STANDBY.waitTime;
+      } else {
+        return 1;
+      }
+    } else {
+      return -1;
+    }
+  }
+
+  function getSingleRider(val: HistoryData) {
+    if (val.queue.SINGLE_RIDER !== undefined) {
+      if (val.queue.SINGLE_RIDER.waitTime !== null) {
+        return val.queue.SINGLE_RIDER.waitTime;
       } else {
         return 0.01;
       }
@@ -83,6 +105,10 @@ const AttractionPage = ({ route }: any) => {
           date: new Date(value.time).getTime(),
         });
         // singleRiderElement();
+        historicSingleRider.push({
+          high: getSingleRider(value),
+          date: new Date(value.time).getTime(),
+        });
         // reservationTimeElement();
         break;
       case QueueType.standby_single:
@@ -93,6 +119,10 @@ const AttractionPage = ({ route }: any) => {
         })
 
         // singleRiderElement();
+        historicSingleRider.push({
+          high: getSingleRider(value),
+          date: new Date(value.time).getTime(),
+        });
         break;
       case QueueType.undetermined:
         historicStandby.push({
@@ -105,12 +135,21 @@ const AttractionPage = ({ route }: any) => {
           high: undefined,
           date: new Date(value.time).getTime(),
         });
+        historicSingleRider.push({
+          high: undefined,
+          date: new Date(value.time).getTime(),
+        });
+        historicBoardingGroup.push({
+          start: undefined,
+          end: undefined,
+          date: new Date(value.time).getTime(),
+        });
         break;
       default:
-        historicStandby.push({
-          high: -8,
-          date: new Date(value.time).getTime(),
-        })
+        // historicStandby.push({
+        //   high: -8,
+        //   date: new Date(value.time).getTime(),
+        // })
         break;
     }
   });
@@ -132,8 +171,11 @@ const AttractionPage = ({ route }: any) => {
           </View>
           {Platform.OS === 'web' ?
             <View style={styles.attractionLiveDataCard}>
-              <View style={{width: '100%', height: "auto"}}>
-                {historicStandby.length > 0 ?
+              {/*<View style={{width: '100%', height: "auto"}}>
+                {(attr.queue.queueType === QueueType.standby
+                  || attr.queue.queueType === QueueType.standby_single
+                  || attr.queue.queueType === QueueType.standby_single_reservation
+                  || attr.queue.queueType === QueueType.open_status) ?
                   <View style={{width: '100%', height: "auto"}}>
                     <View style={styles.attractionTitle}>
                       <Text style={styles.attractionPageHeaderText}>Standby Wait History:</Text>
@@ -141,7 +183,15 @@ const AttractionPage = ({ route }: any) => {
                     <WebSingleLineAreaChart data={historicStandby} timezone={route.params.timezone}/>
                   </View>
                   : null}
-{/*
+                {(attr.queue.queueType === QueueType.standby_single
+                  || attr.queue.queueType === QueueType.standby_single_reservation) ?
+                  <View style={{width: '100%', height: "auto"}}>
+                    <View style={styles.attractionTitle}>
+                      <Text style={styles.attractionPageHeaderText}>Single Rider Wait History:</Text>
+                    </View>
+                    <WebSingleLineAreaChart data={historicSingleRider} timezone={route.params.timezone}/>
+                  </View>
+                  : null}
                 {historicBoardingGroup.length > 0 ?
                   <View style={{width: '100%', height: "auto"}}>
                     <View style={styles.attractionTitle}>
@@ -150,64 +200,94 @@ const AttractionPage = ({ route }: any) => {
                     <TwoLineAreaChart data={historicBoardingGroup} timezone={route.params.timezone}/>
                   </View>
                   : null}
-*/}
-              </View>
-{/*
-              <View style={{flexDirection: "row", marginBottom: 5}}>
-                <View style={{
-                  width: '50%',
-                  paddingLeft: 2,
-                }}>
-
-                  <Text>6 hours ago</Text>
-                </View>
-                <View style={{
-                  width: '50%',
-                  paddingRight: 2,
-                  alignItems: "flex-end",
-                }}>
-                  <Text>Now</Text>
-                </View>
-              </View>
-*/}
+              </View>*/}
             </View>
             :
-            <View style={styles.attractionLiveDataCard}>
-              <View style={{width: '100%', height: "auto"}}>
-                {historicStandby.length > 0 ?
+            <>
+              {(attr.queue.queueType === QueueType.standby
+                || attr.queue.queueType === QueueType.standby_single
+                || attr.queue.queueType === QueueType.standby_single_reservation
+                || attr.queue.queueType === QueueType.open_status
+                || attr.queue.queueType === QueueType.standby_reservation) ?
+                <View style={styles.attractionLiveDataCard}>
                   <View style={{width: '100%', height: "auto"}}>
                     <View style={styles.attractionTitle}>
                       <Text style={styles.attractionPageHeaderText}>Standby Wait History:</Text>
                     </View>
                     <SingleLineAreaChart data={historicStandby} timezone={route.params.timezone}/>
                   </View>
-                  : null}
-                {historicBoardingGroup.length > 0 ?
+                  <View style={{flexDirection: "row", marginBottom: 5}}>
+                    <View style={{
+                      width: '50%',
+                      paddingLeft: 2,
+                    }}>
+
+                      <Text>6 hours ago</Text>
+                    </View>
+                    <View style={{
+                      width: '50%',
+                      paddingRight: 2,
+                      alignItems: "flex-end",
+                    }}>
+                      <Text>Now</Text>
+                    </View>
+                  </View>
+                </View>
+                : null}
+              {(attr.queue.queueType === QueueType.standby_single
+                || attr.queue.queueType === QueueType.standby_single_reservation) ?
+                <View style={styles.attractionLiveDataCard}>
+                  <View style={{width: '100%', height: "auto"}}>
+                    <View style={styles.attractionTitle}>
+                      <Text style={styles.attractionPageHeaderText}>Single Rider Wait History:</Text>
+                    </View>
+                    <SingleLineAreaChart data={historicSingleRider} timezone={route.params.timezone}/>
+                  </View>
+                  <View style={{flexDirection: "row", marginBottom: 5}}>
+                    <View style={{
+                      width: '50%',
+                      paddingLeft: 2,
+                    }}>
+
+                      <Text>6 hours ago</Text>
+                    </View>
+                    <View style={{
+                      width: '50%',
+                      paddingRight: 2,
+                      alignItems: "flex-end",
+                    }}>
+                      <Text>Now</Text>
+                    </View>
+                  </View>
+                </View>
+                : null}
+              {(attr.queue.queueType === QueueType.boarding_reservation) ?
+                <View style={styles.attractionLiveDataCard}>
                   <View style={{width: '100%', height: "auto"}}>
                     <View style={styles.attractionTitle}>
                       <Text style={styles.attractionPageHeaderText}>Boarding Group History:</Text>
                     </View>
                     <TwoLineAreaChart data={historicBoardingGroup} timezone={route.params.timezone}/>
                   </View>
-                  : null}
-              </View>
-              <View style={{flexDirection: "row", marginBottom: 5}}>
-                <View style={{
-                  width: '50%',
-                  paddingLeft: 2,
-                }}>
+                  <View style={{flexDirection: "row", marginBottom: 5}}>
+                    <View style={{
+                      width: '50%',
+                      paddingLeft: 2,
+                    }}>
 
-                  <Text>6 hours ago</Text>
+                      <Text>6 hours ago</Text>
+                    </View>
+                    <View style={{
+                      width: '50%',
+                      paddingRight: 2,
+                      alignItems: "flex-end",
+                    }}>
+                      <Text>Now</Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={{
-                  width: '50%',
-                  paddingRight: 2,
-                  alignItems: "flex-end",
-                }}>
-                  <Text>Now</Text>
-                </View>
-              </View>
-            </View>
+                : null}
+            </>
           }
         </View>
       </ScrollView>
