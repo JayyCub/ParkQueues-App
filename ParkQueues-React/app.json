@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "ParkQueues",
+    "slug": "parkqueues",
+    "privacy": "unlisted",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/PQ-logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jayycub.parkqueues"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.jayycub.parkqueues"
+    },
+    "web": {
+      "favicon": "./assets/PQ-logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "1c8482f5-34bf-40f6-bd91-0a94c883431c"
+      }
+    },
+    "owner": "jayycub"
+  }
+}
