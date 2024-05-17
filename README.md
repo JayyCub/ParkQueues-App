@@ -12,4 +12,7 @@ A React Native application made by Jacob Thomsen, 2024.
 
 &nbsp;
 
-## Demo
+![ParkQueues_Designs.gif](ReamdeAssets%2FParkQueues_Designs.gif)
+![ParkQueues_Designs (1).gif](ReamdeAssets%2FParkQueues_Designs%20%281%29.gif)
+![ParkQueues_Designs.png](ReamdeAssets%2FParkQueues_Designs.png)
+
