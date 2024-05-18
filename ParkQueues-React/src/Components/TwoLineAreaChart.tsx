@@ -27,7 +27,7 @@ import {
   useDerivedValue,
 } from "react-native-reanimated";
 import { AnimatedText } from "./AnimatedText";
-import { styles } from "../styles/styles";
+import { styles } from "../styles";
 
 const initChartPressState = { x: 0, y: { end: 0, start: 0} } as const;
 type DataItem = {

@@ -1,5 +1,5 @@
-import {Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View} from "react-native";
-import { styles } from "../styles/styles";
+import {Image, Pressable, ScrollView, Text, TextInput, View} from "react-native";
+import { styles } from "../styles";
 import React, {useEffect, useState} from "react";
 import { Park } from "../Data/Park";
 import {Attraction, LiveStatusType} from "../Data/Attraction";
@@ -20,10 +20,10 @@ const ParkPage = ({ route, navigation }: any) => {
   // Filter attractions by status
   const openAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
     attr.status === LiveStatusType.OPERATING);
-  const otherAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
+  const closedAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
     attr.status !== LiveStatusType.OPERATING);
 
-  // Sort attractions alphabetically by name
+  // DEFAULT: Sort attractions alphabetically by name
   const sortedOpenAttractions = openAttractions.slice().sort((a, b) => {
     if (sortAsc) {
       return a.name.localeCompare(b.name);
@@ -32,7 +32,7 @@ const ParkPage = ({ route, navigation }: any) => {
     }
   });
 
-  const sortedOtherAttractions = otherAttractions.slice().sort((a, b) => {
+  const sortedClosedAttractions = closedAttractions.slice().sort((a, b) => {
     if (sortAsc) {
       return a.name.localeCompare(b.name);
     } else {
@@ -59,7 +59,7 @@ const ParkPage = ({ route, navigation }: any) => {
         return b.name.localeCompare(a.name);
       }
     });
-    const filteredOtherAttractions = otherAttractions.filter(attraction =>
+    const filteredOtherAttractions = closedAttractions.filter(attraction =>
       attraction.name.toLowerCase().includes(query.toLowerCase())
     ).slice().sort((a, b) => {
       if (sortAsc) {
@@ -107,7 +107,7 @@ const ParkPage = ({ route, navigation }: any) => {
                   width: 40,
                   height: 40,
                 }}
-                source={require('../images/sort-alph-asc.png')}
+                source={require('../icon_imgs/sort-alph-asc.png')}
               />
             </View>
             :
@@ -117,7 +117,7 @@ const ParkPage = ({ route, navigation }: any) => {
                   width: 40,
                   height: 40,
                 }}
-                source={require('../images/sort-alph-desc.png')}
+                source={require('../icon_imgs/sort-alph-desc.png')}
               />
             </View>
           }
@@ -130,7 +130,7 @@ const ParkPage = ({ route, navigation }: any) => {
                   width: 30,
                   height: 30,
                 }}
-                source={require('../images/trends-icon.png')}
+                source={require('../icon_imgs/trends-icon.png')}
               />
             </View>
             :
@@ -140,7 +140,7 @@ const ParkPage = ({ route, navigation }: any) => {
                   width: 30,
                   height: 30,
                 }}
-                source={require('../images/trends-icon.png')}
+                source={require('../icon_imgs/trends-icon.png')}
               />
             </View>
           }
@@ -191,7 +191,7 @@ const ParkPage = ({ route, navigation }: any) => {
               <View style={styles.attrAvailSectionView}>
                 <Text style={styles.attrAvailSectionText}>Closed Attractions</Text>
               </View>
-              {sortedOtherAttractions.map((attr: Attraction, index: number) => (
+              {sortedClosedAttractions.map((attr: Attraction, index: number) => (
                 <Pressable
                   key={index}
                   style={styles.attractionCard}

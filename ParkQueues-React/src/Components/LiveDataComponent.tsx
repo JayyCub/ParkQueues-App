@@ -1,12 +1,12 @@
 import {Image, Text, View} from "react-native";
 import {Attraction, LiveStatusType} from "../Data/Attraction";
-import {styles} from "../styles/styles";
+import {styles} from "../styles";
 import {QueueType, ReturnTimeState} from "../Data/Queue";
 import React from "react";
 
-const downArrow = require("../images/diag-down.png");
-const upArrow = require("../images/diag-up.png");
-const flatLine = require("../images/flat-line.png");
+const downArrow = require("../icon_imgs/diag-down.png");
+const upArrow = require("../icon_imgs/diag-up.png");
+const flatLine = require("../icon_imgs/flat-line.png");
 
 const LiveDataComponent = (
   { attr, timezone, showAdditionalText }:

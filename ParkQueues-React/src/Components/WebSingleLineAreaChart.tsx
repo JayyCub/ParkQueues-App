@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { VictoryChart, VictoryArea, VictoryTooltip, VictoryVoronoiContainer, VictoryLine } from "victory"; // Import VictoryLine
 import { View, Text } from "react-native";
-import { styles } from "../styles/styles";
+import { styles } from "../styles";
 import {Circle} from "@shopify/react-native-skia";
 
 export default function WebSingleLineAreaChart({ data, timezone }: { data: { high: number | undefined; date: number }[], timezone: string }) {

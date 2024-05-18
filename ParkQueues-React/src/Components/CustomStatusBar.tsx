@@ -25,7 +25,7 @@
 
 import {View, Text} from 'react-native'
 import React from 'react'
-import {fontFamily, platform_style} from "../styles/styles";
+import {fontFamily, platform_style} from "../styles";
 
 const Header = (props: any) => {
   if (props.platform === 'ios') {

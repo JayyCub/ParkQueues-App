@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from "./Pages/Home";
 import Header from "./Components/CustomStatusBar";
-import {colorPalette, platform_style, styles} from "./styles/styles";
+import {colorPalette, platform_style, styles} from "./styles";
 import DestinationPage from "./Pages/DestinationPage";
 import ParkPage from "./Pages/ParkPage";
 import AttractionPage from "./Pages/AttractionPage";

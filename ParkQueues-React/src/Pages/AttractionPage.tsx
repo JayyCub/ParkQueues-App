@@ -1,5 +1,5 @@
 import {Attraction, HistoryData} from "../Data/Attraction";
-import {styles} from "../styles/styles";
+import {styles} from "../styles";
 import {Platform, ScrollView, Text, View} from "react-native";
 import React, {useState} from "react";
 import LiveDataComponent from "../Components/LiveDataComponent";

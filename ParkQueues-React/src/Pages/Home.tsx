@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { styles } from "../styles/styles";
+import { styles } from "../styles";
 import { useDataContext } from "../Data/DataContext";
 import { Destination } from "../Data/Destination";
 
@@ -31,9 +31,7 @@ const HomePage = ({ navigation }: any) => {
             <Pressable
               key={destination.slug}
               style={styles.destinationCard}
-              onPress={() =>
-                navigation.navigate('Destination', { destination })
-              }
+              onPress={() => navigation.navigate('Destination', { destination })}
             >
               <View>
                 <Text style={styles.destinationTitle}>{destination.name}</Text>
@@ -49,9 +47,7 @@ const HomePage = ({ navigation }: any) => {
             <Pressable
               key={destination.slug}
               style={styles.destinationCard}
-              onPress={() =>
-                navigation.navigate('Destination', { destination })
-              }
+              onPress={() => navigation.navigate('Destination', { destination })}
             >
               <View>
                 <Text style={styles.destinationTitle}>{destination.name}</Text>
