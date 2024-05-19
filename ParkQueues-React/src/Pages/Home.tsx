@@ -1,23 +1,23 @@
-import React from "react";
-import { Pressable, ScrollView, Text, View } from 'react-native';
-import { styles } from "../styles";
-import { useDataContext } from "../Data/DataContext";
-import { Destination } from "../Data/Destination";
+import React from 'react'
+import { Pressable, ScrollView, Text, View } from 'react-native'
+import { styles } from '../styles'
+import { useDataContext } from '../Data/DataContext'
+import { type Destination } from '../Data/Destination'
 
-const HomePage = ({ navigation }: any) => {
-  const { destinations, refreshData } = useDataContext();
+const HomePage = ({ navigation }: any): React.JSX.Element => {
+  const { destinations } = useDataContext()
 
   // Separate destinations into two lists: Disney and others
-  const disneyDestinations: Destination[] = [];
-  const otherDestinations: Destination[] = [];
+  const disneyDestinations: Destination[] = []
+  const otherDestinations: Destination[] = []
 
   Array.from(destinations.values()).forEach((destination: Destination) => {
-    if (destination.name.toLowerCase().includes("disney")) {
-      disneyDestinations.push(destination);
+    if (destination.name.toLowerCase().includes('disney')) {
+      disneyDestinations.push(destination)
     } else {
-      otherDestinations.push(destination);
+      otherDestinations.push(destination)
     }
-  });
+  })
 
   return (
     <>
@@ -57,7 +57,7 @@ const HomePage = ({ navigation }: any) => {
         </View>
       </ScrollView>
     </>
-  );
+  )
 }
 
-export default HomePage;
+export default HomePage

@@ -1,24 +1,25 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Destination } from "./Destination";
-import { DataManager } from "./DataManager";
-import {Park} from "./Park";
-
+import React, { createContext, useContext, useEffect, useState } from 'react'
+import { type Destination } from './Destination'
+import { DataManager } from './DataManager'
+import { type Park } from './Park'
 
 interface DataContextProps {
-  destinations: Map<string, Destination>;
-  parks: Map<string, Park>; // Add parks
-  refreshData: () => Promise<void>;
-  updateData: () => Promise<void>;
+  destinations: Map<string, Destination>
+  parks: Map<string, Park>
+  refreshData: () => Promise<void>
+  updateData: () => Promise<void>
 }
 
 const DataContext = createContext<DataContextProps>({
   destinations: new Map<string, Destination>(),
-  parks: new Map<string, Park>(), // Initialize as an empty Map
+  parks: new Map<string, Park>(),
   refreshData: async () => {},
-  updateData: async () => {},
-});
+  updateData: async () => {}
+})
 
-export const useDataContext = () => useContext(DataContext);
+export const useDataContext = (): DataContextProps => {
+  return useContext(DataContext)
+}
 
 const slugs = [
   'waltdisneyworldresort',
@@ -29,59 +30,53 @@ const slugs = [
   'tokyodisneyresort',
   'shanghaidisneyresort',
   'hongkongdisneylandpark'
-];
+]
 
-export const DataProvider = ({ children }: any) => {
-  const [destinations, setDestinations] = useState<Map<string, Destination>>(new Map<string, Destination>()); // Change destinations to Map
-  const [parks, setParks] = useState<Map<string, Park>>(new Map<string, Park>()); // Initialize as an empty Map
+export const DataProvider = ({ children }: any): React.JSX.Element => {
+  const [destinations, setDestinations] = useState<Map<string, Destination>>(new Map<string, Destination>())
+  const [parks, setParks] = useState<Map<string, Park>>(new Map<string, Park>())
 
   useEffect(() => {
-    refreshData().then();
-  }, []);
+    void refreshData().then()
+  }, [])
 
-  const refreshData = async () => {
-    const fetchedDestinations = await Promise.all(slugs.map(slug => DataManager.fetchDestination(slug)));
+  const processDestinations = (destinations: Destination[]): { destinationMap: Map<string, Destination>, parkMap: Map<string, Park> } => {
+    const destinationMap = new Map<string, Destination>()
+    const parkMap = new Map<string, Park>()
 
-    const filteredDestinations = fetchedDestinations.filter(dest => dest !== null) as Destination[];
-
-    const destinationMap = new Map<string, Destination>();
-    const parkMap = new Map<string, Park>(); // Create a map for parks
-
-    // Convert the filtered destinations array to a map
-    filteredDestinations.forEach(dest => {
-      destinationMap.set(dest.slug, dest);
-      // Add parks to the park map
+    destinations.forEach(dest => {
+      destinationMap.set(dest.slug, dest)
       Object.values(dest.parks).forEach(park => {
-        parkMap.set(park.id, park);
-      });
-    });
+        parkMap.set(park.id, park)
+      })
+    })
 
-    setDestinations(destinationMap);
-    setParks(parkMap);
-  };
+    return { destinationMap, parkMap }
+  }
 
-  const updateData = async () => {
-    const fetchedDestinations = await Promise.all(slugs.map(slug => DataManager.updateDestination(slug, destinations.get(slug))));
-    const filteredDestinations = fetchedDestinations.filter(dest => dest !== null) as Destination[];
-    const destinationMap = new Map<string, Destination>();
-    const parkMap = new Map<string, Park>(); // Create a map for parks
+  const refreshData = async (): Promise<void> => {
+    const fetchedDestinations = await Promise.all(slugs.map(async slug => await DataManager.fetchDestination(slug)))
 
-    // Convert the filtered destinations array to a map
-    filteredDestinations.forEach(dest => {
-      destinationMap.set(dest.slug, dest);
-      // Add parks to the park map
-      Object.values(dest.parks).forEach(park => {
-        parkMap.set(park.id, park);
-      });
-    });
+    const filteredDestinations = fetchedDestinations.filter(dest => dest !== null) as Destination[]
+    const { destinationMap, parkMap } = processDestinations(filteredDestinations)
 
-    setDestinations(destinationMap);
-    setParks(parkMap);
-  };
+    setDestinations(destinationMap)
+    setParks(parkMap)
+  }
+
+  const updateData = async (): Promise<void> => {
+    const fetchedDestinations = await Promise.all(slugs.map(async slug => await DataManager.updateDestination(slug, destinations.get(slug))))
+
+    const filteredDestinations = fetchedDestinations.filter(dest => dest !== null) as Destination[]
+    const { destinationMap, parkMap } = processDestinations(filteredDestinations)
+
+    setDestinations(destinationMap)
+    setParks(parkMap)
+  }
 
   return (
     <DataContext.Provider value={{ destinations, parks, refreshData, updateData }}>
       {children}
     </DataContext.Provider>
-  );
-};
+  )
+}

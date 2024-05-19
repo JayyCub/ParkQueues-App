@@ -1,57 +1,40 @@
-import {Attraction, AttractionInterface} from "./Attraction";
+import { Attraction, type AttractionInterface } from './Attraction'
 
 export enum EntityType {
-  DESTINATION = "DESTINATION",
-  PARK = "PARK",
-  ATTRACTION = "ATTRACTION",
-  RESTAURANT = "RESTAURANT",
-  HOTEL = "HOTEL",
-  SHOW = "SHOW"
+  DESTINATION = 'DESTINATION',
+  PARK = 'PARK',
+  ATTRACTION = 'ATTRACTION',
+  RESTAURANT = 'RESTAURANT',
+  HOTEL = 'HOTEL',
+  SHOW = 'SHOW'
 }
 
 export interface ParkInterface {
-  id: string;
-  name: string;
-  entityType: EntityType;
-  timezone: string;
-  liveData: { [attractionId: string]: AttractionInterface }; // Changed to object
+  id: string
+  name: string
+  entityType: EntityType
+  timezone: string
+  liveData: Record<string, AttractionInterface>
 }
 
 export class Park {
-  id: string;
-  name: string;
-  entityType: EntityType;
-  timezone: string;
-  liveData: { [attractionId: string]: Attraction }; // Changed to object
+  id: string
+  name: string
+  entityType: EntityType
+  timezone: string
+  liveData: Record<string, Attraction>
 
-  constructor(response: ParkInterface) {
-    this.id = response.id;
-    this.name = response.name;
-    this.entityType = response.entityType;
-    this.timezone = response.timezone;
-    this.liveData = {}; // Initialize as empty object
+  constructor (response: ParkInterface) {
+    this.id = response.id
+    this.name = response.name
+    this.entityType = response.entityType
+    this.timezone = response.timezone
+    this.liveData = {}
 
-    // Iterate over the attraction data and create new Attraction objects
-    for (let attractionId in response.liveData) {
-      let attractionData = response.liveData[attractionId];
-       // Create new Attraction object
-      this.liveData[attractionId] = new Attraction(attractionData); // Assign to the attractions object
-    }
-  }
-
-  public static fromJson(json: string | null | undefined): Park | null {
-    if (!!json) {
-      let jsonObject: ParkInterface = JSON.parse(json);
-
-      return new Park({
-        id: jsonObject.id,
-        name: jsonObject.name,
-        entityType: jsonObject.entityType,
-        timezone: jsonObject.timezone,
-        liveData: jsonObject.liveData // Use the provided liveData
-      });
-    } else {
-      return null;
+    for (const attractionId in response.liveData) {
+      const attractionData = response.liveData[attractionId]
+      // Create new Attraction object
+      this.liveData[attractionId] = new Attraction(attractionData)
     }
   }
 }

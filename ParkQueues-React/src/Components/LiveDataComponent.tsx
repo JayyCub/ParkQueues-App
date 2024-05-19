@@ -1,45 +1,37 @@
-import {Image, Text, View} from "react-native";
-import {Attraction, LiveStatusType} from "../Data/Attraction";
-import {styles} from "../styles";
-import {QueueType, ReturnTimeState} from "../Data/Queue";
-import React from "react";
+import { Image, Text, View } from 'react-native'
+import { type Attraction, LiveStatusType } from '../Data/Attraction'
+import { styles } from '../styles'
+import { QueueType, ReturnTimeState } from '../Data/Queue'
+import React from 'react'
 
-const downArrow = require("../icon_imgs/diag-down.png");
-const upArrow = require("../icon_imgs/diag-up.png");
-const flatLine = require("../icon_imgs/flat-line.png");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const downArrow = require('../icon_imgs/diag-down.png')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const upArrow = require('../icon_imgs/diag-up.png')
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const flatLine = require('../icon_imgs/flat-line.png')
 
 const LiveDataComponent = (
   { attr, timezone, showAdditionalText }:
-    { attr: Attraction, timezone: string, showAdditionalText: boolean}) => {
-  let elements: any[] = [];
-  let status;
-
-  function renderAdditionalText() {
-    if (showAdditionalText) {
-      return (
-        <Text>+info+</Text>
-      );
-    }
-    return null;
-  }
-
-  const additionalText = renderAdditionalText();
+  { attr: Attraction, timezone: string, showAdditionalText: boolean }): React.JSX.Element => {
+  const elements: any[] = []
+  let status
 
   // Check if attraction is NOT operating
   if (attr.status !== LiveStatusType.OPERATING) {
     switch (attr.status) {
       case LiveStatusType.CLOSED:
-        status = "Closed";
-        break;
+        status = 'Closed'
+        break
       case LiveStatusType.DOWN:
-        status = "Unexpected Downtime";
-        break;
+        status = 'Unexpected Downtime'
+        break
       case LiveStatusType.REFURBISHMENT:
-        status = "Under Refurbishment";
-        break;
+        status = 'Under Refurbishment'
+        break
       default:
-        status = "Closed";
-        break;
+        status = 'Closed'
+        break
     }
 
     return (
@@ -50,59 +42,58 @@ const LiveDataComponent = (
           </Text>
         </View>
       </View>
-    );
+    )
   }
 
-  function statusElement() {
+  function statusElement (): void {
     elements.push((
       <>
-        {/*<View style={styles.liveDataLabelBox}>
+        {/* <View style={styles.liveDataLabelBox}>
           <Text style={styles.liveDataLabelText}>Status:</Text>
-        </View>*/}
+        </View> */}
         <Text style={styles.liveData2}>Open</Text>
       </>
-    ));
+    ))
   }
 
-  function standbyElement() {
-    let diff = 0;
-    let icon;
+  function standbyElement (): void {
+    let diff = 0
+    let icon
 
-    let prev = attr.history[attr.history.length - 2];
-    if (prev) {
-      let prevStatus = prev.status;
-      let prevQueue = prev.queue;
+    const prev = attr.history[attr.history.length - 2]
+    if (prev != null) {
+      const prevStatus = prev.status
+      const prevQueue = prev.queue
 
-      let currWait: number | undefined = attr.queue.STANDBY?.waitTime
+      const currWait: number | undefined = attr.queue.STANDBY?.waitTime
 
-      if (prevStatus !== undefined && prevQueue !== undefined
-        && prevQueue.STANDBY?.waitTime !== undefined
-        && prevStatus === LiveStatusType.OPERATING
-        && currWait !== undefined) {
-        let prevWait = prevQueue.STANDBY?.waitTime;
-        diff = (currWait - prevWait);
+      if (prevStatus !== undefined && prevQueue?.STANDBY?.waitTime !== undefined &&
+        prevStatus === LiveStatusType.OPERATING &&
+        currWait !== undefined) {
+        const prevWait = prevQueue.STANDBY?.waitTime
+        diff = (currWait - prevWait)
         if (currWait < prevWait) {
-          icon = downArrow;
+          icon = downArrow
         } else if (currWait > prevWait) {
-          icon = upArrow;
+          icon = upArrow
         } else if (currWait === prevWait) {
-          icon = flatLine;
+          icon = flatLine
         }
       }
     }
 
-    let iconElement =
+    const iconElement =
       <Image
-        style={{ width: 18, height: 18, marginLeft: 5}}
+        style={{ width: 18, height: 18, marginLeft: 5 }}
         source={icon}
-        resizeMode="contain" />;
-    let diffElement =
+        resizeMode="contain" />
+    const diffElement =
       <Text style={{
         marginLeft: 2,
-        verticalAlign: "middle",
-        fontWeight: "bold",
+        verticalAlign: 'middle',
+        fontWeight: 'bold',
         fontSize: 13,
-        color: diff === 0? "gray" : diff > 0 ? "#b40100" : "#008c01"
+        color: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01'
       }}>
         {Math.abs(diff)}
       </Text>
@@ -112,34 +103,35 @@ const LiveDataComponent = (
         <View style={styles.liveDataLabelBox}>
           <Text style={styles.liveDataLabelText}>Standby:</Text>
         </View>
-        <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
           <View style={{
             width: 40,
-            display: showAdditionalText ? undefined : "none"
+            display: showAdditionalText ? undefined : 'none'
           }} />
 
           <Text style={styles.liveData3}>
-            {attr.queue.STANDBY?.waitTime !== null ?
-              (<>{attr.queue.STANDBY?.waitTime}</>) : "Open"}
+            {attr.queue.STANDBY?.waitTime !== null
+              ? (<>{attr.queue.STANDBY?.waitTime}</>)
+              : 'Open'}
           </Text>
 
           <View style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
             width: 40,
-            display: showAdditionalText ? undefined : "none",
+            display: showAdditionalText ? undefined : 'none'
           }}>
             { iconElement.props.source === undefined ? null : iconElement}
             { diffElement }
           </View>
         </View>
       </>
-    ));
+    ))
   }
 
-  function singleRiderElement() {
-    let element;
+  function singleRiderElement (): void {
+    let element
     if (attr.queue.SINGLE_RIDER?.waitTime !== null) {
       element = <Text style={styles.liveData3}>
         {attr.queue.SINGLE_RIDER?.waitTime}
@@ -155,10 +147,10 @@ const LiveDataComponent = (
         </View>
         {element}
       </>
-    ));
+    ))
   }
 
-  function boardingGroupElement() {
+  function boardingGroupElement (): void {
     elements.push((
       <>
         <View style={styles.liveDataLabelBox}>
@@ -170,49 +162,50 @@ const LiveDataComponent = (
           {attr.queue.BOARDING_GROUP?.currentGroupEnd}
         </Text>
       </>
-    ));
+    ))
   }
 
-  function reservationTimeElement() {
-    let paid = attr.queue.PAID_RETURN_TIME?.returnStart;
-    let reg = attr.queue.RETURN_TIME?.returnStart;
-    let title: string;
-    let nextTime: string;
-    let price: string | undefined;
+  function reservationTimeElement (): void {
+    const paid = attr.queue.PAID_RETURN_TIME?.returnStart
+    const reg = attr.queue.RETURN_TIME?.returnStart
+    let title: string
+    let nextTime: string
+    let price: string | undefined
 
     if (paid !== undefined) {
-      title = "Next Individual LL:";
+      title = 'Next Individual LL:'
       if (attr.queue.PAID_RETURN_TIME?.state === ReturnTimeState.AVAILABLE) {
-        let temp = new Date(paid);
+        const temp = new Date(paid)
         nextTime = temp.toLocaleString('en-US',
-          { hour: 'numeric',
+          {
+            hour: 'numeric',
             minute: 'numeric',
             hour12: true,
-            timeZone: timezone,
-          });
+            timeZone: timezone
+          })
       } else {
-        nextTime = "Unavailable";
+        nextTime = 'Unavailable'
       }
       if (attr.queue.PAID_RETURN_TIME?.price.currency !== undefined) {
-        price = "$" + (attr.queue.PAID_RETURN_TIME.price.amount / 100).toString();
+        price = '$' + (attr.queue.PAID_RETURN_TIME.price.amount / 100).toString()
       }
-
-    } else if (reg !== undefined ) {
-      title = "Next Genie+ Reservation:";
+    } else if (reg !== undefined) {
+      title = 'Next Genie+ Reservation:'
       if (attr.queue.RETURN_TIME?.state === ReturnTimeState.AVAILABLE) {
-        let temp = new Date(reg);
+        const temp = new Date(reg)
         nextTime = temp.toLocaleString('en-US',
-          { hour: 'numeric',
+          {
+            hour: 'numeric',
             minute: 'numeric',
             hour12: true,
-            timeZone: timezone,
-          });
+            timeZone: timezone
+          })
       } else {
-        nextTime = "Unavailable";
+        nextTime = 'Unavailable'
       }
     } else {
-      title = "Next Reservable Time:";
-      nextTime = "Unavailable"
+      title = 'Next Reservable Time:'
+      nextTime = 'Unavailable'
     }
 
     elements.push(
@@ -220,26 +213,26 @@ const LiveDataComponent = (
           <View style={styles.liveDataLabelBox}>
             <Text style={styles.liveDataLabelText}>{title}</Text>
           </View>
-          {nextTime !== "Unavailable" ?
-            <Text style={styles.liveData3}>{nextTime}</Text>
+          {nextTime !== 'Unavailable'
+            ? <Text style={styles.liveData3}>{nextTime}</Text>
             : <Text style={styles.liveDataUnavailable}>Unavailable</Text>
           }
         </View>
-    );
+    )
     if (price !== undefined) {
-      getDivider();
+      getDivider()
       elements.push(<View style={styles.liveDataBox}>
           <View style={styles.liveDataLabelBox}>
             <Text style={styles.liveDataLabelText}>Price:</Text>
           </View>
           <Text style={styles.liveData3}>{price}</Text>
         </View>
-      );
+      )
     }
   }
 
-  function getDivider() {
-    elements.push(<></>);
+  function getDivider (): void {
+    elements.push(<></>)
   }
 
   // If only standby or status: use center
@@ -249,37 +242,37 @@ const LiveDataComponent = (
 
   switch (attr.queue.queueType) {
     case QueueType.open_status:
-      statusElement();
-      break;
+      statusElement()
+      break
     case QueueType.standby:
-      standbyElement();
-      break;
+      standbyElement()
+      break
     case QueueType.standby_reservation:
-      standbyElement();
-      getDivider();
-      reservationTimeElement();
-      break;
+      standbyElement()
+      getDivider()
+      reservationTimeElement()
+      break
     case QueueType.boarding_reservation:
-      boardingGroupElement();
-      getDivider();
-      reservationTimeElement();
-      break;
+      boardingGroupElement()
+      getDivider()
+      reservationTimeElement()
+      break
     case QueueType.standby_single_reservation:
-      standbyElement();
-      getDivider();
-      singleRiderElement();
-      getDivider();
-      reservationTimeElement();
-      break;
+      standbyElement()
+      getDivider()
+      singleRiderElement()
+      getDivider()
+      reservationTimeElement()
+      break
     case QueueType.standby_single:
-      standbyElement();
-      getDivider();
-      singleRiderElement();
-      break;
+      standbyElement()
+      getDivider()
+      singleRiderElement()
+      break
     case QueueType.undetermined:
-      break;
+      break
     default:
-      break;
+      break
   }
 
   return (
@@ -291,10 +284,11 @@ const LiveDataComponent = (
           return (
             <View style={styles.liveDataBox} key={index}>{element}</View>
           )
-        }})
+        }
+      })
       }
     </View>
   )
 }
 
-export default LiveDataComponent;
+export default LiveDataComponent

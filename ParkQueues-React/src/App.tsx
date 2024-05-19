@@ -1,37 +1,36 @@
-// App.tsx
-import React from "react";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Home from "./Pages/Home";
-import Header from "./Components/CustomStatusBar";
-import {colorPalette, platform_style, styles} from "./styles";
-import DestinationPage from "./Pages/DestinationPage";
-import ParkPage from "./Pages/ParkPage";
-import AttractionPage from "./Pages/AttractionPage";
-import {DataProvider} from "./Data/DataContext";
-import {Platform} from "react-native";
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import Home from './Pages/Home'
+import Header from './Components/CustomStatusBar'
+import { colorPalette, platform_style } from './styles'
+import DestinationPage from './Pages/DestinationPage'
+import ParkPage from './Pages/ParkPage'
+import AttractionPage from './Pages/AttractionPage'
+import { DataProvider } from './Data/DataContext'
+import { Platform } from 'react-native'
 
-const Stack = createNativeStackNavigator();
-const platform = Platform.OS;
+const Stack = createNativeStackNavigator()
+const platform = Platform.OS
 
-export default function App() {
+export default function App (): React.JSX.Element {
   return (
     <DataProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{
           contentStyle: {
-            backgroundColor: colorPalette.layer15,
+            backgroundColor: colorPalette.layer15
           },
-          headerBackTitleVisible: false,
+          headerBackTitleVisible: false
         }}>
           <Stack.Screen
             name="Home"
             component={Home}
             options={{
               headerTitle: () => <Header platform={platform} title="ParkQueues" />,
-              headerTitleAlign: "center",
+              headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor,
+                backgroundColor: platform_style.statusBar.bgColor
               },
               headerShadowVisible: true,
               presentation: 'card'
@@ -42,9 +41,9 @@ export default function App() {
             component={DestinationPage}
             options={{
               headerTitle: () => <Header platform={platform} title="Select a Park" />,
-              headerTitleAlign: "center",
+              headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor,
+                backgroundColor: platform_style.statusBar.bgColor
               },
               headerShadowVisible: false,
               presentation: 'card'
@@ -55,9 +54,9 @@ export default function App() {
             component={ParkPage}
             options={{
               headerTitle: () => <Header platform={platform} title="View Attractions" />,
-              headerTitleAlign: "center",
+              headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor,
+                backgroundColor: platform_style.statusBar.bgColor
               },
               headerShadowVisible: false,
               presentation: 'card'
@@ -68,9 +67,9 @@ export default function App() {
             component={AttractionPage}
             options={{
               headerTitle: () => <Header platform={platform} title="View Attraction" />,
-              headerTitleAlign: "center",
+              headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor,
+                backgroundColor: platform_style.statusBar.bgColor
               },
               headerShadowVisible: false,
               presentation: 'card'
@@ -79,5 +78,5 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </DataProvider>
-  );
+  )
 }

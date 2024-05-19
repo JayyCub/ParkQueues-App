@@ -1,32 +1,32 @@
-import * as React from "react";
-import { TextInput, type TextInputProps } from "react-native";
+import * as React from 'react'
+import { TextInput, type TextInputProps } from 'react-native'
 import Reanimated, {
   useAnimatedProps,
-  type SharedValue,
-} from "react-native-reanimated";
+  type SharedValue
+} from 'react-native-reanimated'
 
-const AnimText = Reanimated.createAnimatedComponent(TextInput);
-Reanimated.addWhitelistedNativeProps({ text: true });
+const AnimText = Reanimated.createAnimatedComponent(TextInput)
+Reanimated.addWhitelistedNativeProps({ text: true })
 
-type AnimatedTextProps = Omit<TextInputProps, "editable" | "value"> & {
-  text: SharedValue<string>;
-  style?: React.ComponentProps<typeof AnimText>["style"];
-};
+type AnimatedTextProps = Omit<TextInputProps, 'editable' | 'value'> & {
+  text: SharedValue<string>
+  style?: React.ComponentProps<typeof AnimText>['style']
+}
 
-export function AnimatedText({ text, ...rest }: AnimatedTextProps) {
+export function AnimatedText ({ text, ...rest }: AnimatedTextProps): React.JSX.Element {
   const animProps = useAnimatedProps(() => {
     return {
-      text: text.value,
-    };
-  });
+      text: text.value
+    }
+  })
 
   return (
     <AnimText
       {...rest}
       value={text.value}
-      // @ts-ignore
+      // @ts-expect-error : Lint doesn't like custom components
       animatedProps={animProps}
       editable={false}
     />
-  );
+  )
 }

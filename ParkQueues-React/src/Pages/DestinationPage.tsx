@@ -1,11 +1,12 @@
-import { Pressable, Text, View } from "react-native";
-import { styles } from "../styles";
-import React, { useState } from "react";
-import { Destination } from "../Data/Destination";
-import { Park } from "../Data/Park";
+import { Pressable, Text, View } from 'react-native'
+import { styles } from '../styles'
+import React, { useState } from 'react'
+import { type Destination } from '../Data/Destination'
+import { type Park } from '../Data/Park'
 
-const DestinationPage = ({ route, navigation }: any) => {
-  const [destination] = useState<Destination>(route.params?.destination);
+const DestinationPage = ({ route, navigation }: any): React.JSX.Element => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const [destination] = useState<Destination>(route.params?.destination)
 
   return (
     <>
@@ -15,27 +16,27 @@ const DestinationPage = ({ route, navigation }: any) => {
         >@ {destination.name}</Text>
       </View>
       <View style={styles.main}>
-        {Object.values(destination.parks).map((park: Park, index: number) => (
+        {Object.values(destination.parks).map((park: Park) => (
           <Pressable
             key={park.id}
             style={styles.parkCard}
             onPress={() =>
-              navigation.navigate('Park', { park: park })
+              navigation.navigate('Park', { park })
             }
           >
             <View>
               <Text style={styles.destinationTitle}>
                 {park.name
                   .replaceAll("Disney's", '')
-                  .replaceAll("Theme Park", '')
-                  .replaceAll("Water Park", '')}
+                  .replaceAll('Theme Park', '')
+                  .replaceAll('Water Park', '')}
               </Text>
             </View>
           </Pressable>
         ))}
       </View>
     </>
-  );
+  )
 }
 
-export default DestinationPage;
+export default DestinationPage
