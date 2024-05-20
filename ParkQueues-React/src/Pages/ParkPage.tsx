@@ -1,4 +1,4 @@
-import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
 import { styles } from '../styles'
 import React, { useEffect, useState } from 'react'
 import { type Park } from '../Data/Park'
@@ -7,80 +7,61 @@ import LiveDataComponent from '../Components/LiveDataComponent'
 import { useDataContext } from '../Data/DataContext'
 
 const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
-  const { parks } = useDataContext()
-  useEffect(() => {
-  }, [parks])
-
+  const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha } = useDataContext()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  const [park] = useState<Park>(route.params?.park)
-  const [showAdditionalText, setShowAdditionalText] = useState(false)
+  const [park, setPark] = useState<Park>(route.params?.park)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [filteredAttractions, setFilteredAttractions] = useState<Attraction[]>([])
-  const [sortAsc, setSortAsc] = useState<boolean>(true) // State for sorting ascending or descending
+  const [refreshing, setRefreshing] = useState(false)
 
-  // Filter attractions by status
-  const openAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
-    attr.status === LiveStatusType.OPERATING)
-  const closedAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
-    attr.status !== LiveStatusType.OPERATING)
-
-  // DEFAULT: Sort attractions alphabetically by name
-  const sortedOpenAttractions = openAttractions.slice().sort((a, b) => {
-    if (sortAsc) {
-      return a.name.localeCompare(b.name)
-    } else {
-      return b.name.localeCompare(a.name)
+  useEffect(() => {
+    const updatedPark = parks.get(park.id)
+    if (updatedPark != null) {
+      setPark(updatedPark)
     }
+  }, [lastUpdated, parks, park.id])
+
+  const openAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
+    attr.status === LiveStatusType.OPERATING
+  )
+  const closedAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
+    attr.status !== LiveStatusType.OPERATING
+  )
+
+  const sortedOpenAttractions = openAttractions.slice().sort((a, b) => {
+    return sortAlpha ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
   })
 
   const sortedClosedAttractions = closedAttractions.slice().sort((a, b) => {
-    if (sortAsc) {
-      return a.name.localeCompare(b.name)
-    } else {
-      return b.name.localeCompare(a.name)
-    }
+    return sortAlpha ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
   })
 
-  // const [setRefreshing] = React.useState(false)
-
-  // const onRefresh = React.useCallback(async () => {
-  //   setRefreshing(true)
-  //   // await updateData();
-  //   setRefreshing(false)
-  // }, [])
-
-  // Function to filter attractions based on search query
   const filterAttractions = (query: string): void => {
     const filteredOpenAttractions = openAttractions.filter(attraction =>
       attraction.name.toLowerCase().includes(query.toLowerCase())
     ).slice().sort((a, b) => {
-      if (sortAsc) {
-        return a.name.localeCompare(b.name)
-      } else {
-        return b.name.localeCompare(a.name)
-      }
+      return sortAlpha ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     })
     const filteredOtherAttractions = closedAttractions.filter(attraction =>
       attraction.name.toLowerCase().includes(query.toLowerCase())
     ).slice().sort((a, b) => {
-      if (sortAsc) {
-        return a.name.localeCompare(b.name)
-      } else {
-        return b.name.localeCompare(a.name)
-      }
+      return sortAlpha ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
     })
     setFilteredAttractions([...filteredOpenAttractions, ...filteredOtherAttractions])
   }
 
-  // Handle search query change
   const handleSearch = (query: string): void => {
     setSearchQuery(query)
     filterAttractions(query)
   }
 
-  // Function to toggle sorting order
-  const toggleSortOrder = (): void => {
-    setSortAsc(prev => !prev)
+  const onRefresh = (): void => {
+    setRefreshing(true)
+    // eslint-disable-next-line
+    refreshData().then(() => {
+      // Set refreshing state to false to hide the spinner
+      setRefreshing(false)
+    })
   }
 
   return (
@@ -90,7 +71,6 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
       </View>
       <View style={styles.toolsHeaderView}>
         <View style={{ flex: 4 }}>
-          {/* Search input field */}
           <TextInput
             style={searchQuery !== '' ? styles.searchBarSelected : styles.searchBar}
             onChangeText={handleSearch}
@@ -100,45 +80,33 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
             clearButtonMode="always"
           />
         </View>
-        <Pressable onPress={toggleSortOrder}>
-          {!sortAsc
+        <Pressable onPress={ () => { toggleSortAlpha() } }>
+          {!sortAlpha
             ? <View style={styles.subheaderSortAlphaAsc}>
               <Image
-                style={{
-                  width: 40,
-                  height: 40
-                }}
+                style={{ width: 40, height: 40 }}
                 source={require('../icon_imgs/sort-alph-asc.png')}
               />
             </View>
             : <View style={styles.subheaderSortAlphaDesc}>
               <Image
-                style={{
-                  width: 40,
-                  height: 40
-                }}
+                style={{ width: 40, height: 40 }}
                 source={require('../icon_imgs/sort-alph-desc.png')}
               />
             </View>
           }
         </Pressable>
-        <Pressable onPress={() => { setShowAdditionalText(prevState => !prevState) }}>
-          {showAdditionalText
+        <Pressable onPress={() => { toggleShowTrends() }}>
+          {showTrends
             ? <View style={styles.subheaderShowDataTrue}>
               <Image
-                style={{
-                  width: 30,
-                  height: 30
-                }}
+                style={{ width: 30, height: 30 }}
                 source={require('../icon_imgs/trends-icon.png')}
               />
             </View>
             : <View style={styles.subheaderShowDataFalse}>
               <Image
-                style={{
-                  width: 30,
-                  height: 30
-                }}
+                style={{ width: 30, height: 30 }}
                 source={require('../icon_imgs/trends-icon.png')}
               />
             </View>
@@ -146,46 +114,36 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
         </Pressable>
       </View>
       <ScrollView
-        /* refreshControl={
-          <RefreshControl title={"Pull down to refresh"} refreshing={refreshing} onRefresh={onRefresh} />
-        } */
-      >
+        refreshControl={
+          <RefreshControl title='Pull down to refresh' refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <View style={styles.main}>
-          {/* List for filtered attractions */}
           {searchQuery !== ''
             ? filteredAttractions.map((attr: Attraction, index: number) => (
               <Pressable
                 key={index}
                 style={styles.attractionCard}
-                onPress={() => navigation.navigate('Attraction', {
-                  attr,
-                  timezone: park.timezone
-                })}
+                onPress={() => navigation.navigate('Attraction', { attr, timezone: park.timezone })}
               >
                 <View style={styles.attractionTitle}>
                   <Text style={styles.attractionTitleText}>{attr.name}</Text>
                 </View>
-                <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showAdditionalText}/>
+                <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showTrends} />
               </Pressable>
             ))
             : <>
-              {/* List for open attractions */}
               {sortedOpenAttractions.map((attr: Attraction, index: number) => (
                 <Pressable
                   key={index}
                   style={styles.attractionCard}
-                  onPress={() => navigation.navigate('Attraction', {
-                    attr,
-                    timezone: park.timezone
-                  })}
+                  onPress={() => navigation.navigate('Attraction', { attr, timezone: park.timezone })}
                 >
                   <View style={styles.attractionTitle}>
                     <Text style={styles.attractionTitleText}>{attr.name}</Text>
                   </View>
-                  <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showAdditionalText}/>
+                  <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showTrends} />
                 </Pressable>
               ))}
-              {/* List for other attractions */}
               <View style={styles.attrAvailSectionView}>
                 <Text style={styles.attrAvailSectionText}>Closed Attractions</Text>
               </View>
@@ -193,15 +151,12 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
                 <Pressable
                   key={index}
                   style={styles.attractionCard}
-                  onPress={() => navigation.navigate('Attraction', {
-                    attr,
-                    timezone: park.timezone
-                  })}
+                  onPress={() => navigation.navigate('Attraction', { attr, timezone: park.timezone })}
                 >
                   <View style={styles.attractionTitle}>
                     <Text style={styles.attractionTitleText}>{attr.name}</Text>
                   </View>
-                  <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showAdditionalText}/>
+                  <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showTrends} />
                 </Pressable>
               ))}
             </>

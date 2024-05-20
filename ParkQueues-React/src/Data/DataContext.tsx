@@ -8,13 +8,23 @@ interface DataContextProps {
   parks: Map<string, Park>
   refreshData: () => Promise<void>
   updateData: () => Promise<void>
+  lastUpdated: number
+  showTrends: boolean
+  toggleShowTrends: () => void
+  sortAlpha: boolean
+  toggleSortAlpha: () => void
 }
 
 const DataContext = createContext<DataContextProps>({
   destinations: new Map<string, Destination>(),
   parks: new Map<string, Park>(),
   refreshData: async () => {},
-  updateData: async () => {}
+  updateData: async () => {},
+  lastUpdated: 0,
+  showTrends: false,
+  toggleShowTrends: () => {},
+  sortAlpha: false,
+  toggleSortAlpha: () => {}
 })
 
 export const useDataContext = (): DataContextProps => {
@@ -35,6 +45,19 @@ const slugs = [
 export const DataProvider = ({ children }: any): React.JSX.Element => {
   const [destinations, setDestinations] = useState<Map<string, Destination>>(new Map<string, Destination>())
   const [parks, setParks] = useState<Map<string, Park>>(new Map<string, Park>())
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
+
+  const [showTrends, setShowTrends] = useState<boolean>(false)
+
+  const toggleShowTrends = (): void => {
+    setShowTrends(prevState => !prevState)
+  }
+
+  const [sortAlpha, setSortAlpha] = useState<boolean>(true)
+
+  const toggleSortAlpha = (): void => {
+    setSortAlpha(prevState => !prevState)
+  }
 
   useEffect(() => {
     void refreshData().then()
@@ -62,6 +85,7 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
 
     setDestinations(destinationMap)
     setParks(parkMap)
+    setLastUpdated(Date.now())
   }
 
   const updateData = async (): Promise<void> => {
@@ -72,10 +96,11 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
 
     setDestinations(destinationMap)
     setParks(parkMap)
+    setLastUpdated(Date.now())
   }
 
   return (
-    <DataContext.Provider value={{ destinations, parks, refreshData, updateData }}>
+    <DataContext.Provider value={{ destinations, parks, refreshData, updateData, lastUpdated, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha }}>
       {children}
     </DataContext.Provider>
   )

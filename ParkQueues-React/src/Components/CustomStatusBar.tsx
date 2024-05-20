@@ -1,14 +1,14 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { fontFamily, platform_style } from '../styles'
+import { fontFamily, platformStyle } from '../styles'
 
 const Header = (props: any): React.JSX.Element => {
   if (props.platform === 'ios') {
     return (
       <View>
         <Text style={{
-          fontSize: platform_style.statusBar.fontSize,
-          color: platform_style.statusBar.fontColor,
+          fontSize: platformStyle.statusBar.fontSize,
+          color: platformStyle.statusBar.fontColor,
           fontFamily
         }}>
           {props.title}</Text>
@@ -18,8 +18,8 @@ const Header = (props: any): React.JSX.Element => {
     return (
       <View>
         <Text style={{
-          fontSize: platform_style.statusBar.fontSize,
-          color: platform_style.statusBar.fontColor,
+          fontSize: platformStyle.statusBar.fontSize,
+          color: platformStyle.statusBar.fontColor,
           fontFamily
         }}>
           {props.title}</Text>
@@ -29,8 +29,8 @@ const Header = (props: any): React.JSX.Element => {
     return (
       <View>
         <Text style={{
-          fontSize: platform_style.statusBar.fontSize,
-          color: platform_style.statusBar.fontColor,
+          fontSize: platformStyle.statusBar.fontSize,
+          color: platformStyle.statusBar.fontColor,
           fontFamily
         }}>
           {props.title}</Text>

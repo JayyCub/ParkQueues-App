@@ -78,7 +78,7 @@ export class Queue implements QueueInterface {
 
   queueType: QueueType
 
-  constructor (queue: QueueInterface) {
+  constructor (queue: QueueInterface | undefined) {
     if (queue === undefined) {
       this.STANDBY = undefined
       this.SINGLE_RIDER = undefined
@@ -115,11 +115,10 @@ export class Queue implements QueueInterface {
       (this.RETURN_TIME !== undefined || this.PAID_RETURN_TIME !== undefined)
     ) {
       this.queueType = 2
-    } else if (this.STANDBY?.waitTime !== null
+    } else if (this.STANDBY !== undefined && this.STANDBY?.waitTime !== null
     ) {
       this.queueType = 1
-    } else if (this.STANDBY !== undefined &&
-      this.STANDBY.waitTime === null) {
+    } else if (this.STANDBY === undefined || (this.STANDBY.waitTime === null)) {
       this.queueType = 0
     } else {
       this.queueType = 6

@@ -8,10 +8,10 @@ export class DataManager {
     const localData = await AsyncStorage.getItem(slug)
 
     if ((localData != null) && Date.now() - (1000 * 60 * 5) < JSON.parse(localData).lastUpdated) {
-      // console.log(slug + ": Found local storage, and it is recent");
+      console.log(slug + ': Found local storage, and it is recent')
       return Destination.fromJson(localData)
     } else {
-      // console.log(slug + ": Local data is missing or expired.");
+      console.log(slug + ': Local data is missing or expired.')
       try {
         const response = await fetch(url)
         const data = await response.json()

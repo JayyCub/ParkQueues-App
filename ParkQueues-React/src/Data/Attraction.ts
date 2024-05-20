@@ -56,12 +56,10 @@ export class Attraction implements AttractionInterface {
     this.entityType = attractionData.entityType
     this.status = attractionData.status
     this.lastUpdated = attractionData.lastUpdated
-    this.queue =
-      new Queue(this.status === LiveStatusType.OPERATING ? attractionData.queue : {})
+    this.queue = new Queue(this.status === LiveStatusType.OPERATING ? attractionData.queue : undefined)
     this.showtimes = attractionData.showtimes
     this.operatingHours = attractionData.operatingHours
     this.diningAvailability = attractionData.diningAvailability
-    // this.history = attractionData.history;
 
     attractionData.history.forEach((histItem) => {
       const newQueue = new Queue(histItem.queue)

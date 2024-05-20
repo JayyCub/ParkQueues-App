@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import Home from './Pages/Home'
 import Header from './Components/CustomStatusBar'
-import { colorPalette, platform_style } from './styles'
+import { colorPalette, platformStyle } from './styles'
 import DestinationPage from './Pages/DestinationPage'
 import ParkPage from './Pages/ParkPage'
 import AttractionPage from './Pages/AttractionPage'
@@ -30,7 +30,7 @@ export default function App (): React.JSX.Element {
               headerTitle: () => <Header platform={platform} title="ParkQueues" />,
               headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor
+                backgroundColor: platformStyle.statusBar.bgColor
               },
               headerShadowVisible: true,
               presentation: 'card'
@@ -43,7 +43,7 @@ export default function App (): React.JSX.Element {
               headerTitle: () => <Header platform={platform} title="Select a Park" />,
               headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor
+                backgroundColor: platformStyle.statusBar.bgColor
               },
               headerShadowVisible: false,
               presentation: 'card'
@@ -56,7 +56,7 @@ export default function App (): React.JSX.Element {
               headerTitle: () => <Header platform={platform} title="View Attractions" />,
               headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor
+                backgroundColor: platformStyle.statusBar.bgColor
               },
               headerShadowVisible: false,
               presentation: 'card'
@@ -69,7 +69,7 @@ export default function App (): React.JSX.Element {
               headerTitle: () => <Header platform={platform} title="View Attraction" />,
               headerTitleAlign: 'center',
               headerStyle: {
-                backgroundColor: platform_style.statusBar.bgColor
+                backgroundColor: platformStyle.statusBar.bgColor
               },
               headerShadowVisible: false,
               presentation: 'card'
