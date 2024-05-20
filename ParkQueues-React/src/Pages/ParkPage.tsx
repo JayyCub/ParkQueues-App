@@ -115,7 +115,16 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
       </View>
       <ScrollView
         refreshControl={
-          <RefreshControl title='Pull down to refresh' refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            title={`Last updated: ${new Date(lastUpdated).toLocaleString('en-US', {
+              hour: 'numeric',
+              minute: 'numeric',
+              // second: 'numeric',
+              hour12: true
+              // timeZone: park.timezone
+            })}`}
+            refreshing={refreshing} onRefresh={onRefresh}
+          />
         }>
         <View style={styles.main}>
           {searchQuery !== ''

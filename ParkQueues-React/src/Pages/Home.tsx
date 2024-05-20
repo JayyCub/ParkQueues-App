@@ -26,6 +26,11 @@ const HomePage = ({ navigation }: any): React.JSX.Element => {
   return (
     <ScrollView>
       <View style={styles.main}>
+        { disneyDestinations.length === 0
+          ? <View style={{ height: 400, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 32 }}>Loading...</Text>
+          </View>
+          : <>
         {/* Disney Parks */}
         <View style={styles.destinationSectionView}>
           <Text style={styles.attrAvailSectionText}>Disney Parks</Text>
@@ -59,6 +64,8 @@ const HomePage = ({ navigation }: any): React.JSX.Element => {
             </View>
           </Pressable>
         ))}
+        </>
+      }
       </View>
     </ScrollView>
   )
