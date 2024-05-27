@@ -96,6 +96,8 @@ export default function SingleLineAreaChart ({ data, timezone }:
           return 'Closed'
         case '1':
           return 'Open'
+        case '-1':
+          return 'Unavailable'
         default:
           return val
       }

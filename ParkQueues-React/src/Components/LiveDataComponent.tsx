@@ -1,15 +1,13 @@
-import { Image, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { type Attraction, LiveStatusType } from '../Data/Attraction'
 import { styles } from '../styles'
 import { QueueType, ReturnTimeState } from '../Data/Queue'
 import React from 'react'
+import { FontAwesome5 } from '@expo/vector-icons'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const downArrow = require('../icon_imgs/diag-down.png')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const upArrow = require('../icon_imgs/diag-up.png')
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const flatLine = require('../icon_imgs/flat-line.png')
+const downArrow = <FontAwesome5 name={'caret-down'} size={16} color='white' />
+const upArrow = <FontAwesome5 name={'caret-up'} size={16} color='white' />
+const flatLine = <FontAwesome5 name={'caret-right'} size={16} color='white' />
 
 const LiveDataComponent = (
   { attr, timezone, showAdditionalText }:
@@ -82,21 +80,46 @@ const LiveDataComponent = (
       }
     }
 
-    const iconElement =
-      <Image
-        style={{ width: 18, height: 18, marginLeft: 5 }}
-        source={icon}
-        resizeMode="contain" />
-    const diffElement =
-      <Text style={{
-        marginLeft: 2,
-        verticalAlign: 'middle',
-        fontWeight: 'bold',
-        fontSize: 13,
-        color: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01'
+    // const iconElement =
+    //   <Image
+    //     style={{ width: 18, height: 18, marginLeft: 5 }}
+    //     source={icon}
+    //     resizeMode="contain" />
+    // const diffElement =
+    //   <Text style={{
+    //     marginLeft: 2,
+    //     verticalAlign: 'middle',
+    //     fontWeight: 'bold',
+    //     fontSize: 13,
+    //     color: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01'
+    //   }}>
+    //     {Math.abs(diff)}
+    //   </Text>
+
+    const iconElement2 =
+      <View style={{
+        width: 35,
+        // height: 16,
+        // padding: 1,
+        paddingLeft: 3,
+        paddingRight: 3,
+        borderRadius: 25,
+        backgroundColor: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
       }}>
-        {Math.abs(diff)}
-      </Text>
+        {icon}
+        <Text style={{
+          paddingLeft: 2,
+          verticalAlign: 'middle',
+          fontWeight: 700,
+          fontSize: 14,
+          color: '#ffffff'
+        }}>
+          {Math.abs(diff)}
+        </Text>
+      </View>
 
     elements.push((
       <>
@@ -122,8 +145,9 @@ const LiveDataComponent = (
             width: 40,
             display: showAdditionalText ? undefined : 'none'
           }}>
-            { iconElement.props.source === undefined ? null : iconElement}
-            { diffElement }
+            {/* { iconElement.props.source === undefined ? null : iconElement}
+            { diffElement } */}
+            {iconElement2}
           </View>
         </View>
       </>

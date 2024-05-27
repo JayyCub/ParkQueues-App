@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import { styles } from '../styles'
 import React, { useState } from 'react'
 import { type Destination } from '../Data/Destination'
@@ -15,26 +15,28 @@ const DestinationPage = ({ route, navigation }: any): React.JSX.Element => {
           style={styles.subheaderText}
         >@ {destination.name}</Text>
       </View>
-      <View style={styles.main}>
-        {Object.values(destination.parks).map((park: Park) => (
-          <Pressable
-            key={park.id}
-            style={styles.parkCard}
-            onPress={() =>
-              navigation.navigate('Park', { park })
-            }
-          >
-            <View>
-              <Text style={styles.destinationTitle}>
-                {park.name
-                  .replaceAll("Disney's", '')
-                  .replaceAll('Theme Park', '')
-                  .replaceAll('Water Park', '')}
-              </Text>
-            </View>
-          </Pressable>
-        ))}
-      </View>
+      <ScrollView>
+        <View style={styles.main}>
+          {Object.values(destination.parks).map((park: Park) => (
+            <Pressable
+              key={park.id}
+              style={styles.parkCard}
+              onPress={() =>
+                navigation.navigate('Park', { park })
+              }
+            >
+              <View>
+                <Text style={styles.destinationTitle}>
+                  {park.name
+                    .replaceAll("Disney's", '')
+                    .replaceAll('Theme Park', '')
+                    .replaceAll('Water Park', '')}
+                </Text>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+      </ScrollView>
     </>
   )
 }

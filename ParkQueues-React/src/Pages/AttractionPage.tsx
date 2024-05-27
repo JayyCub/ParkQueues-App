@@ -44,7 +44,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
       if (val.queue.SINGLE_RIDER.waitTime !== null) {
         return val.queue.SINGLE_RIDER.waitTime
       } else {
-        return 1
+        return -1
       }
     } else {
       return -1

@@ -9,7 +9,7 @@ export const colorPalette = {
   layer2: '#144272',
   layer3: '#205295',
   layer3b: '#105cbc',
-  layer3c: '#08dcdc',
+  layer3c: '#37d8d8',
   layer4: '#2C74B3',
   layer5: '#4693d7',
   layer6: '#62a8e6',
@@ -21,6 +21,7 @@ export const colorPalette = {
   layer11: '#f0f8fd',
   layer12: '#f7ffff',
   layer13: '#ffffff', // white
+  layer13b: '#f4f4f4', // white-blue
   layer14: '#fbfbfb',
   layer15: '#eef0fb' // off-white
 }
@@ -57,7 +58,7 @@ const iosStyles: PlatformStyles = {
   },
   mainContainer: { bgColor: colorPalette.layer15 },
   statusBar: {
-    bgColor: colorPalette.layer14,
+    bgColor: colorPalette.layer13,
     height: '50',
     fontColor: colorPalette.layer2,
     fontSize: 30,
@@ -74,7 +75,7 @@ const webStyles: PlatformStyles = {
   },
   mainContainer: { bgColor: colorPalette.layer15 },
   statusBar: {
-    bgColor: colorPalette.layer14,
+    bgColor: colorPalette.layer13,
     height: '50',
     fontColor: colorPalette.layer2,
     fontSize: 30,
@@ -145,15 +146,63 @@ export const styles = StyleSheet.create({
   destinationCard: {
     width: platformStyle.destCard.width as DimensionValue,
     backgroundColor: platformStyle.destCard.bgColor,
-    marginTop: 20,
-    padding: 30,
+    marginTop: 12,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 15,
+    borderRadius: 25,
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 2
+  },
+  destinationCardSelected: {
+    width: platformStyle.destCard.width as DimensionValue,
+    backgroundColor: platformStyle.destCard.bgColor,
+    marginTop: 12,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+    borderBottomColor: platformStyle.destCard.bgColor,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 2,
+    zIndex: 1
+  },
+  expandedParkList: {
+    width: platformStyle.destCard.width as DimensionValue,
+    marginTop: -20,
+    paddingTop: 20,
+    paddingBottom: 4,
+    backgroundColor: colorPalette.layer13,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 2,
+    zIndex: 0,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  parkListCard: {
+    width: '85%',
+    padding: 15,
+    borderTopWidth: 1,
+    borderTopColor: 'lightgray'
+  },
+  parkListCardFirst: {
+    width: '85%',
+    padding: 15
+  },
+  parkListCardText: {
+    textAlign: 'center',
+    color: platformStyle.destCard.fontColor,
+    fontSize: 20,
+    fontWeight: '600',
+    fontFamily
   },
   parkCard: {
     width: platformStyle.destCard.width as DimensionValue,
@@ -280,7 +329,7 @@ export const styles = StyleSheet.create({
     height: 40,
     borderColor: colorPalette.layer9b,
     borderRadius: 25,
-    borderWidth: 2.5,
+    borderWidth: 2,
     paddingHorizontal: 10,
     marginLeft: 10,
     marginRight: 10,
@@ -291,7 +340,7 @@ export const styles = StyleSheet.create({
     height: 40,
     borderColor: colorPalette.layer3b,
     borderRadius: 25,
-    borderWidth: 2.5,
+    borderWidth: 2,
     paddingHorizontal: 10,
     marginLeft: 10,
     marginRight: 10,
