@@ -7,7 +7,7 @@ import { FontAwesome5 } from '@expo/vector-icons'
 
 const downArrow = <FontAwesome5 name={'caret-down'} size={16} color='white' />
 const upArrow = <FontAwesome5 name={'caret-up'} size={16} color='white' />
-const flatLine = <FontAwesome5 name={'caret-right'} size={16} color='white' />
+// const flatLine = <FontAwesome5 name={'caret-right'} size={16} color='white' />
 
 const LiveDataComponent = (
   { attr, timezone, showAdditionalText }:
@@ -75,7 +75,7 @@ const LiveDataComponent = (
         } else if (currWait > prevWait) {
           icon = upArrow
         } else if (currWait === prevWait) {
-          icon = flatLine
+          icon = null
         }
       }
     }

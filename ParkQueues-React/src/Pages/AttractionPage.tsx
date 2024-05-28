@@ -73,11 +73,10 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
         })
         break
       case QueueType.boarding_reservation:
-        if (typeof value.queue.BOARDING_GROUP?.currentGroupStart === 'number' &&
-            typeof value.queue.BOARDING_GROUP?.currentGroupEnd === 'number') {
+        if (value.queue.BOARDING_GROUP !== undefined) {
           historicBoardingGroup.push({
-            start: value.queue.BOARDING_GROUP.currentGroupStart,
-            end: value.queue.BOARDING_GROUP.currentGroupEnd,
+            start: value.queue.BOARDING_GROUP.currentGroupStart ?? undefined,
+            end: value.queue.BOARDING_GROUP.currentGroupEnd ?? undefined,
             date: new Date(value.time).getTime()
           })
         }

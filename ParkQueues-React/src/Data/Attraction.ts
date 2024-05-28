@@ -57,6 +57,10 @@ export class Attraction implements AttractionInterface {
     this.status = attractionData.status
     this.lastUpdated = attractionData.lastUpdated
     this.queue = new Queue(this.status === LiveStatusType.OPERATING ? attractionData.queue : undefined)
+    if (this.queue.queueType === QueueType.boarding_reservation &&
+      (this.queue.BOARDING_GROUP?.currentGroupStart === null && this.queue.BOARDING_GROUP?.currentGroupEnd === null)) {
+      this.status = LiveStatusType.DOWN
+    }
     this.showtimes = attractionData.showtimes
     this.operatingHours = attractionData.operatingHours
     this.diningAvailability = attractionData.diningAvailability
