@@ -2,6 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { type Destination } from './Destination'
 import { DataManager } from './DataManager'
 import { type Park } from './Park'
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth'
+import { auth } from '../../firebaseConfig'
 
 interface DataContextProps {
   destinations: Map<string, Destination>
@@ -13,9 +15,13 @@ interface DataContextProps {
   toggleShowTrends: () => void
   sortAlpha: boolean
   toggleSortAlpha: () => void
+  user: FirebaseUser | null
+  setUser: (user: FirebaseUser | null) => void
 }
 
 const DataContext = createContext<DataContextProps>({
+  setUser (): void {},
+  user: null,
   destinations: new Map<string, Destination>(),
   parks: new Map<string, Park>(),
   refreshData: async () => {},
@@ -46,14 +52,13 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
   const [destinations, setDestinations] = useState<Map<string, Destination>>(new Map<string, Destination>())
   const [parks, setParks] = useState<Map<string, Park>>(new Map<string, Park>())
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
-
   const [showTrends, setShowTrends] = useState<boolean>(false)
+  const [sortAlpha, setSortAlpha] = useState<boolean>(true)
+  const [user, setUser] = useState<FirebaseUser | null>(auth.currentUser) // Initialize with current user
 
   const toggleShowTrends = (): void => {
     setShowTrends(prevState => !prevState)
   }
-
-  const [sortAlpha, setSortAlpha] = useState<boolean>(true)
 
   const toggleSortAlpha = (): void => {
     setSortAlpha(prevState => !prevState)
@@ -61,6 +66,13 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
 
   useEffect(() => {
     void refreshData().then()
+  }, [])
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser) // Update user state when auth state changes
+    })
+    return () => { unsubscribe() } // Cleanup subscription on unmount
   }, [])
 
   const processDestinations = (destinations: Destination[]): { destinationMap: Map<string, Destination>, parkMap: Map<string, Park> } => {
@@ -100,7 +112,7 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
   }
 
   return (
-    <DataContext.Provider value={{ destinations, parks, refreshData, updateData, lastUpdated, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha }}>
+    <DataContext.Provider value={{ destinations, parks, refreshData, updateData, lastUpdated, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, user, setUser }}>
       {children}
     </DataContext.Provider>
   )

@@ -154,7 +154,7 @@ export const styles = StyleSheet.create({
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 2
+    shadowRadius: 1
   },
   destinationCardSelected: {
     width: platformStyle.destCard.width as DimensionValue,
@@ -168,7 +168,7 @@ export const styles = StyleSheet.create({
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 2,
+    shadowRadius: 1,
     zIndex: 1
   },
   expandedParkList: {
@@ -182,7 +182,7 @@ export const styles = StyleSheet.create({
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 2,
+    shadowRadius: 1,
     zIndex: 0,
     justifyContent: 'center',
     alignItems: 'center'
@@ -215,7 +215,7 @@ export const styles = StyleSheet.create({
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 2
+    shadowRadius: 1
   },
   destinationTitle: {
     color: platformStyle.destCard.fontColor,
@@ -361,9 +361,9 @@ export const styles = StyleSheet.create({
     marginRight: 10
   },
   attrAvailSectionText: {
-    fontSize: 30,
+    width: '90%',
+    fontSize: 32,
     fontWeight: 'bold',
-    textAlign: 'center',
     color: platformStyle.statusBar.fontColor,
     fontFamily
   },
@@ -385,5 +385,127 @@ export const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderBottomWidth: 2,
     borderColor: platformStyle.statusBar.fontColor
+  },
+  authContainer: {
+    flex: 1,
+    // justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    height: '100%'
+  },
+  authCard: {
+    // width: platformStyle.destCard.width as DimensionValue,
+    width: '100%',
+    backgroundColor: platformStyle.destCard.bgColor,
+    // marginTop: 12,
+    padding: 15,
+    paddingTop: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25
+    // shadowColor: '#aeb5be',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 1,
+    // shadowRadius: 2,
+    // flexGrow: 1,
+  },
+  authHeadingText: {
+    fontFamily,
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 5,
+    color: colorPalette.layer1
+  },
+  authInput: {
+    height: 40,
+    width: '90%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    fontSize: 18,
+    backgroundColor: colorPalette.layer14
+  },
+  authButton: {
+    height: 40,
+    width: '90%',
+    backgroundColor: 'gray',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16
+  },
+  authButtonReady: {
+    height: 40,
+    width: '90%',
+    backgroundColor: colorPalette.layer3,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16
+  },
+  authButtonText: {
+    fontFamily,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colorPalette.layer13
+  },
+  authButtonReadyText: {
+    fontFamily,
+    fontSize: 20,
+    fontWeight: '600',
+    color: colorPalette.layer13
+  },
+  authFieldText: {
+    fontFamily,
+    fontSize: 15,
+    color: colorPalette.layer1,
+    width: '85%'
+  },
+  accountSectionView: {
+    width: '92%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    // marginBottom: 10,
+    borderStyle: 'solid',
+    borderBottomWidth: 2,
+    borderColor: platformStyle.statusBar.fontColor
+  },
+  accountHeaderText: {
+    width: '95%',
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily
+  },
+  accountSubHeaderText: {
+    width: '88%',
+    fontSize: 18,
+    // fontWeight: 'bold',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily,
+    marginTop: 5
+  },
+  signOutButton: {
+    height: 40,
+    width: '90%',
+    backgroundColor: colorPalette.layer14,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 5,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 1
+  },
+  signOutButtonText: {
+    fontFamily,
+    fontSize: 20,
+    fontWeight: '600',
+    // color: platformStyle.statusBar.fontColor
   }
 })

@@ -96,7 +96,7 @@ const LiveDataComponent = (
     //     {Math.abs(diff)}
     //   </Text>
 
-    const iconElement2 =
+    const iconElement2 = icon === null ? null :
       <View style={{
         width: 35,
         // height: 16,
