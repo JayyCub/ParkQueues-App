@@ -440,7 +440,7 @@ export const styles = StyleSheet.create({
   authButtonReady: {
     height: 40,
     width: '90%',
-    backgroundColor: colorPalette.layer3,
+    backgroundColor: '#136f00',
     borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -487,7 +487,7 @@ export const styles = StyleSheet.create({
     // fontWeight: 'bold',
     color: platformStyle.statusBar.fontColor,
     fontFamily,
-    marginTop: 5
+    marginTop: 8
   },
   signOutButton: {
     height: 40,
@@ -497,6 +497,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 5,
+    marginBottom: 5,
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
@@ -505,7 +506,38 @@ export const styles = StyleSheet.create({
   signOutButtonText: {
     fontFamily,
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '600'
     // color: platformStyle.statusBar.fontColor
+  },
+  invalidPassword: {
+    borderColor: '#d30000'
+  },
+  validField: {
+    borderColor: '#136f00'
+  },
+  authInputField: {
+    height: 40,
+    width: '90%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    borderRadius: 5,
+    paddingHorizontal: 8,
+    backgroundColor: colorPalette.layer14,
+    justifyContent: 'center'
+  },
+  authInputFieldText: {
+    fontSize: 18
+  },
+  resetPasswordButton: {
+    height: 32,
+    width: '50%',
+    // backgroundColor: 'lightgray',
+    borderRadius: 5,
+    borderColor: 'lightgray',
+    // borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16
   }
 })

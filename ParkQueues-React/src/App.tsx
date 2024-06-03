@@ -5,13 +5,13 @@ import Header from './Components/CustomStatusBar'
 import { colorPalette, platformStyle } from './styles'
 import ParkPage from './Pages/ParkPage'
 import AttractionPage from './Pages/AttractionPage'
-import { DataProvider } from './Data/DataContext'
+import { DataProvider, useDataContext } from './Data/DataContext'
 import { Platform } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import DestinationsList from './Pages/DestinationsList'
 import { Ionicons } from '@expo/vector-icons'
-// import SettingsPage from './Pages/SettingsPage'
 import AccountPage from './Pages/AccountPage'
+import SettingsPage from './Pages/SettingsPage'
 
 const platform = Platform.OS
 const Tab = createBottomTabNavigator()
@@ -69,7 +69,7 @@ function PrimaryStackScreen (): React.JSX.Element {
   )
 }
 
-/* const SettingsStack = createNativeStackNavigator()
+const SettingsStack = createNativeStackNavigator()
 
 function SettingsStackScreen (): React.JSX.Element {
   return (
@@ -94,7 +94,7 @@ function SettingsStackScreen (): React.JSX.Element {
       />
     </SettingsStack.Navigator>
   )
-} */
+}
 
 const AccountStack = createNativeStackNavigator()
 
@@ -126,37 +126,47 @@ function AccountStackScreen (): React.JSX.Element {
 export default function App (): React.JSX.Element {
   return (
     <DataProvider>
-      <NavigationContainer>
-        <Tab.Navigator screenOptions={{
-          tabBarStyle: {
-            backgroundColor: platformStyle.statusBar.bgColor
-            // height: 80
-          },
-          tabBarLabelStyle: {
-            fontFamily: platformStyle.statusBar.fontFamily,
-            fontSize: 14
-          }
-        }}>
-          <Tab.Screen name={'Home'} component={PrimaryStackScreen} options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" color={color} size={size} />
-            )
-          }}/>
-          {/* <Tab.Screen name={'Settings'} component={SettingsStackScreen} options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="settings-outline" color={color} size={size} />
-            )
-          }}/> */}
-          <Tab.Screen name={'Account'} component={AccountStackScreen} options={{
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person-circle-outline" color={color} size={size} />
-            )
-          }}/>
-        </Tab.Navigator>
-      </NavigationContainer>
+      <MainNavigation />
     </DataProvider>
+  )
+}
+
+function MainNavigation (): React.JSX.Element {
+  const { user } = useDataContext()
+
+  return (
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{
+        tabBarStyle: {
+          backgroundColor: platformStyle.statusBar.bgColor
+          // height: 80
+        },
+        tabBarLabelStyle: {
+          fontFamily: platformStyle.statusBar.fontFamily,
+          fontSize: 14
+        }
+      }}>
+        <Tab.Screen name={'Home'} component={PrimaryStackScreen} options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          )
+        }}/>
+        {user !== null &&
+          <Tab.Screen name={'Favorites'} component={SettingsStackScreen} options={{
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="star-outline" color={color} size={size} />
+            )
+          }}/>
+        }
+        <Tab.Screen name={'Account'} component={AccountStackScreen} options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" color={color} size={size} />
+          )
+        }}/>
+      </Tab.Navigator>
+    </NavigationContainer>
   )
 }
