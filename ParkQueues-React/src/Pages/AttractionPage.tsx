@@ -195,7 +195,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
                       paddingLeft: 2
                     }}>
 
-                      <Text>6 hours ago</Text>
+                      <Text>8 hours ago</Text>
                     </View>
                     <View style={{
                       width: '50%',
@@ -222,7 +222,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
                       paddingLeft: 2
                     }}>
 
-                      <Text>6 hours ago</Text>
+                      <Text>8 hours ago</Text>
                     </View>
                     <View style={{
                       width: '50%',
@@ -248,7 +248,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
                       paddingLeft: 2
                     }}>
 
-                      <Text>6 hours ago</Text>
+                      <Text>8 hours ago</Text>
                     </View>
                     <View style={{
                       width: '50%',
