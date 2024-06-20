@@ -4,12 +4,14 @@ import React, { useState, useRef, useEffect } from 'react'
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { useDataContext } from '../Data/DataContext'
+import LoadingPopup from './LoadingPopup'
 
 const Login = (): React.JSX.Element => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [allFieldsFilled, setAllFieldsFilled] = useState(false)
   const { setUser } = useDataContext()
+  const [isLoading, setIsLoading] = useState(false)
 
   const passwordRef: React.MutableRefObject<any> = useRef(null)
 
@@ -21,22 +23,37 @@ const Login = (): React.JSX.Element => {
     }
   }, [email, password])
 
-  const handleSignIn = (): void => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Logged in
-        const user = userCredential.user
-        setUser(user)
-        setEmail('')
-        setPassword('')
-        // Alert.alert('Login Successful', `User: ${user}`)
+  const handleSignIn = async (): Promise<void> => {
+    setIsLoading(true)
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      setUser(user)
+      setEmail('')
+      setPassword('')
+
+      const url = 'https://7o2vcnfjgc.execute-api.us-east-1.amazonaws.com/ParkQueues-live/user-data'
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+          uid: user.uid
+        }
       })
-      .catch((/* error */) => {
-        // const errorCode = error.code
-        // const errorMessage = error.message
-        Alert.alert('Incorrect email or password', 'Please try again.')
-        setPassword('')
-      })
+      if (response.status === 200) {
+        console.log('Fetched account data')
+      } else {
+        console.log('Error fetching account data')
+      }
+
+      const data = await response.json()
+      console.log('S3 response: ', data)
+    } catch (error: any) {
+      Alert.alert('Incorrect email or password', 'Please try again.')
+      setPassword('')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const forgotPassword = (): void => {
@@ -57,7 +74,6 @@ const Login = (): React.JSX.Element => {
             .catch((error) => {
               const errorCode = error.code
               const errorMessage = error.message
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               Alert.alert(errorCode, errorMessage)
             })
         }
@@ -67,45 +83,51 @@ const Login = (): React.JSX.Element => {
   }
 
   return (
-    <View style={styles.authCard}>
-      <Text style={styles.authHeadingText}>Welcome back!</Text>
-      <Text style={styles.authFieldText}>
-        Email address
-      </Text>
-      <TextInput
-        style={styles.authInput}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        returnKeyType="next"
-        onSubmitEditing={() => passwordRef.current.focus()}
-      />
-      <Text style={styles.authFieldText}>
-        Password
-      </Text>
-      <TextInput
-        ref={passwordRef}
-        style={styles.authInput}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-        returnKeyType="done"
-      />
-      {!allFieldsFilled
-        ? <Pressable style={styles.authButton} onPress={() => {
-          Alert.alert('Please fill in all necessary fields.')
-        }}>
-          <Text style={styles.authButtonText}>Sign in</Text>
+    <>
+      {isLoading
+        ? <LoadingPopup message='Signing in...' />
+        : <></>
+      }
+      <View style={styles.authCard}>
+        <Text style={styles.authHeadingText}>Welcome back!</Text>
+        <Text style={styles.authFieldText}>
+          Email address
+        </Text>
+        <TextInput
+          style={styles.authInput}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          returnKeyType="next"
+          onSubmitEditing={() => passwordRef.current.focus()}
+        />
+        <Text style={styles.authFieldText}>
+          Password
+        </Text>
+        <TextInput
+          ref={passwordRef}
+          style={styles.authInput}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+          returnKeyType="done"
+        />
+        {!allFieldsFilled
+          ? <Pressable style={styles.authButton} onPress={() => {
+            Alert.alert('Please fill in all necessary fields.')
+          }}>
+            <Text style={styles.authButtonText}>Sign in</Text>
+          </Pressable>
+          : <Pressable onPress={handleSignIn} style={styles.authButtonReady}>
+            <Text style={styles.authButtonReadyText}>Sign in</Text>
+          </Pressable>}
+        <Pressable style={styles.resetPasswordButton} onPress={forgotPassword}>
+          <Text style={{ fontFamily, color: colorPalette.layer2, fontSize: 16 }}>Reset password</Text>
         </Pressable>
-        : <Pressable onPress={handleSignIn} style={styles.authButtonReady}>
-          <Text style={styles.authButtonReadyText}>Sign in</Text>
-        </Pressable>}
-      <Pressable style={styles.resetPasswordButton} onPress={forgotPassword}>
-        <Text style={{ fontFamily, color: colorPalette.layer2, fontSize: 16 }}>Reset password</Text>
-      </Pressable>
-    </View>
+      </View>
+    </>
   )
 }
 
