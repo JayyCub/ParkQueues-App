@@ -1,18 +1,21 @@
+import React, { useEffect, useState } from 'react'
 import { Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
 import { styles } from '../styles'
-import React, { useEffect, useState } from 'react'
 import { type Park } from '../Data/Park'
 import { type Attraction, LiveStatusType } from '../Data/Attraction'
-import LiveDataComponent from '../Components/LiveDataComponent'
 import { useDataContext } from '../Data/DataContext'
+import AttractionCard from '../Components/AttractionCard'
 
 const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
-  const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha } = useDataContext()
+  const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData } = useDataContext()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const [park, setPark] = useState<Park>(route.params?.park)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [filteredAttractions, setFilteredAttractions] = useState<Attraction[]>([])
   const [refreshing, setRefreshing] = useState(false)
+
+  const favAttrs: string[] = []
+  userData?.favs.forEach(attr => favAttrs.push(attr.id))
 
   useEffect(() => {
     const updatedPark = parks.get(park.id)
@@ -67,7 +70,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
   return (
     <>
       <View style={styles.subheaderView}>
-        <Text style={styles.subheaderText}>@ {park.name}</Text>
+        <Text style={styles.subheaderText}>{park.name.replace(/Disney's | Water| Park| Theme/g, '')}</Text>
       </View>
       <View style={styles.toolsHeaderView}>
         <View style={{ flex: 4 }}>
@@ -75,7 +78,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
             style={searchQuery !== '' ? styles.searchBarSelected : styles.searchBar}
             onChangeText={handleSearch}
             value={searchQuery}
-            placeholder="Search"
+            placeholder="Search by name"
             returnKeyType="done"
             clearButtonMode="always"
           />
@@ -129,44 +132,47 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
         <View style={styles.main}>
           {searchQuery !== ''
             ? filteredAttractions.map((attr: Attraction, index: number) => (
-              <Pressable
+              <AttractionCard
                 key={index}
-                style={styles.attractionCard}
-                onPress={() => navigation.navigate('Attraction', { attr, timezone: park.timezone })}
-              >
-                <View style={styles.attractionTitle}>
-                  <Text style={styles.attractionTitleText}>{attr.name}</Text>
-                </View>
-                <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showTrends} />
-              </Pressable>
+                attr={attr}
+                timezone={park.timezone}
+                showAdditionalText={showTrends}
+                navigation={navigation}
+                favorite={favAttrs.includes(attr.id)}
+                parkId={park.id}
+                destId={route.params.destId}
+                navStack='Attraction'
+              />
             ))
             : <>
               {sortedOpenAttractions.map((attr: Attraction, index: number) => (
-                <Pressable
+                <AttractionCard
                   key={index}
-                  style={styles.attractionCard}
-                  onPress={() => navigation.navigate('Attraction', { attr, timezone: park.timezone })}
-                >
-                  <View style={styles.attractionTitle}>
-                    <Text style={styles.attractionTitleText}>{attr.name}</Text>
-                  </View>
-                  <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showTrends} />
-                </Pressable>
+                  attr={attr}
+                  timezone={park.timezone}
+                  showAdditionalText={showTrends}
+                  navigation={navigation}
+                  favorite={favAttrs.includes(attr.id)}
+                  parkId={park.id}
+                  destId={route.params.destId}
+                  navStack='Attraction'
+                />
               ))}
               <View style={styles.attrAvailSectionView}>
                 <Text style={styles.attrAvailSectionText}>Closed Attractions</Text>
               </View>
               {sortedClosedAttractions.map((attr: Attraction, index: number) => (
-                <Pressable
+                <AttractionCard
                   key={index}
-                  style={styles.attractionCard}
-                  onPress={() => navigation.navigate('Attraction', { attr, timezone: park.timezone })}
-                >
-                  <View style={styles.attractionTitle}>
-                    <Text style={styles.attractionTitleText}>{attr.name}</Text>
-                  </View>
-                  <LiveDataComponent attr={attr} timezone={park.timezone} showAdditionalText={showTrends} />
-                </Pressable>
+                  attr={attr}
+                  timezone={park.timezone}
+                  showAdditionalText={showTrends}
+                  navigation={navigation}
+                  favorite={favAttrs.includes(attr.id)}
+                  parkId={park.id}
+                  destId={route.params.destId}
+                  navStack='Attraction'
+                />
               ))}
             </>
           }

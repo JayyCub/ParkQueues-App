@@ -7,309 +7,235 @@ import { FontAwesome5 } from '@expo/vector-icons'
 
 const downArrow = <FontAwesome5 name={'caret-down'} size={16} color='white' />
 const upArrow = <FontAwesome5 name={'caret-up'} size={16} color='white' />
-// const flatLine = <FontAwesome5 name={'caret-right'} size={16} color='white' />
 
 const LiveDataComponent = (
   { attr, timezone, showAdditionalText }:
   { attr: Attraction, timezone: string, showAdditionalText: boolean }): React.JSX.Element => {
-  const elements: any[] = []
-  let status
+  const elements: React.JSX.Element[] = []
 
   // Check if attraction is NOT operating
   if (attr.status !== LiveStatusType.OPERATING) {
-    switch (attr.status) {
-      case LiveStatusType.CLOSED:
-        status = 'Closed'
-        break
-      case LiveStatusType.DOWN:
-        status = 'Unexpected Downtime'
-        break
-      case LiveStatusType.REFURBISHMENT:
-        status = 'Under Refurbishment'
-        break
-      default:
-        status = 'Closed'
-        break
-    }
+    const status = (() => {
+      switch (attr.status) {
+        case LiveStatusType.CLOSED:
+          return 'Closed'
+        case LiveStatusType.DOWN:
+          return 'Unexpected Downtime'
+        case LiveStatusType.REFURBISHMENT:
+          return 'Under Refurbishment'
+        default:
+          return 'Closed'
+      }
+    })()
 
     return (
       <View style={styles.attractionLiveDataView}>
         <View style={styles.liveDataBox}>
-          <Text style={styles.liveData3}>
-            {status}
-          </Text>
+          <Text style={styles.liveData3}>{status}</Text>
         </View>
       </View>
     )
   }
 
-  function statusElement (): void {
-    elements.push((
-      <>
-        {/* <View style={styles.liveDataLabelBox}>
-          <Text style={styles.liveDataLabelText}>Status:</Text>
-        </View> */}
-        <Text style={styles.liveData2}>Open</Text>
-      </>
-    ))
-  }
-
-  function standbyElement (): void {
-    let diff = 0
-    let icon
-
-    const prev = attr.history[attr.history.length - 2]
-    if (prev != null) {
-      const prevStatus = prev.status
-      const prevQueue = prev.queue
-
-      const currWait: number | undefined = attr.queue.STANDBY?.waitTime
-
-      if (prevStatus !== undefined && prevQueue?.STANDBY?.waitTime !== undefined &&
-        prevStatus === LiveStatusType.OPERATING &&
-        currWait !== undefined) {
-        const prevWait = prevQueue.STANDBY?.waitTime
-        diff = (currWait - prevWait)
-        if (currWait < prevWait) {
-          icon = downArrow
-        } else if (currWait > prevWait) {
-          icon = upArrow
-        } else if (currWait === prevWait) {
-          icon = null
-        }
-      }
-    }
-
-    // const iconElement =
-    //   <Image
-    //     style={{ width: 18, height: 18, marginLeft: 5 }}
-    //     source={icon}
-    //     resizeMode="contain" />
-    // const diffElement =
-    //   <Text style={{
-    //     marginLeft: 2,
-    //     verticalAlign: 'middle',
-    //     fontWeight: 'bold',
-    //     fontSize: 13,
-    //     color: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01'
-    //   }}>
-    //     {Math.abs(diff)}
-    //   </Text>
-
-    const iconElement2 = icon === null ? null
-      : <View style={{
-        width: 35,
-        // height: 16,
-        // padding: 1,
-        paddingLeft: 3,
-        paddingRight: 3,
-        borderRadius: 25,
-        backgroundColor: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row'
+  const renderIconElement = (icon: React.JSX.Element | null, diff: number) => (
+    <View style={{
+      width: 35,
+      paddingLeft: 3,
+      paddingRight: 3,
+      borderRadius: 25,
+      backgroundColor: diff === 0 ? 'gray' : diff > 0 ? '#b40100' : '#008c01',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row'
+    }}>
+      {icon}
+      <Text style={{
+        paddingLeft: 2,
+        verticalAlign: 'middle',
+        fontWeight: 700,
+        fontSize: 14,
+        color: '#ffffff'
       }}>
-        {icon}
-        <Text style={{
-          paddingLeft: 2,
-          verticalAlign: 'middle',
-          fontWeight: 700,
-          fontSize: 14,
-          color: '#ffffff'
-        }}>
-          {Math.abs(diff)}
-        </Text>
-      </View>
-
-    elements.push((
-      <>
-        <View style={styles.liveDataLabelBox}>
-          <Text style={styles.liveDataLabelText}>Standby:</Text>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <View style={{
-            width: 40,
-            display: showAdditionalText ? undefined : 'none'
-          }} />
-
-          <Text style={styles.liveData3}>
-            {attr.queue.STANDBY?.waitTime !== null
-              ? (<>{attr.queue.STANDBY?.waitTime}</>)
-              : 'Open'}
-          </Text>
-
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: 40,
-            display: showAdditionalText ? undefined : 'none'
-          }}>
-            {/* { iconElement.props.source === undefined ? null : iconElement}
-            { diffElement } */}
-            {iconElement2}
-          </View>
-        </View>
-      </>
-    ))
-  }
-
-  function singleRiderElement (): void {
-    let element
-    if (attr.queue.SINGLE_RIDER?.waitTime !== null) {
-      element = <Text style={styles.liveData3}>
-        {attr.queue.SINGLE_RIDER?.waitTime}
+        {Math.abs(diff)}
       </Text>
-    } else {
-      element = <Text style={styles.liveDataUnavailable}>Unavailable</Text>
-    }
+    </View>
+  )
 
-    elements.push((
-      <>
-        <View style={styles.liveDataLabelBox}>
-          <Text style={styles.liveDataLabelText}>Single Rider:</Text>
-        </View>
-        {element}
-      </>
-    ))
-  }
-
-  function boardingGroupElement (): void {
-    elements.push((
-      <>
-        <View style={styles.liveDataLabelBox}>
-          <Text style={styles.liveDataLabelText}>Now Boarding:</Text>
-        </View>
+  const renderWaitTimeElement = (label: string, waitTime: number | null, diff: number, icon: React.JSX.Element | null) => (
+    <>
+      <View style={styles.liveDataLabelBox}>
+        <Text style={styles.liveDataLabelText}>{label}</Text>
+      </View>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{
+          width: 40,
+          display: showAdditionalText ? undefined : 'none'
+        }} />
         <Text style={styles.liveData3}>
-          {attr.queue.BOARDING_GROUP?.currentGroupStart}
-          -
-          {attr.queue.BOARDING_GROUP?.currentGroupEnd}
+          {waitTime !== null ? waitTime : 'Open'}
         </Text>
-      </>
-    ))
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: 40,
+          display: showAdditionalText ? undefined : 'none'
+        }}>
+          {icon && renderIconElement(icon, diff)}
+        </View>
+      </View>
+    </>
+  )
+
+  const renderUnavailableElement = (label: string) => (
+    <>
+      <View style={styles.liveDataLabelBox}>
+        <Text style={styles.liveDataLabelText}>{label}</Text>
+      </View>
+      <Text style={styles.liveDataUnavailable}>Unavailable</Text>
+    </>
+  )
+
+  const renderElement = (label: string, data: any) => (
+    <>
+      <View style={styles.liveDataLabelBox}>
+        <Text style={styles.liveDataLabelText}>{label}</Text>
+      </View>
+      <Text style={styles.liveData3}>
+        {data}
+      </Text>
+    </>
+  )
+
+  const getWaitTimeDiff = (currentWait: number | undefined, previousWait: number | undefined) => {
+    if (currentWait !== undefined && previousWait !== undefined) {
+      const diff = currentWait - previousWait
+      if (diff < 0) return { diff, icon: downArrow }
+      if (diff > 0) return { diff, icon: upArrow }
+    }
+    return { diff: 0, icon: null }
   }
 
-  function reservationTimeElement (): void {
-    const paid = attr.queue.PAID_RETURN_TIME?.returnStart
-    const reg = attr.queue.RETURN_TIME?.returnStart
-    let title: string
-    let nextTime: string
-    let price: string | undefined
+  const prev = attr.history[attr.history.length - 2]
+  const prevWait = prev?.queue?.STANDBY?.waitTime
+  const currWait = attr.queue.STANDBY?.waitTime
+  const { diff, icon } = getWaitTimeDiff(currWait, prevWait)
 
-    if (paid !== undefined) {
-      title = 'Next Individual LL:'
-      if (attr.queue.PAID_RETURN_TIME?.state === ReturnTimeState.AVAILABLE) {
+  const renderQueueElement = (queueType: QueueType) => {
+    switch (queueType) {
+      case QueueType.open_status:
+        elements.push(renderElement('Status:', 'Open'))
+        break
+      case QueueType.standby:
+        elements.push(renderWaitTimeElement('Standby:', currWait!, diff, icon))
+        break
+      case QueueType.standby_single_reservation:
+      case QueueType.standby_single:
+        elements.push(renderWaitTimeElement('Standby:', currWait!, diff, icon))
+        elements.push(<View style={styles.liveDataDivider} />)
+        if (attr.queue.SINGLE_RIDER?.waitTime !== null) {
+          renderElement('Single Rider:', attr.queue.SINGLE_RIDER?.waitTime)
+        } else if (attr.status === LiveStatusType.OPERATING) {
+          elements.push(renderElement('Single Rider:', 'Open'))
+        } else {
+          elements.push(renderUnavailableElement('Single Rider:'))
+        }
+        break
+      case QueueType.boarding_reservation:
+        elements.push(renderElement('Now Boarding:', `${attr.queue.BOARDING_GROUP?.currentGroupStart}-${attr.queue.BOARDING_GROUP?.currentGroupEnd}`))
+        break
+      default:
+        break
+    }
+  }
+
+  const renderReservationTimeElement = () => {
+    const { title, nextTime, price } = (() => {
+      const paid = attr.queue.PAID_RETURN_TIME?.returnStart
+      const reg = attr.queue.RETURN_TIME?.returnStart
+      if (paid !== undefined) {
         const temp = new Date(paid)
-        nextTime = temp.toLocaleString('en-US',
-          {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-            timeZone: timezone
-          })
-      } else {
-        nextTime = 'Unavailable'
+        const nextTime = attr.queue.PAID_RETURN_TIME?.state === ReturnTimeState.AVAILABLE
+          ? temp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
+          : 'Unavailable'
+        const price = attr.queue.PAID_RETURN_TIME?.price
+          ? `$${(attr.queue.PAID_RETURN_TIME.price.amount / 100).toString()}`
+          : undefined
+        return { title: 'Next Individual LL:', nextTime, price }
       }
-      if (attr.queue.PAID_RETURN_TIME?.price.currency !== undefined) {
-        price = '$' + (attr.queue.PAID_RETURN_TIME.price.amount / 100).toString()
-      }
-    } else if (reg !== undefined) {
-      title = 'Next Genie+ Reservation:'
-      if (attr.queue.RETURN_TIME?.state === ReturnTimeState.AVAILABLE) {
+      if (reg !== undefined) {
         const temp = new Date(reg)
-        nextTime = temp.toLocaleString('en-US',
-          {
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true,
-            timeZone: timezone
-          })
-      } else {
-        nextTime = 'Unavailable'
+        const nextTime = attr.queue.RETURN_TIME?.state === ReturnTimeState.AVAILABLE
+          ? temp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
+          : 'Unavailable'
+        return { title: 'Next Genie+ Reservation:', nextTime, price: undefined }
       }
+      return { title: 'Next Reservable Time:', nextTime: 'Unavailable', price: undefined }
+    })()
+
+    if (nextTime === 'Unavailable') {
+      elements.push(renderUnavailableElement(title))
     } else {
-      title = 'Next Reservable Time:'
-      nextTime = 'Unavailable'
+      elements.push(renderElement(title, nextTime))
     }
-
-    elements.push(
-        <View style={styles.liveDataBox}>
-          <View style={styles.liveDataLabelBox}>
-            <Text style={styles.liveDataLabelText}>{title}</Text>
-          </View>
-          {nextTime !== 'Unavailable'
-            ? <Text style={styles.liveData3}>{nextTime}</Text>
-            : <Text style={styles.liveDataUnavailable}>Unavailable</Text>
-          }
-        </View>
-    )
     if (price !== undefined) {
-      getDivider()
-      elements.push(<View style={styles.liveDataBox}>
-          <View style={styles.liveDataLabelBox}>
-            <Text style={styles.liveDataLabelText}>Price:</Text>
-          </View>
-          <Text style={styles.liveData3}>{price}</Text>
-        </View>
-      )
+      elements.push(<View style={styles.liveDataDivider} />)
+      elements.push(renderElement('Price:', price))
     }
   }
-
-  function getDivider (): void {
-    elements.push(<></>)
-  }
-
-  // If only standby or status: use center
-  // If standby and reservation time: use Left and Right
-  // If boarding group and reservation time: use Left and Right
-  // If standby, single rider, and reservation time: Left, Center, Right
 
   switch (attr.queue.queueType) {
-    case QueueType.open_status:
-      statusElement()
-      break
-    case QueueType.standby:
-      standbyElement()
-      break
     case QueueType.standby_reservation:
-      standbyElement()
-      getDivider()
-      reservationTimeElement()
+      renderQueueElement(QueueType.standby)
+      elements.push(<View style={styles.liveDataDivider} />)
+      renderReservationTimeElement()
       break
     case QueueType.boarding_reservation:
-      boardingGroupElement()
-      getDivider()
-      reservationTimeElement()
+      renderQueueElement(QueueType.boarding_reservation)
+      elements.push(<View style={styles.liveDataDivider} />)
+      renderReservationTimeElement()
       break
     case QueueType.standby_single_reservation:
-      standbyElement()
-      getDivider()
-      singleRiderElement()
-      getDivider()
-      reservationTimeElement()
-      break
-    case QueueType.standby_single:
-      standbyElement()
-      getDivider()
-      singleRiderElement()
-      break
-    case QueueType.undetermined:
+      renderQueueElement(QueueType.standby_single)
+      elements.push(<View style={styles.liveDataDivider} />)
+      renderReservationTimeElement()
       break
     default:
+      renderQueueElement(attr.queue.queueType)
       break
   }
 
   return (
-    <View style={styles.attractionLiveDataView}>
-      {Object.values(elements).map((element, index) => {
-        if (index % 2 === 1) {
-          return <View key={index} style={styles.liveDataDivider} />
-        } else {
-          return (
-            <View style={styles.liveDataBox} key={index}>{element}</View>
-          )
-        }
-      })
+    <View style={{width: '100%'}}>
+      {elements.length <= 5
+        ? <View style={styles.attractionLiveDataView}>
+            {elements.map((element, index) => {
+              return <View style={index % 2 === 1 ? null : styles.liveDataBox} key={index}>
+                {element}
+              </View>
+            })}
+          </View>
+        : <View style={{width: '100%'}}>
+          <View style={styles.attractionLiveDataView}>
+            {elements.slice(0, 3).map((element, index) => {
+              return <View style={index % 2 === 1 ? null : styles.liveDataBox} key={index}>
+                {element}
+              </View>
+            })}
+          </View>
+          <View style={{
+            borderStyle: 'solid',
+            borderBottomWidth: 1,
+            borderColor: 'lightgray',
+            margin: 5}} />
+            <View style={styles.attractionLiveDataView}>
+              {elements.slice(4).map((element, index) => {
+                return <View style={index % 2 === 1 ? null : styles.liveDataBox} key={index}>
+                  {element}
+                </View>
+              })}
+          </View>
+        </View>
       }
     </View>
   )

@@ -99,7 +99,7 @@ export class Queue implements QueueInterface {
 
     if (this.STANDBY !== undefined &&
       this.SINGLE_RIDER !== undefined &&
-      this.RETURN_TIME === undefined) {
+      this.RETURN_TIME === undefined && this.PAID_RETURN_TIME === undefined) {
       this.queueType = 5
     } else if (this.STANDBY !== undefined &&
       this.SINGLE_RIDER !== undefined &&

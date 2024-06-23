@@ -45,11 +45,11 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
         <Pressable
           key={destination.slug}
           style={styles.destinationCard}
-          onPress={() => navigation.navigate('Park', { park })}
+          onPress={() => navigation.navigate('Park', { park, destId: destination.slug })}
         >
           <View>
             <Text style={styles.destinationTitle}>
-              {park.name.replaceAll("Disney's", '').replaceAll('Theme Park', '').replaceAll('Water Park', '')}
+              {park.name.replace(/Disney's|Water Park| Park/g, '')}
             </Text>
           </View>
         </Pressable>
@@ -72,10 +72,10 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
               <Pressable
                 key={park.id}
                 style={index === 0 ? styles.parkListCardFirst : styles.parkListCard}
-                onPress={() => navigation.navigate('Park', { park })}
+                onPress={() => navigation.navigate('Park', { park, destId: destination.slug })}
               >
                 <Text style={styles.parkListCardText}>
-                  {park.name.replaceAll("Disney's", '').replaceAll('Theme Park', '').replaceAll('Water Park', '')}
+                  {park.name.replace(/Disney's|Water Park| Park| Theme/g, '')}
                 </Text>
               </Pressable>
             ))}

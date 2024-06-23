@@ -23,7 +23,7 @@ export const colorPalette = {
   layer13: '#ffffff', // white
   layer13b: '#f4f4f4', // white-blue
   layer14: '#fbfbfb',
-  layer15: '#eef0fb' // off-white
+  layer15: '#f3f4fb' // off-white
 }
 
 export interface PlatformStyles {
@@ -93,10 +93,10 @@ export const styles = StyleSheet.create({
     paddingBottom: 2,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderStyle: 'solid',
-    borderBottomWidth: 1,
-    borderColor: 'lightgray'
+    alignItems: 'center'
+    // borderStyle: 'solid',
+    // borderBottomWidth: 0,
+    // borderColor: 'lightgray',
   },
   toolsHeaderView: {
     backgroundColor: colorPalette.layer13,
@@ -109,8 +109,8 @@ export const styles = StyleSheet.create({
     borderColor: 'lightgray'
   },
   subheaderText: {
-    fontSize: 20,
-    // fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: 'bold',
     fontStyle: 'italic',
     textAlign: 'center',
     color: platformStyle.statusBar.fontColor,
@@ -173,10 +173,10 @@ export const styles = StyleSheet.create({
   },
   expandedParkList: {
     width: platformStyle.destCard.width as DimensionValue,
-    marginTop: -20,
-    paddingTop: 20,
+    marginTop: -25,
+    paddingTop: 25,
     paddingBottom: 4,
-    backgroundColor: colorPalette.layer13,
+    backgroundColor: '#e4effd',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     shadowColor: '#aeb5be',
@@ -228,7 +228,7 @@ export const styles = StyleSheet.create({
     paddingLeft: 8,
     paddingRight: 8,
     paddingTop: 0,
-    marginTop: 8,
+    marginTop: 10,
     alignItems: 'center',
     borderRadius: 8,
     shadowColor: '#aeb5be',
@@ -237,20 +237,23 @@ export const styles = StyleSheet.create({
     shadowRadius: 1
   },
   attractionTitle: {
+    flexDirection: 'row',
     paddingTop: 5,
     paddingBottom: 5,
     marginBottom: 5,
     width: '100%',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     borderStyle: 'solid',
-    borderBottomWidth: 1,
+    borderBottomWidth: 1.5,
     borderColor: 'lightgray'
   },
   attractionTitleText: {
-    color: '#133ca2',
+    color: colorPalette.layer3b,
     fontSize: 20,
     fontWeight: 'bold',
-    fontFamily
+    fontFamily,
+    // backgroundColor: 'gray',
+    width: '92%'
   },
   attractionWait: {
     backgroundColor: colorPalette.layer14
@@ -262,9 +265,9 @@ export const styles = StyleSheet.create({
   },
   attractionLiveDataView: {
     width: '100%',
-    flexDirection: 'row',
-    paddingTop: 2,
-    paddingBottom: 2
+    flexDirection: 'row'
+    // paddingTop: 2,
+    // paddingBottom: 2
   },
   liveDataBox: {
     flex: 1,
@@ -294,7 +297,8 @@ export const styles = StyleSheet.create({
   liveDataUnavailable: {
     fontSize: 20,
     textAlign: 'center',
-    fontStyle: 'italic',
+    // fontStyle: 'italic',
+    // fontWeight: 'bold',
     fontFamily
   },
   liveDataDivider: {
@@ -539,5 +543,27 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 16
+  },
+  favAttrDest: {
+    flexDirection: 'row',
+    backgroundColor: '#b0c3de',
+    paddingHorizontal: 8,
+    paddingTop: 2,
+    paddingBottom: 10,
+    marginTop: 10,
+    marginBottom: -18,
+    // alignItems: 'center',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 1
+  },
+  favAttrParkText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colorPalette.layer13,
+    fontFamily
   }
 })

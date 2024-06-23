@@ -11,7 +11,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import DestinationsList from './Pages/DestinationsList'
 import { Ionicons } from '@expo/vector-icons'
 import AccountPage from './Pages/AccountPage'
-import SettingsPage from './Pages/SettingsPage'
+import FavoritesPage from './Pages/FavoritesPage'
 
 const platform = Platform.OS
 const Tab = createBottomTabNavigator()
@@ -69,30 +69,43 @@ function PrimaryStackScreen (): React.JSX.Element {
   )
 }
 
-const SettingsStack = createNativeStackNavigator()
+const FavoritesStack = createNativeStackNavigator()
 
-function SettingsStackScreen (): React.JSX.Element {
+function FavoritesStackScreen (): React.JSX.Element {
   return (
-    <SettingsStack.Navigator screenOptions={{
+    <FavoritesStack.Navigator screenOptions={{
       contentStyle: {
         backgroundColor: colorPalette.layer15
       },
       headerBackTitleVisible: false
     }}>
-      <SettingsStack.Screen
-        name={'SettingsHome'}
-        component={SettingsPage}
+      <FavoritesStack.Screen
+        name={'FavoritesHome'}
+        component={FavoritesPage}
         options={{
           headerTitle: () => <Header platform={platform} title="ParkQueues" />,
           headerTitleAlign: 'center',
           headerStyle: {
             backgroundColor: platformStyle.statusBar.bgColor
           },
-          headerShadowVisible: true,
+          headerShadowVisible: false,
           presentation: 'card'
         }}
       />
-    </SettingsStack.Navigator>
+      <FavoritesStack.Screen
+        name="FavAttraction"
+        component={AttractionPage}
+        options={{
+          headerTitle: () => <Header platform={platform} title="View Attraction" />,
+          headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: platformStyle.statusBar.bgColor
+          },
+          headerShadowVisible: false,
+          presentation: 'card'
+        }}
+      />
+    </FavoritesStack.Navigator>
   )
 }
 
@@ -153,7 +166,7 @@ function MainNavigation (): React.JSX.Element {
           )
         }}/>
         {user !== null &&
-          <Tab.Screen name={'Favorites'} component={SettingsStackScreen} options={{
+          <Tab.Screen name={'Favorites'} component={FavoritesStackScreen} options={{
             headerShown: false,
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="star-outline" color={color} size={size} />

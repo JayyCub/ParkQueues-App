@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Destination } from './Destination'
+import { UserData } from './UserData'
 
-// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class DataManager {
   static async fetchDestination (slug: string): Promise<Destination | null> {
     const url = `https://wait-times-data.s3.amazonaws.com/${slug}.json?timestamp=${Date.now()}`
@@ -32,41 +32,29 @@ export class DataManager {
     }
   }
 
-  static async updateDestination (slug: string, existingDest: Destination | undefined): Promise<Destination | null> {
-    const url = `https://wait-times-data.s3.amazonaws.com/${slug}.json?timestamp=${Date.now()}`
-    const localData = await AsyncStorage.getItem(slug)
-
-    if ((localData != null) && Date.now() - (1000 * 60 * 5) < JSON.parse(localData).lastUpdated) {
-      // console.log(slug + ": Found local storage, and it is recent");
-      return null
-    } else {
-      // console.log(slug + ": Local data is missing or expired.");
-      try {
-        const response = await fetch(url)
-        const data = await response.json()
-        const newDest = Destination.fromJson(JSON.stringify(data))
-        // console.log("Retrieved: " + slug);
-
-        if (newDest != null) {
-          // console.log("Locally Saving: " + slug);
-          await AsyncStorage.setItem(slug, newDest.toJson())
-          if (existingDest == null) {
-            return newDest
-          } else {
-            // console.log("UPDATING...");
-            for (const [parkKey] of Object.entries(existingDest)) {
-              existingDest.parks[parkKey].liveData = newDest.parks[parkKey].liveData
-            }
-            return existingDest
-          }
-        } else {
-          console.error('Error parsing destination data')
-          return null
+  static async getUser (uid: string): Promise<UserData | null> {
+    // console.log("Getting account info...")
+    const url = 'https://7o2vcnfjgc.execute-api.us-east-1.amazonaws.com/ParkQueues-live/user-data'
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+          uid
         }
-      } catch (error) {
-        console.error('Error fetching data: ', error)
-        return null
+      })
+
+      if (response.status !== 200) {
+        console.log('Error fetching account data')
       }
+
+      const data = await response.json()
+      // console.log('Got S3 response.')
+      // console.log(userData)
+      return UserData.fromJson(data.body)
+    } catch (error: any) {
+      console.error('Error getting user data from S3. ' + JSON.stringify(error))
+      return null
     }
   }
 }
