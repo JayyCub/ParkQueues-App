@@ -2,7 +2,10 @@ export class UserData {
   uid: string
   maxFavs: {
     num: number
-    expires: number | null
+    expirationStack: [{
+      expiration: number
+      newMaxFav: number
+    }]
   }
 
   favs: UserDataAttr[]
@@ -13,7 +16,8 @@ export class UserData {
 
   notifs: UserDataAttr[]
 
-  constructor (uid: string, maxFavs: { num: number, expires: number | null }, favs: UserDataAttr[], maxNotifs: { num: number, expires: number | null }, notifs: UserDataAttr[]) {
+  constructor (uid: string, maxFavs: { num: number, expirationStack: [{ expiration: number, newMaxFav: number }] },
+    favs: UserDataAttr[], maxNotifs: { num: number, expires: number | null }, notifs: UserDataAttr[]) {
     this.uid = uid
     this.maxFavs = maxFavs
     this.favs = favs
@@ -25,7 +29,7 @@ export class UserData {
     if (json != null) {
       const jsonObject: {
         uid: string
-        maxFavs: { num: number, expires: number | null }
+        maxFavs: { num: number, expirationStack: [{ expiration: number, newMaxFav: number }] }
         favs: any[]
         maxNotifs: { num: number, expires: number | null }
         notifs: any[]

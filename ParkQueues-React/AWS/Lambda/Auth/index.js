@@ -18,11 +18,10 @@ export async function getUser (event) {
     const response = await client.send(command)
     const data = JSON.parse(await response.Body.transformToString())
 
-    const now = Date.now()
-    if (data.maxFavs.expires < now) {
-      data.maxFavs.expires = null
-      data.maxFavs.num = 5
+    while (data.maxFavs.expirationStack.length > 0 && data.maxFavs.expirationStack[0].expiration < Date.now()) {
+      data.maxFavs.num = data.maxFavs.expirationStack[0].newMaxFav
       data.favs.splice(data.maxFavs)
+      data.maxFavs.expirationStack.shift()
     }
 
     const putCommand = new PutObjectCommand({
@@ -57,7 +56,7 @@ export async function addUser (event) {
         uid: event.uid,
         maxFavs: {
           num: 5,
-          expires: null
+          expirationStack: []
         },
         favs: [],
         maxNotifs: {

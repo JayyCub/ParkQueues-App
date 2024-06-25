@@ -107,7 +107,7 @@ const Register = (): React.JSX.Element => {
 
       // TODO: SUCCESSFULLY GOT USER DATA, NOW SAVE IT IN DATA CONTEXT
       const data = await response.json()
-      console.log('S3 response: ', data)
+      // console.log('S3 response: ', data)
 
       setUser(null)
       setUser(user)

@@ -1,14 +1,13 @@
 import { Alert, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDataContext } from '../Data/DataContext'
-import { type Attraction, LiveStatusType } from '../Data/Attraction'
+import { type Attraction } from '../Data/Attraction'
 import { colorPalette, fontFamily, styles } from '../styles'
 import AttractionCard from '../Components/AttractionCard'
 import { type UserDataAttr } from '../Data/UserData'
-import { AntDesign } from '@expo/vector-icons'
 
 const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
-  const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData, destinations } = useDataContext()
+  const { lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData, updateUserData, destinations } = useDataContext()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [filteredAttractions, setFilteredAttractions] = useState<Attraction[]>([])
   const [refreshing, setRefreshing] = useState(false)
@@ -17,7 +16,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
   const attrMap = new Map<string, UserDataAttr>()
   userData?.favs.forEach((attr) => {
     const tempAttr = destinations.get(attr.destId)?.parks[attr.parkId].liveData[attr.id]
-    if (tempAttr) {
+    if (tempAttr != null) {
       attractions.set(attr.id, tempAttr)
       attrMap.set(attr.id, attr)
     }
@@ -32,9 +31,9 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
 
   const allAttractions = Array.from(attractions.values())
 
-  const sortedAttractions = allAttractions.slice().sort((a, b) => {
+  /*  const sortedAttractions = allAttractions.slice().sort((a, b) => {
     return sortAlpha ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-  })
+  }) */
 
   const filterAttractions = (query: string): void => {
     const filtered = allAttractions.filter(attraction =>
@@ -57,6 +56,41 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
     })
   }
 
+  /*
+  const watchAd = (): void => {
+    console.log('Watching advertisement')
+    if (userData?.maxFavs?.num != null) {
+      console.log('Here')
+      userData?.maxFavs.expirationStack.push({
+        expiration: Date.now() + (1000 * 60 * 60 * 24),
+        newMaxFav: userData?.maxFavs.num
+      })
+      userData.maxFavs.num += 3
+      console.log('There')
+      const url = 'https://7o2vcnfjgc.execute-api.us-east-1.amazonaws.com/ParkQueues-live/user-data'
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: userData?.toJson()
+      }).then((response) => {
+        console.log('Erm')
+
+        if (response.status === 200) {
+          updateUserData()
+          console.log('Successfully watched ad!')
+        } else {
+          console.log('Error watching ad...')
+          console.log(response)
+        }
+      })
+    } else {
+      console.log('Error handling local userdata')
+    }
+  }
+*/
+
   return (
     <>
       <View style={styles.subheaderView}>
@@ -73,7 +107,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
             clearButtonMode="always"
           />
         </View>
-        <Pressable onPress={toggleSortAlpha}>
+        {/* <Pressable onPress={toggleSortAlpha}>
           {!sortAlpha
             ? <View style={styles.subheaderSortAlphaAsc}>
               <Image
@@ -88,7 +122,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               />
             </View>
           }
-        </Pressable>
+        </Pressable> */}
         <Pressable onPress={toggleShowTrends}>
           {showTrends
             ? <View style={styles.subheaderShowDataTrue}>
@@ -173,10 +207,10 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
                 navStack='FavAttraction'
               />
             })
-            : sortedAttractions.map((attr: Attraction, index: number) => {
+            : allAttractions.map((attr: Attraction, index: number) => {
               const localDest = destinations.get(attrMap.get(attr.id)!.destId)
               const localPark = localDest?.parks[attrMap.get(attr.id)!.parkId]
-              const localParkName = localDest?.name.includes('Paris')
+              const localParkName = ((localDest?.name.includes('Paris')) === true)
                 ? 'Disneyland - Paris'
                 : localPark?.name.replace(/Disney's|Water Park| Park| Theme/g, '')
 
@@ -202,6 +236,31 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               )
             })
           }
+          {/* <Pressable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 50
+            }}
+            onPress={() => {
+              Alert.alert('Watch an ad to unlock more favorites?',
+                'Every ad you watch rewards you with 3 more favorite attraction selections for 24 hours. ' +
+                'Would you like to watch an ad now?',
+                [
+                  { text: 'No', onPress: () => {} },
+                  { text: 'Yes', onPress: () => { watchAd() } }
+                ])
+            }}
+          >
+            <Text style={{
+              fontSize: 18,
+              fontFamily,
+              textAlign: 'center',
+              color: colorPalette.layer1,
+              textDecorationLine: 'underline'
+            }}>Want to save more favorites?</Text>
+          </Pressable> */}
         </View>
       </ScrollView>
     </>

@@ -47,7 +47,7 @@ const Login = (): React.JSX.Element => {
       }
 
       const data = await response.json()
-      console.log('S3 response: ', data)
+      // console.log('S3 response: ', data)
     } catch (error: any) {
       Alert.alert('Incorrect email or password', 'Please try again.')
       setPassword('')

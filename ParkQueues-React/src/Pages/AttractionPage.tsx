@@ -1,4 +1,4 @@
-import { type Attraction } from '../Data/Attraction'
+import { type Attraction, LiveStatusType } from '../Data/Attraction'
 import { styles } from '../styles'
 import { ScrollView, Text, View } from 'react-native'
 import React, { useState } from 'react'
@@ -11,6 +11,26 @@ import TimeAreaChart, { type ReturnDataItem } from '../Components/TimeAreaChart'
 const AttractionPage = ({ route }: any): React.JSX.Element => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const [attr] = useState<Attraction>(route.params?.attr)
+
+  if (attr.status === LiveStatusType.REFURBISHMENT || attr.status === LiveStatusType.CLOSED) {
+    return (
+      <>
+        <View style={styles.subheaderView}>
+          <Text style={styles.subheaderText}>{attr.name}</Text>
+        </View>
+        <ScrollView>
+          <View style={styles.main}>
+            <View style={styles.attractionLiveDataCard}>
+              <View style={styles.attractionTitle}>
+                <Text style={styles.attractionLiveText}>Live:</Text>
+              </View>
+              <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
+            </View>
+          </View>
+        </ScrollView>
+      </>
+    )
+  }
 
   const historicStandby: Array<{ high: number | undefined, date: number }> = []
   const historicSingleRider: Array<{ high: number | undefined, date: number }> = []

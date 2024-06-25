@@ -570,5 +570,11 @@ export const styles = StyleSheet.create({
     fontWeight: '700',
     color: colorPalette.layer13,
     fontFamily
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+    // marginTop: 22
   }
 })

@@ -226,6 +226,9 @@ async function dataUpdate (dest) {
           return attr.entityType === 'ATTRACTION'
         })
 
+        // Maintain a list of current attractions from API
+        const currentAttractions = new Set()
+
         // Compare existing info with API data
         // if park exists in S3 destData, leave it. Otherwise, add the park data
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -241,6 +244,7 @@ async function dataUpdate (dest) {
 
           // FOR EACH ATTRACTION IN API
           for (let item of parkData.liveData) {
+            currentAttractions.add(item.id)
             item = {
               id: item.id,
               name: item.name,
@@ -258,6 +262,7 @@ async function dataUpdate (dest) {
         } else {
           // FOR EACH ATTRACTION IN API
           for (const item of parkData.liveData) {
+            currentAttractions.add(item.id)
             try {
               // Attr not found in S3 data
               if (destData.parks[parkData.id].liveData[item.id] == null) {
@@ -274,7 +279,7 @@ async function dataUpdate (dest) {
                   status: item.status
                 }]
               } else {
-                // Compare existing info with
+                // Compare existing info with API data
                 destData.parks[parkData.id].liveData[item.id].name = item.name
                 destData.parks[parkData.id].liveData[item.id].status = item.status
                 destData.parks[parkData.id].liveData[item.id].queue = item.queue
@@ -295,6 +300,13 @@ async function dataUpdate (dest) {
               }
             } catch (e) {
               console.log('Error adding/checking data. Attraction: ', item.id)
+            }
+          }
+
+          // Remove attractions not in current API data
+          for (const attractionId in destData.parks[parkData.id].liveData) {
+            if (!currentAttractions.has(attractionId)) {
+              delete destData.parks[parkData.id].liveData[attractionId]
             }
           }
         }
