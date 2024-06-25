@@ -3,22 +3,50 @@ import { styles } from '../styles'
 import { ScrollView, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import LiveDataComponent from '../Components/LiveDataComponent'
-import { QueueType } from '../Data/Queue'
+import { type Queue, QueueType, ReturnTimeState } from '../Data/Queue'
 import SingleLineAreaChart from '../Components/SingleLineAreaChart'
-import TwoLineAreaChart from '../Components/TwoLineAreaChart'
+import TwoLineAreaChart, { type DataItem } from '../Components/TwoLineAreaChart'
+import TimeAreaChart, { type ReturnDataItem } from '../Components/TimeAreaChart'
 
 const AttractionPage = ({ route }: any): React.JSX.Element => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const [attr] = useState<Attraction>(route.params?.attr)
 
   const historicStandby: Array<{ high: number | undefined, date: number }> = []
   const historicSingleRider: Array<{ high: number | undefined, date: number }> = []
-  const historicBoardingGroup: Array<{ start: number | undefined, end: number | undefined, date: number }> = []
+  const historicBoardingGroup: DataItem[] = []
+  const historicReturnTime: ReturnDataItem[] = []
 
   const getWaitTime = (queue: any, type: string): number => {
     if (queue[type] !== undefined) {
       return queue[type].waitTime !== null ? queue[type].waitTime : 1
     }
     return -1
+  }
+
+  const getReturnTime = (queue: Queue): number | undefined => {
+    if (queue.PAID_RETURN_TIME != null) {
+      if (queue.PAID_RETURN_TIME.state === ReturnTimeState.FINISHED) {
+        return undefined
+      } else {
+        const val = new Date(queue.PAID_RETURN_TIME.returnStart)
+        if (val.getMinutes() === 59) {
+          return undefined
+        }
+        return val.getTime()
+      }
+    } else if (queue.RETURN_TIME != null) {
+      if (queue.RETURN_TIME.state === ReturnTimeState.FINISHED) {
+        return undefined
+      } else {
+        const val = new Date(queue.RETURN_TIME.returnStart)
+        if (val.getMinutes() === 59) {
+          return undefined
+        }
+        return val.getTime()
+      }
+    }
+    return undefined
   }
 
   attr.history.forEach((value) => {
@@ -28,8 +56,11 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
         historicStandby.push({ high: 1, date })
         break
       case QueueType.standby:
+        historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
+        break
       case QueueType.standby_reservation:
         historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
+        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
         break
       case QueueType.boarding_reservation:
         if (value.queue.BOARDING_GROUP !== undefined) {
@@ -39,8 +70,13 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
             date
           })
         }
+        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
         break
       case QueueType.standby_single_reservation:
+        historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
+        historicSingleRider.push({ high: getWaitTime(value.queue, 'SINGLE_RIDER'), date })
+        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
+        break
       case QueueType.standby_single:
         historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
         historicSingleRider.push({ high: getWaitTime(value.queue, 'SINGLE_RIDER'), date })
@@ -52,13 +88,14 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
         historicStandby.push({ high: undefined, date })
         historicSingleRider.push({ high: undefined, date })
         historicBoardingGroup.push({ start: undefined, end: undefined, date })
+        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
         break
       default:
         break
     }
   })
 
-  const renderChart = (title: string, data: any, Component: any) => (
+  const renderChart = (title: string, data: any, Component: any): React.JSX.Element => (
     <View style={styles.attractionLiveDataCard}>
       <View style={{ width: '100%', height: 'auto' }}>
         <View style={styles.attractionTitle}>
@@ -77,9 +114,6 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
     </View>
   )
 
-  console.log(JSON.stringify(attr.name))
-  console.log(JSON.stringify(attr.queue))
-
   return (
     <>
       <View style={styles.subheaderView}>
@@ -93,17 +127,14 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
             </View>
             <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
           </View>
-          {(attr.queue.queueType === QueueType.standby ||
-              attr.queue.queueType === QueueType.standby_single ||
-              attr.queue.queueType === QueueType.standby_single_reservation ||
-              attr.queue.queueType === QueueType.open_status ||
-              attr.queue.queueType === QueueType.standby_reservation) &&
+           {historicStandby.length === attr.history.length &&
             renderChart('Standby Wait History:', historicStandby, SingleLineAreaChart)}
-          {(attr.queue.queueType === QueueType.standby_single ||
-              attr.queue.queueType === QueueType.standby_single_reservation) &&
+           {historicSingleRider.length === attr.history.length &&
             renderChart('Single Rider Wait History:', historicSingleRider, SingleLineAreaChart)}
-          {attr.queue.queueType === QueueType.boarding_reservation &&
+           {historicBoardingGroup.length === attr.history.length &&
             renderChart('Boarding Group History:', historicBoardingGroup, TwoLineAreaChart)}
+          {(historicReturnTime.length === attr.history.length) &&
+            renderChart('Next Reservation Time History:', historicReturnTime, TimeAreaChart)}
         </View>
       </ScrollView>
     </>

@@ -24,15 +24,22 @@ import {
 import { AnimatedText } from './AnimatedText'
 import { styles } from '../styles'
 
-const initChartPressState = { x: 0, y: { end: 0, start: 0 } } as const
-export interface DataItem {
-  start: number | undefined
-  end: number | undefined
+const initChartPressState = { x: 0, y: { returnTime: 0, histTime: 0 } } as const
+export interface ReturnDataItem {
+  histTime: number | undefined
+  returnTime: number | undefined
   date: number
 }
 
-export default function TwoLineAreaChart ({ data, timezone }: { data: DataItem[], timezone: string }): React.JSX.Element {
-  const maxVal = Math.max(...data.map(o => o.end ?? 0))
+export default function TimeAreaChart ({ data, timezone }: { data: ReturnDataItem[], timezone: string }): React.JSX.Element {
+  const validHighValues = data
+    .map(o => o.histTime)
+    .filter(value => value !== undefined && value !== null)
+
+  const maxVal = Math.max(...data.map(o => o.returnTime ?? 0))
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
+  const minVal = Math.min(...validHighValues)
 
   const isDark = false
   const font = useFont('arial', 12)
@@ -54,13 +61,12 @@ export default function TwoLineAreaChart ({ data, timezone }: { data: DataItem[]
   // Active high display
   const activeNums = useDerivedValue(() => {
     if (!isChartPressActive) return '—'
-    let start = chartPressState.y.start.value.value.toFixed(0)
-    let end = chartPressState.y.end.value.value.toFixed(0)
+    let returnTime = new Date(parseFloat(chartPressState.y.returnTime.value.value.toFixed(0))).toLocaleString('en-US',
+      { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
 
-    if (start === 'NaN') start = 'Closed'
-    if (end === 'NaN') end = 'Closed'
+    if (returnTime === 'Invalid Date') returnTime = 'Closed'
 
-    return `${start} - ${end}`
+    return returnTime
   })
 
   return (
@@ -96,14 +102,14 @@ export default function TwoLineAreaChart ({ data, timezone }: { data: DataItem[]
           // @ts-expect-error Lint doesn't like custom components
           xKey="date"
           // @ts-expect-error Lint doesn't like custom components
-          yKeys={['start', 'end']}
+          yKeys={['histTime', 'returnTime']}
           // @ts-expect-error Lint doesn't like custom components
           chartPressState={chartPressState}
           curve="linear"
-          domain={{ y: [0, Math.ceil((maxVal + 5) / 5) * 5] }}
+          domain={{ y: [minVal, maxVal] }}
           axisOptions={{
             font,
-            tickCount: maxVal / 5,
+            tickCount: 10,
             labelOffset: { x: 5, y: 8 },
             labelPosition: { x: 'inset', y: 'inset' },
             axisSide: { x: 'bottom', y: 'left' },
@@ -116,11 +122,11 @@ export default function TwoLineAreaChart ({ data, timezone }: { data: DataItem[]
                 <>
                   <ActiveValueIndicator
                     xPosition={chartPressState.x.position}
-                    y1Position={chartPressState.y.end.position}
-                    y2Position={chartPressState.y.start.position}
+                    y1Position={chartPressState.y.returnTime.position}
+                    y2Position={chartPressState.y.histTime.position}
                     bottom={chartBounds.bottom}
                     top={chartBounds.top}
-                    lineColor={'#0a90da'} // Line color for indicator
+                    lineColor={'#6226be'} // Line color for indicator
                   />
                 </>
               )}
@@ -132,12 +138,12 @@ export default function TwoLineAreaChart ({ data, timezone }: { data: DataItem[]
               <LineArea
                 lineVal={true}
                 // @ts-expect-error Lint doesn't like custom components
-                points={points.end}
+                points={points.returnTime}
                 {...chartBounds} />
               <LineArea
                 lineVal={false}
                 // @ts-expect-error Lint doesn't like custom components
-                points={points.start}
+                points={points.histTime}
                 {...chartBounds}
               />
             </>
@@ -154,23 +160,25 @@ const LineArea =
     const { path: linePath } = useLinePath(points)
 
     return (
-    <>
-      <Path path={areaPath} style="fill">
-        <LinearGradient
-          start={vec(0, 0)}
-          end={vec(top, bottom)}
-          colors={lineVal
-            ? ['#63eeff', '#effeff']
-            : ['#2d9ff1', '#effeff']}
+      <>
+        <Path path={areaPath} style="fill">
+          <LinearGradient
+            start={vec(0, 0)}
+            end={vec(top, bottom)}
+            colors={lineVal
+              ? ['#7050ff', '#effeff']
+              : ['#f1f1f1', '#f1f1f1']}
+          />
+        </Path>
+        {lineVal
+          ? <Path
+          path={linePath}
+          style="stroke"
+          strokeWidth={2}
+          color={lineVal ? '#5633bc' : '#dfdfdf'}
         />
-      </Path>
-      <Path
-        path={linePath}
-        style="stroke"
-        strokeWidth={2}
-        color={'#0a90da'}
-      />
-    </>
+          : null}
+      </>
     )
   }
 
@@ -194,10 +202,10 @@ const ActiveValueIndicator =
     const end = useDerivedValue(() => vec(xPosition.value, top))
 
     return (
-    <>
-      <SkiaLine p1={start} p2={end} color={lineColor} strokeWidth={1} />
-      <Circle cx={xPosition} cy={y1Position} r={3} color="blue" />
-      <Circle cx={xPosition} cy={y2Position} r={3} color="blue" />
-    </>
+      <>
+        <SkiaLine p1={start} p2={end} color={lineColor} strokeWidth={1} />
+        <Circle cx={xPosition} cy={y1Position} r={3} color='#3d1082' />
+        <Circle cx={xPosition} cy={y2Position} r={3} color="gray" />
+      </>
     )
   }

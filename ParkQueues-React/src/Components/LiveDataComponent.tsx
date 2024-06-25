@@ -37,7 +37,7 @@ const LiveDataComponent = (
     )
   }
 
-  const renderIconElement = (icon: React.JSX.Element | null, diff: number) => (
+  const renderIconElement = (icon: React.JSX.Element | null, diff: number): React.JSX.Element => (
     <View style={{
       width: 35,
       paddingLeft: 3,
@@ -61,7 +61,12 @@ const LiveDataComponent = (
     </View>
   )
 
-  const renderWaitTimeElement = (label: string, waitTime: number | null, diff: number, icon: React.JSX.Element | null) => (
+  const renderWaitTimeElement =
+    (label: string,
+      waitTime: number | null | undefined,
+      diff: number,
+      icon: React.JSX.Element | null
+    ): React.JSX.Element => (
     <>
       <View style={styles.liveDataLabelBox}>
         <Text style={styles.liveDataLabelText}>{label}</Text>
@@ -72,7 +77,7 @@ const LiveDataComponent = (
           display: showAdditionalText ? undefined : 'none'
         }} />
         <Text style={styles.liveData3}>
-          {waitTime !== null ? waitTime : 'Open'}
+          {waitTime ?? 'Open'}
         </Text>
         <View style={{
           flexDirection: 'row',
@@ -81,13 +86,13 @@ const LiveDataComponent = (
           width: 40,
           display: showAdditionalText ? undefined : 'none'
         }}>
-          {icon && renderIconElement(icon, diff)}
+          {(icon != null) && renderIconElement(icon, diff)}
         </View>
       </View>
     </>
-  )
+    )
 
-  const renderUnavailableElement = (label: string) => (
+  const renderUnavailableElement = (label: string): React.JSX.Element => (
     <>
       <View style={styles.liveDataLabelBox}>
         <Text style={styles.liveDataLabelText}>{label}</Text>
@@ -96,7 +101,7 @@ const LiveDataComponent = (
     </>
   )
 
-  const renderElement = (label: string, data: any) => (
+  const renderElement = (label: string, data: any): React.JSX.Element => (
     <>
       <View style={styles.liveDataLabelBox}>
         <Text style={styles.liveDataLabelText}>{label}</Text>
@@ -107,7 +112,10 @@ const LiveDataComponent = (
     </>
   )
 
-  const getWaitTimeDiff = (currentWait: number | undefined, previousWait: number | undefined) => {
+  const getWaitTimeDiff = (currentWait: number | undefined, previousWait: number | undefined): {
+    icon: null | React.JSX.Element
+    diff: number
+  } => {
     if (currentWait !== undefined && previousWait !== undefined) {
       const diff = currentWait - previousWait
       if (diff < 0) return { diff, icon: downArrow }
@@ -121,17 +129,17 @@ const LiveDataComponent = (
   const currWait = attr.queue.STANDBY?.waitTime
   const { diff, icon } = getWaitTimeDiff(currWait, prevWait)
 
-  const renderQueueElement = (queueType: QueueType) => {
+  const renderQueueElement = (queueType: QueueType): void => {
     switch (queueType) {
       case QueueType.open_status:
         elements.push(renderElement('Status:', 'Open'))
         break
       case QueueType.standby:
-        elements.push(renderWaitTimeElement('Standby:', currWait!, diff, icon))
+        elements.push(renderWaitTimeElement('Standby:', currWait, diff, icon))
         break
       case QueueType.standby_single_reservation:
       case QueueType.standby_single:
-        elements.push(renderWaitTimeElement('Standby:', currWait!, diff, icon))
+        elements.push(renderWaitTimeElement('Standby:', currWait, diff, icon))
         elements.push(<View style={styles.liveDataDivider} />)
         if (attr.queue.SINGLE_RIDER?.waitTime !== null) {
           renderElement('Single Rider:', attr.queue.SINGLE_RIDER?.waitTime)
@@ -142,14 +150,15 @@ const LiveDataComponent = (
         }
         break
       case QueueType.boarding_reservation:
-        elements.push(renderElement('Now Boarding:', `${attr.queue.BOARDING_GROUP?.currentGroupStart}-${attr.queue.BOARDING_GROUP?.currentGroupEnd}`))
+        elements.push(renderElement('Now Boarding:',
+          `${attr.queue.BOARDING_GROUP?.currentGroupStart}-${attr.queue.BOARDING_GROUP?.currentGroupEnd}`))
         break
       default:
         break
     }
   }
 
-  const renderReservationTimeElement = () => {
+  const renderReservationTimeElement = (): any => {
     const { title, nextTime, price } = (() => {
       const paid = attr.queue.PAID_RETURN_TIME?.returnStart
       const reg = attr.queue.RETURN_TIME?.returnStart
@@ -158,7 +167,7 @@ const LiveDataComponent = (
         const nextTime = attr.queue.PAID_RETURN_TIME?.state === ReturnTimeState.AVAILABLE
           ? temp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
           : 'Unavailable'
-        const price = attr.queue.PAID_RETURN_TIME?.price
+        const price = ((attr.queue.PAID_RETURN_TIME?.price) != null)
           ? `$${(attr.queue.PAID_RETURN_TIME.price.amount / 100).toString()}`
           : undefined
         return { title: 'Next Individual LL:', nextTime, price }
@@ -206,7 +215,7 @@ const LiveDataComponent = (
   }
 
   return (
-    <View style={{width: '100%'}}>
+    <View style={{ width: '100%' }}>
       {elements.length <= 5
         ? <View style={styles.attractionLiveDataView}>
             {elements.map((element, index) => {
@@ -215,7 +224,7 @@ const LiveDataComponent = (
               </View>
             })}
           </View>
-        : <View style={{width: '100%'}}>
+        : <View style={{ width: '100%' }}>
           <View style={styles.attractionLiveDataView}>
             {elements.slice(0, 3).map((element, index) => {
               return <View style={index % 2 === 1 ? null : styles.liveDataBox} key={index}>
@@ -227,7 +236,8 @@ const LiveDataComponent = (
             borderStyle: 'solid',
             borderBottomWidth: 1,
             borderColor: 'lightgray',
-            margin: 5}} />
+            margin: 5
+          }} />
             <View style={styles.attractionLiveDataView}>
               {elements.slice(4).map((element, index) => {
                 return <View style={index % 2 === 1 ? null : styles.liveDataBox} key={index}>

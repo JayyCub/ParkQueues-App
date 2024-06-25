@@ -51,17 +51,17 @@ export default function SingleLineAreaChart ({ data, timezone }:
 
   // Active date display
   const activeDate = useDerivedValue(() => {
-    if (!isFirstPressActive) return 'Press on the chart to view history:'
+    if (!isFirstPressActive) return 'Press to view a point in time:'
 
     // One-touch only
     if (!isSecondPressActive) {
-      return new Date(firstTouch.x.value.value).toLocaleString(
+      return 'at: ' + new Date(firstTouch.x.value.value).toLocaleString(
         'en-US', {
           hour: 'numeric',
           minute: 'numeric',
           hour12: true,
           timeZone: timezone
-        })
+        }) + ':'
     }
     // Two-touch
     const early =
@@ -75,7 +75,7 @@ export default function SingleLineAreaChart ({ data, timezone }:
         minute: 'numeric',
         hour12: true,
         timeZone: timezone
-      })} - ${new Date(late.x.value.value).toLocaleString(
+      })} : ${new Date(late.x.value.value).toLocaleString(
       'en-US', {
         hour: 'numeric',
         minute: 'numeric',
@@ -101,7 +101,6 @@ export default function SingleLineAreaChart ({ data, timezone }:
         default:
           return val
       }
-      // return val === 'NaN' ? "Closed" : val;
     }
 
     // Two-touch
@@ -110,10 +109,32 @@ export default function SingleLineAreaChart ({ data, timezone }:
         ? firstTouch
         : secondTouch
     const late = early === firstTouch ? secondTouch : firstTouch
+    let earlyVal = early.y.high.value.value.toFixed(0)
+    let lateVal = late.y.high.value.value.toFixed(0)
+    switch (earlyVal) {
+      case 'NaN':
+        earlyVal = 'Closed'
+        break
+      case '1':
+        earlyVal = 'Open'
+        break
+      case '-1':
+        earlyVal = 'Unavailable'
+        break
+    }
+    switch (lateVal) {
+      case 'NaN':
+        lateVal = 'Closed'
+        break
+      case '1':
+        lateVal = 'Open'
+        break
+      case '-1':
+        lateVal = 'Unavailable'
+        break
+    }
 
-    return `${early.y.high.value.value.toFixed(
-      0
-    )} – ${late.y.high.value.value.toFixed(0)}`
+    return `${earlyVal} : ${lateVal}`
   })
 
   // Determine if the selected range has a positive delta, which will be used to conditionally pick colors.

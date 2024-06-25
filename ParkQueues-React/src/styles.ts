@@ -154,53 +154,56 @@ export const styles = StyleSheet.create({
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
-    shadowRadius: 1
+    shadowRadius: 1,
+    zIndex: 999
   },
   destinationCardSelected: {
-    width: platformStyle.destCard.width as DimensionValue,
-    backgroundColor: platformStyle.destCard.bgColor,
-    marginTop: 12,
-    padding: 20,
+    // backgroundColor: '#dbf0ff',
+    // shadowColor: '#aecaec',
+    shadowOffset: { width: 0, height: 2 }
+  },
+  shadowWrapper: {
+    marginTop: -30,
+    paddingTop: 30,
+    width: '86%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 25,
-    borderBottomColor: platformStyle.destCard.bgColor,
+    backgroundColor: '#ffffff',
     shadowColor: '#aeb5be',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
     shadowRadius: 1,
-    zIndex: 1
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25
   },
   expandedParkList: {
-    width: platformStyle.destCard.width as DimensionValue,
-    marginTop: -25,
-    paddingTop: 25,
-    paddingBottom: 4,
-    backgroundColor: '#e4effd',
+    width: '100%',
+    marginTop: -30,
+    paddingTop: 30,
+    // paddingBottom: 5,
+    // backgroundColor: '#e4effd',
+    backgroundColor: '#ffffff',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
-    shadowColor: '#aeb5be',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 1,
-    zIndex: 0,
+    zIndex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    overflow: 'hidden'
   },
   parkListCard: {
-    width: '85%',
-    padding: 15,
     borderTopWidth: 1,
     borderTopColor: 'lightgray'
   },
   parkListCardFirst: {
     width: '85%',
-    padding: 15
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   parkListCardText: {
     textAlign: 'center',
-    color: platformStyle.destCard.fontColor,
-    fontSize: 20,
+    color: '#133b74',
+    fontSize: 22,
     fontWeight: '600',
     fontFamily
   },
@@ -321,12 +324,14 @@ export const styles = StyleSheet.create({
   },
   attractionPageHeaderText: {
     fontSize: 20,
-    fontFamily
+    fontFamily,
+    fontWeight: '600'
   },
   attractionLiveText: {
     fontSize: 20,
     fontFamily,
-    color: 'red'
+    color: 'red',
+    fontWeight: '600'
   },
   searchBar: {
     backgroundColor: colorPalette.layer13,

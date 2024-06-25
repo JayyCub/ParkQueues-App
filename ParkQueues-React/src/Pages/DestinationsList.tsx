@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { Animated, Pressable, ScrollView, Text, View } from 'react-native'
 import { styles } from '../styles'
 import { useDataContext } from '../Data/DataContext'
 import { type Destination } from '../Data/Destination'
@@ -8,6 +8,7 @@ import { type Park } from '../Data/Park'
 const DestinationsList = ({ navigation }: any): React.JSX.Element => {
   const { destinations, lastUpdated } = useDataContext()
   const [expandedDestinations, setExpandedDestinations] = useState<Record<string, boolean>>({})
+  const animations = useRef<Record<string, Animated.Value>>({})
 
   useEffect(() => {
     // This effect will run whenever lastUpdated changes
@@ -30,15 +31,39 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
     if (Object.values(parks).length === 1) {
       navigation.navigate('Park', { park: Object.values(parks)[0] })
     } else {
-      setExpandedDestinations(prevState => ({
-        ...prevState,
-        [slug]: !prevState[slug]
-      }))
+      setExpandedDestinations(prevState => {
+        const newState = {
+          ...prevState,
+          [slug]: !prevState[slug]
+        }
+        animateExpansion(slug, newState[slug])
+        return newState
+      })
     }
+  }
+
+  const animateExpansion = (slug: string, isExpanded: boolean): void => {
+    if (!animations.current[slug]) {
+      animations.current[slug] = new Animated.Value(0)
+    }
+
+    Animated.timing(animations.current[slug], {
+      toValue: isExpanded ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false
+    }).start()
   }
 
   const renderDestination = (destination: Destination): React.JSX.Element => {
     const parks = Object.values(destination.parks)
+    const isExpanded = expandedDestinations[destination.slug]
+    const animation = animations.current[destination.slug] || new Animated.Value(0)
+
+    const height = animation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, (parks.length * 60) + 30] // Assuming each park item height is 50
+    })
+
     if (parks.length === 1) {
       const park = parks[0]
       return (
@@ -59,19 +84,19 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
     return (
       <View key={destination.slug} style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
         <Pressable
-          style={expandedDestinations[destination.slug] ? styles.destinationCardSelected : styles.destinationCard}
+          style={[styles.destinationCard, isExpanded ? styles.destinationCardSelected : null]}
           onPress={() => { toggleExpand(destination) }}
         >
           <View>
             <Text style={styles.destinationTitle}>{destination.name}</Text>
           </View>
         </Pressable>
-        {expandedDestinations[destination.slug] && (
-          <View style={styles.expandedParkList}>
+        <View style={styles.shadowWrapper}>
+          <Animated.View style={[styles.expandedParkList, { height }]}>
             {parks.map((park: Park, index: number) => (
               <Pressable
                 key={park.id}
-                style={index === 0 ? styles.parkListCardFirst : styles.parkListCard}
+                style={[styles.parkListCardFirst, index === 0 ? null : styles.parkListCard]}
                 onPress={() => navigation.navigate('Park', { park, destId: destination.slug })}
               >
                 <Text style={styles.parkListCardText}>
@@ -79,8 +104,8 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
                 </Text>
               </Pressable>
             ))}
-          </View>
-        )}
+          </Animated.View>
+        </View>
       </View>
     )
   }
