@@ -3,9 +3,9 @@
     "name": "ParkQueues",
     "slug": "parkqueues",
     "privacy": "unlisted",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/PQ-logo.png",
+    "icon": "./assets/PQ_icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -17,7 +17,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.jayycub.parkqueues"
+      "bundleIdentifier": "com.jayycub.parkqueues",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,7 +28,7 @@
       "package": "com.jayycub.parkqueues"
     },
     "web": {
-      "favicon": "./assets/PQ-logo.png"
+      "favicon": "./assets/PQ_icon.png"
     },
     "extra": {
       "eas": {

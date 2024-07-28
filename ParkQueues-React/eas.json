@@ -13,9 +13,17 @@
         "simulator": true
       }
     },
-    "production": {}
+    "production": {
+      "autoIncrement": true
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "jakethom02@gmail.com",
+        "ascAppId": "6584516225",
+        "appleTeamId": "LNM6P49RDT"
+      }
+    }
   }
 }
