@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, TouchableWithoutFeedback, Keyboard, Text, ScrollView, Pressable, Alert } from 'react-native'
+import { View, TouchableWithoutFeedback, Keyboard, Text, ScrollView, Pressable, Alert, Linking } from 'react-native'
 import Register from '../Components/Register'
 import Login from '../Components/Login'
 import { fontFamily, styles } from '../styles'
@@ -63,6 +63,11 @@ const AccountPage = (): React.JSX.Element => {
     ])
   }
 
+  const handleFeedbackPress = (): void => {
+    const url = 'https://docs.google.com/forms/d/e/1FAIpQLSeLUZL3mhlKdwjTq6XSSdlEwIjfvVYjmGBOvdXzBt05fM6DHw/viewform?usp=sf_link'
+    Linking.openURL(url).catch((err) => { console.error('Failed to open URL:', err) })
+  }
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       {(user?.displayName == null)
@@ -110,6 +115,17 @@ const AccountPage = (): React.JSX.Element => {
                 Log out
               </Text>
             </Pressable>
+
+            <Text style={[styles.accountSubHeaderText, { marginTop: 50 }]}>Got feedback for the app? Found a problem?</Text>
+            {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+            <Pressable onPress={handleFeedbackPress} style={styles.signOutButton}>
+              <Text style={styles.signOutButtonText}>
+                Send a message!
+              </Text>
+            </Pressable>
+
+            <Text style={[styles.accountSubHeaderText, { marginTop: 50 }]}>If you have enjoyed your experience with the ParkQueues app, write us a review on your app store and share your experience!</Text>
+
           </View>
         </ScrollView>
       }

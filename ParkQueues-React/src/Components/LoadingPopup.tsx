@@ -1,11 +1,11 @@
 // import { ActivityIndicator, Dimensions, Text, View } from 'react-native'
-import React, { useState } from 'react'
-import {Alert, Modal, Pressable, View, Text, ActivityIndicator, Dimensions} from 'react-native'
+import React from 'react'
+import { Modal, View, Text, ActivityIndicator } from 'react-native'
 import { styles } from '../styles'
 
 const LoadingPopup = ({ message }: { message: string }): React.JSX.Element => {
   return (
-    <View style={styles.centeredView}>
+    // <View style={styles.centeredView}>
       <Modal
         animationType="fade"
         transparent={true}
@@ -29,7 +29,7 @@ const LoadingPopup = ({ message }: { message: string }): React.JSX.Element => {
           </View>
         </View>
       </Modal>
-    </View>
+    // </View>
   )
 }
 

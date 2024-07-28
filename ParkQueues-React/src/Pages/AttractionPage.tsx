@@ -1,12 +1,20 @@
 import { type Attraction, LiveStatusType } from '../Data/Attraction'
 import { styles } from '../styles'
-import { ScrollView, Text, View } from 'react-native'
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import LiveDataComponent from '../Components/LiveDataComponent'
 import { type Queue, QueueType, ReturnTimeState } from '../Data/Queue'
 import SingleLineAreaChart from '../Components/SingleLineAreaChart'
 import TwoLineAreaChart, { type DataItem } from '../Components/TwoLineAreaChart'
 import TimeAreaChart, { type ReturnDataItem } from '../Components/TimeAreaChart'
+import { Ionicons } from '@expo/vector-icons'
+
+const tooltips = {
+  standby: 'This graph shows the standby wait times from the past 8 hours, updated every five minutes. Use this to spot trends in today\'s data or check if an attraction has just reopened.\n\nIt\'s a great tool to help plan your day!',
+  singleRider: 'This graph displays the single rider wait times from the past 8 hours, updated every five minutes. Use it to find trends or check if an attraction has just reopened. \n\nIf you\'re comfortable riding solo, this can help you find rides with a queue for you!',
+  boardingGroups: 'This graph tracks the boarding groups over the past 8 hours, updated every five minutes. Use it to see trends or check if an attraction has experienced delays or downtime. \n\nStay informed so you\'re never caught off-guard by your boarding group!',
+  nextReservation: 'This graph shows the next available attraction reservation times over the past 8 hours. The gray area visualizes how far in advance the next reservation is from that point in time. \n\nUse this to decide which rides to get a reservation for!'
+}
 
 const AttractionPage = ({ route }: any): React.JSX.Element => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -22,7 +30,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
           <View style={styles.main}>
             <View style={styles.attractionLiveDataCard}>
               <View style={styles.attractionTitle}>
-                <Text style={styles.attractionLiveText}>Live:</Text>
+                <Text style={styles.attractionLiveText}>Now:</Text>
               </View>
               <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
             </View>
@@ -115,11 +123,21 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
     }
   })
 
-  const renderChart = (title: string, data: any, Component: any): React.JSX.Element => (
+  const graphTooltip = (tooltip: string): any => {
+    Alert.alert('What is this graph?', tooltip)
+  }
+
+  const renderChart = (title: string, data: any, Component: any, tooltip: string): React.JSX.Element => (
     <View style={styles.attractionLiveDataCard}>
       <View style={{ width: '100%', height: 'auto' }}>
         <View style={styles.attractionTitle}>
           <Text style={styles.attractionPageHeaderText}>{title}</Text>
+          <Pressable
+            style={{ width: '8%', justifyContent: 'center', alignItems: 'center' }}
+            onPress={() => graphTooltip(tooltip)}
+          >
+            <Ionicons name="help-circle-outline" size={26} color="gray" />
+          </Pressable>
         </View>
         <Component data={data} timezone={route.params.timezone} />
       </View>
@@ -143,18 +161,18 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
         <View style={styles.main}>
           <View style={styles.attractionLiveDataCard}>
             <View style={styles.attractionTitle}>
-              <Text style={styles.attractionLiveText}>Live:</Text>
+              <Text style={styles.attractionLiveText}>Now:</Text>
             </View>
             <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
           </View>
            {historicStandby.length === attr.history.length &&
-            renderChart('Standby Wait History:', historicStandby, SingleLineAreaChart)}
+            renderChart('Standby Wait History:', historicStandby, SingleLineAreaChart, tooltips.standby)}
            {historicSingleRider.length === attr.history.length &&
-            renderChart('Single Rider Wait History:', historicSingleRider, SingleLineAreaChart)}
+            renderChart('Single Rider Wait History:', historicSingleRider, SingleLineAreaChart, tooltips.singleRider)}
            {historicBoardingGroup.length === attr.history.length &&
-            renderChart('Boarding Group History:', historicBoardingGroup, TwoLineAreaChart)}
+            renderChart('Boarding Group History:', historicBoardingGroup, TwoLineAreaChart, tooltips.boardingGroups)}
           {(historicReturnTime.length === attr.history.length) &&
-            renderChart('Next Reservation Time History:', historicReturnTime, TimeAreaChart)}
+            renderChart('Next Reservation Time History:', historicReturnTime, TimeAreaChart, tooltips.nextReservation)}
         </View>
       </ScrollView>
     </>

@@ -64,7 +64,7 @@ export default function TimeAreaChart ({ data, timezone }: { data: ReturnDataIte
     let returnTime = new Date(parseFloat(chartPressState.y.returnTime.value.value.toFixed(0))).toLocaleString('en-US',
       { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
 
-    if (returnTime === 'Invalid Date') returnTime = 'Closed'
+    if (returnTime === 'Invalid Date') returnTime = 'Unavailable'
 
     return returnTime
   })
@@ -167,7 +167,7 @@ const LineArea =
             end={vec(top, bottom)}
             colors={lineVal
               ? ['#7050ff', '#effeff']
-              : ['#f1f1f1', '#f1f1f1']}
+              : ['rgba(209,209,209,0.5)', 'rgba(209,209,209,0.5)']}
           />
         </Path>
         {lineVal

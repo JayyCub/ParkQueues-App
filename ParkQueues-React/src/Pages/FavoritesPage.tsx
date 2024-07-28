@@ -7,7 +7,7 @@ import AttractionCard from '../Components/AttractionCard'
 import { type UserDataAttr } from '../Data/UserData'
 
 const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
-  const { lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData, updateUserData, destinations } = useDataContext()
+  const { lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, userData, updateUserData, destinations } = useDataContext()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [filteredAttractions, setFilteredAttractions] = useState<Attraction[]>([])
   const [refreshing, setRefreshing] = useState(false)
@@ -30,10 +30,6 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
   }, [searchQuery, sortAlpha, showTrends, lastUpdated])
 
   const allAttractions = Array.from(attractions.values())
-
-  /*  const sortedAttractions = allAttractions.slice().sort((a, b) => {
-    return sortAlpha ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
-  }) */
 
   const filterAttractions = (query: string): void => {
     const filtered = allAttractions.filter(attraction =>
@@ -177,7 +173,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
                 }}
                 onPress={() => {
                   Alert.alert('Why only 5 favorites?', 'This app is still in development and the amount of possible ' +
-                    'favorites will eventually increase as development details are figured out. \n\nThank you for your patience!')
+                    'favorites will eventually increase as development progresses. \n\nThank you for your patience!')
                 }}
               >
                 <Text style={{
@@ -261,6 +257,41 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               textDecorationLine: 'underline'
             }}>Want to save more favorites?</Text>
           </Pressable> */}
+          {attractions.size === userData?.maxFavs.num
+            ? <>
+              <Text style={{
+                fontSize: 18,
+                fontFamily,
+                width: '75%',
+                textAlign: 'center',
+                marginTop: 20,
+                color: colorPalette.layer1,
+                fontStyle: 'italic'
+              }}>
+                You can only select up to {userData.maxFavs.num} Favorites
+              </Text>
+              <Pressable
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 20
+                }}
+                onPress={() => {
+                  Alert.alert('Why only 5 favorites?', 'This app is still in development. The amount of possible ' +
+                    'favorites will eventually increase as development progresses. \n\nThank you for your patience!')
+                }}
+              >
+                <Text style={{
+                  fontSize: 18,
+                  fontFamily,
+                  textAlign: 'center',
+                  color: colorPalette.layer1,
+                  textDecorationLine: 'underline'
+                }}>Why?</Text>
+              </Pressable>
+            </>
+            : null}
         </View>
       </ScrollView>
     </>

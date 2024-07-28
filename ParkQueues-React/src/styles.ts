@@ -325,7 +325,8 @@ export const styles = StyleSheet.create({
   attractionPageHeaderText: {
     fontSize: 20,
     fontFamily,
-    fontWeight: '600'
+    fontWeight: '600',
+    width: '92%'
   },
   attractionLiveText: {
     fontSize: 20,
@@ -550,9 +551,10 @@ export const styles = StyleSheet.create({
     marginTop: 16
   },
   favAttrDest: {
+    width: '100%',
     flexDirection: 'row',
-    backgroundColor: '#b0c3de',
-    paddingHorizontal: 8,
+    backgroundColor: '#5c88c8',
+    paddingHorizontal: 15,
     paddingTop: 2,
     paddingBottom: 10,
     marginTop: 10,
@@ -567,7 +569,7 @@ export const styles = StyleSheet.create({
   },
   favAttrParkText: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
     color: colorPalette.layer13,
     fontFamily
   },

@@ -47,8 +47,9 @@ const AttractionCard: React.FC<AttractionCardProps> = (
           })
 
           if (response.status === 200) {
-            updateUserData()
-            setIsFavorite(true)
+            updateUserData().then(() => {
+              setIsFavorite(true)
+            })
           } else {
             setIsFavorite(false)
           }
@@ -70,8 +71,9 @@ const AttractionCard: React.FC<AttractionCardProps> = (
         })
 
         if (response.status === 200) {
-          updateUserData()
-          setIsFavorite(false)
+          updateUserData().then(() => {
+            setIsFavorite(false)
+          })
         } else {
           setIsFavorite(true)
         }
