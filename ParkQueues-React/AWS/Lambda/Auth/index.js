@@ -16,29 +16,39 @@ export async function getUser (event) {
   try {
     const command = new GetObjectCommand(input)
     const response = await client.send(command)
-    const data = JSON.parse(await response.Body.transformToString())
+    const str = await response.Body.transformToString()
 
-    while (data.maxFavs.expirationStack.length > 0 && data.maxFavs.expirationStack[0].expiration < Date.now()) {
-      data.maxFavs.num = data.maxFavs.expirationStack[0].newMaxFav
-      data.favs.splice(data.maxFavs)
-      data.maxFavs.expirationStack.shift()
+    const now = Date.now()
+    const parsedData = JSON.parse(str)
+
+    parsedData.maxFavs.expirationStack = parsedData.maxFavs.expirationStack.filter(item => item.expiration >= now)
+    parsedData.maxFavs.num = 5 + (3 * parsedData.maxFavs.expirationStack.length)
+    parsedData.favs.length = parsedData.maxFavs.num
+
+    const updatedStr = JSON.stringify(parsedData)
+
+    if (str !== updatedStr) {
+      try {
+        const putCommand = new PutObjectCommand({
+          Bucket: bucketName,
+          Key: event.uid + '.json',
+          Body: updatedStr,
+          ContentType: 'application/json'
+        })
+        await client.send(putCommand)
+      } catch (e) {
+        console.log('ERROR: Could not update user: ' + event.uid)
+        throw new Error('[Server Error] Could not update user')
+      }
     }
-
-    const putCommand = new PutObjectCommand({
-      Bucket: bucketName,
-      Key: event.uid + '.json',
-      Body: JSON.stringify(data),
-      ContentType: 'application/json'
-    })
-    const putResponse = await client.send(putCommand)
-    console.log(putResponse)
 
     return {
       statusCode: 200,
-      body: data
+      body: updatedStr
     }
   } catch (e) {
     console.log('ERROR: Could not get user: ' + event.uid)
+    console.error(e)
     throw new Error('[Server Error] Could not get user')
   }
 }
@@ -81,7 +91,7 @@ export async function addUser (event) {
 }
 
 export async function updateUser (event) {
-  const data = JSON.parse(JSON.stringify(event))
+  const data = event.body
 
   if (data.uid == null) {
     throw new Error('[Bad Request] Given uid is null')
@@ -91,7 +101,8 @@ export async function updateUser (event) {
     const putCommand = new PutObjectCommand({
       Bucket: bucketName,
       Key: data.uid + '.json',
-      Body: JSON.stringify(data)
+      Body: JSON.stringify(data),
+      ContentType: 'application/json'
     })
     await client.send(putCommand)
 
@@ -100,7 +111,7 @@ export async function updateUser (event) {
       body: JSON.stringify(data)
     }
   } catch (e) {
-    console.log('ERROR: Could not get user: ' + data.uid)
-    throw new Error('[Server Error] Could not get user')
+    console.log('ERROR: Could not update user: ' + data.uid)
+    throw new Error('[Server Error] Could not update user')
   }
 }
