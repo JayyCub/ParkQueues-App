@@ -3,7 +3,7 @@
 
 A React Native application made by Jacob Thomsen, 2024.
 
-*Note: This app is not available on mobile app stores due to publication fees.*
+## [🔗 Now available through iOS public beta!](https://testflight.apple.com/join/J4RfysUu)
 
 &nbsp;
 
