@@ -3,45 +3,37 @@ import React from 'react'
 import { fontFamily, platformStyle } from '../styles'
 
 const Header = (props: any): React.JSX.Element => {
-  if (props.platform === 'ios') {
-    return (
-      <View>
-        <Text style={{
-          fontSize: platformStyle.statusBar.fontSize,
-          color: platformStyle.statusBar.fontColor,
-          fontFamily
-        }}>
-          {props.title}</Text>
-      </View>
-    )
-  } else if (props.platform === 'android') {
-    return (
-      <View>
-        <Text style={{
-          fontSize: platformStyle.statusBar.fontSize,
-          color: platformStyle.statusBar.fontColor,
-          fontFamily
-        }}>
-          {props.title}</Text>
-      </View>
-    )
-  } else if (props.platform === 'web') {
-    return (
-      <View>
-        <Text style={{
-          fontSize: platformStyle.statusBar.fontSize,
-          color: platformStyle.statusBar.fontColor,
-          fontFamily
-        }}>
-          {props.title}</Text>
-      </View>
-    )
-  } else {
-    return (
-      <>
-      </>
-    )
+  // Determine font size based on the length of the title
+  const calculateFontSize = (title: string): number => {
+    const baseSize = (platformStyle.statusBar.fontSize ?? 30)
+    const length = title.length
+
+    // Adjust the size based on the length of the title
+    if (length > 20) {
+      return baseSize * 0.8 // 80% of the base size for long titles
+    } else if (length > 15) {
+      return baseSize * 0.9 // 90% of the base size for medium titles
+    } else {
+      return baseSize // Use base size for shorter titles
+    }
   }
+
+  const fontSize = calculateFontSize(props.title)
+
+  return (
+    <View>
+      <Text
+        style={{
+          fontSize,
+          color: platformStyle.statusBar.fontColor,
+          fontFamily,
+          textAlign: 'center' // Center the text
+        }}
+      >
+        {props.title}
+      </Text>
+    </View>
+  )
 }
 
 export default Header

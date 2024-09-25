@@ -12,6 +12,7 @@ import DestinationsList from './src/Pages/DestinationsList'
 import { Ionicons } from '@expo/vector-icons'
 import AccountPage from './src/Pages/AccountPage'
 import FavoritesPage from './src/Pages/FavoritesPage'
+import AttractionsList from './src/Pages/AttractionsList'
 
 const platform = Platform.OS
 const Tab = createBottomTabNavigator()
@@ -41,9 +42,13 @@ function PrimaryStackScreen (): React.JSX.Element {
       />
       <PrimaryStack.Screen
         name="Park"
-        component={ParkPage}
+        component={ParkPage} // Dynamic title will be set in ParkPage
+      />
+      <PrimaryStack.Screen
+        name="AttractionsList"
+        component={AttractionsList}
         options={{
-          headerTitle: () => <Header platform={platform} title="View Attractions" />,
+          headerTitle: () => <Header platform={platform} title="All Attractions" />,
           headerTitleAlign: 'center',
           headerStyle: {
             backgroundColor: platformStyle.statusBar.bgColor

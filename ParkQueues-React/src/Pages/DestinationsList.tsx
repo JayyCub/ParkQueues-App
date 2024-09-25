@@ -9,6 +9,7 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
   const { destinations, lastUpdated } = useDataContext()
   const [expandedDestinations, setExpandedDestinations] = useState<Record<string, boolean>>({})
   const animations = useRef<Record<string, Animated.Value>>({})
+  const { user } = useDataContext()
 
   useEffect(() => {
     // This effect will run whenever lastUpdated changes
@@ -31,7 +32,7 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
     if (Object.values(parks).length === 1) {
       navigation.navigate('Park', { park: Object.values(parks)[0] })
     } else {
-      setExpandedDestinations(prevState => {
+      setExpandedDestinations((prevState) => {
         const newState = {
           ...prevState,
           [slug]: !prevState[slug]
@@ -61,7 +62,7 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
 
     const height = animation.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, (parks.length * 60) + 30] // Assuming each park item height is 50
+      outputRange: [0, parks.length * 60 + 30] // Assuming each park item height is 50
     })
 
     if (parks.length === 1) {
@@ -85,7 +86,9 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
       <View key={destination.slug} style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
         <Pressable
           style={[styles.destinationCard, isExpanded ? styles.destinationCardSelected : null]}
-          onPress={() => { toggleExpand(destination) }}
+          onPress={() => {
+            toggleExpand(destination)
+          }}
         >
           <View>
             <Text style={styles.destinationTitle}>{destination.name}</Text>
@@ -113,11 +116,18 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
   return (
     <ScrollView>
       <View style={styles.main}>
+        {user != null
+          ? (
+          <View style={{ marginTop: 10, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          </View>
+            )
+          : null}
         {disneyDestinations.length === 0
           ? <View style={{ height: 400, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 32 }}>Loading...</Text>
           </View>
-          : <>
+          : (
+          <>
             {/* Disney Parks */}
             <View style={styles.destinationSectionView}>
               <Text style={styles.attrAvailSectionText}>Disney Parks</Text>
@@ -132,7 +142,7 @@ const DestinationsList = ({ navigation }: any): React.JSX.Element => {
 
             {otherDestinations.map(renderDestination)}
           </>
-        }
+            )}
       </View>
     </ScrollView>
   )

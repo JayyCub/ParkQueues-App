@@ -241,9 +241,8 @@ export const styles = StyleSheet.create({
   },
   attractionTitle: {
     flexDirection: 'row',
-    paddingTop: 5,
-    paddingBottom: 5,
-    marginBottom: 5,
+    paddingVertical: 3,
+    marginBottom: 3,
     width: '100%',
     // justifyContent: 'center',
     borderStyle: 'solid',
@@ -252,11 +251,12 @@ export const styles = StyleSheet.create({
   },
   attractionTitleText: {
     color: colorPalette.layer3b,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     fontFamily,
     // backgroundColor: 'gray',
-    width: '92%'
+    width: '92%',
+    paddingTop: 2
   },
   attractionWait: {
     backgroundColor: colorPalette.layer14
@@ -286,13 +286,13 @@ export const styles = StyleSheet.create({
     fontFamily
   },
   liveData2: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
     fontFamily
   },
   liveData3: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
     fontFamily
@@ -553,10 +553,10 @@ export const styles = StyleSheet.create({
   favAttrDest: {
     width: '100%',
     flexDirection: 'row',
-    backgroundColor: '#5c88c8',
-    paddingHorizontal: 15,
-    paddingTop: 2,
-    paddingBottom: 10,
+    backgroundColor: '#74abf1',
+    paddingHorizontal: 10,
+    paddingTop: 0,
+    paddingBottom: 8,
     marginTop: 10,
     marginBottom: -18,
     // alignItems: 'center',
@@ -571,7 +571,8 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: colorPalette.layer13,
-    fontFamily
+    fontFamily,
+    letterSpacing: 0.25
   },
   centeredView: {
     flex: 1,

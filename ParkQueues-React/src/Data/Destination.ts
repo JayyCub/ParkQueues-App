@@ -1,4 +1,5 @@
 import { Park } from './Park'
+import { locationData } from '../LocationData/locationData' // Import the JSON as an object
 
 export class Destination {
   id: string
@@ -6,6 +7,8 @@ export class Destination {
   slug: string
   lastUpdated: number
   parks: Record<string, Park>
+  lat?: number // Optional property for latitude
+  lon?: number // Optional property for longitude
 
   constructor (id: string, name: string, slug: string, lastUpdated: number, parks: Record<string, Park>) {
     this.id = id
@@ -13,6 +16,22 @@ export class Destination {
     this.slug = slug
     this.lastUpdated = lastUpdated
     this.parks = parks
+
+    // Load lat/lon from the imported data
+    this.loadLocationData()
+  }
+
+  private loadLocationData (): void {
+    const destinationData = locationData[`${this.id}`]
+
+    if (destinationData) {
+      // Save lat and lon if they exist
+      this.lat = destinationData.lat
+      this.lon = destinationData.lon
+      console.log(`Latitude and Longitude for ${this.name}: ${this.lat}, ${this.lon}`)
+    } else {
+      console.log(`ERROR: No data found: ${this.slug}`)
+    }
   }
 
   public static fromJson (json: string | null | undefined): Destination | null {

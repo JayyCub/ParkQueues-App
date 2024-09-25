@@ -52,40 +52,38 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
     })
   }
 
-  /*
   const watchAd = (): void => {
     console.log('Watching advertisement')
     if (userData?.maxFavs?.num != null) {
       console.log('Here')
-      userData?.maxFavs.expirationStack.push({
-        expiration: Date.now() + (1000 * 60 * 60 * 24),
-        newMaxFav: userData?.maxFavs.num
-      })
-      userData.maxFavs.num += 3
-      console.log('There')
-      const url = 'https://7o2vcnfjgc.execute-api.us-east-1.amazonaws.com/ParkQueues-live/user-data'
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: userData?.toJson()
-      }).then((response) => {
-        console.log('Erm')
-
-        if (response.status === 200) {
-          updateUserData()
-          console.log('Successfully watched ad!')
-        } else {
-          console.log('Error watching ad...')
-          console.log(response)
-        }
-      })
+      // userData?.maxFavs.expirationStack.push({
+      //   expiration: Date.now() + (1000 * 60 * 60 * 24),
+      //   newMaxFav: userData?.maxFavs.num
+      // })
+      // userData.maxFavs.num += 3
+      // console.log('There')
+      // const url = 'https://7o2vcnfjgc.execute-api.us-east-1.amazonaws.com/ParkQueues-live/user-data'
+      // fetch(url, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-type': 'application/json'
+      //   },
+      //   body: userData?.toJson()
+      // }).then((response) => {
+      //   console.log('Erm')
+      //
+      //   if (response.status === 200) {
+      //     updateUserData()
+      //     console.log('Successfully watched ad!')
+      //   } else {
+      //     console.log('Error watching ad...')
+      //     console.log(response)
+      //   }
+      // })
     } else {
       console.log('Error handling local userdata')
     }
   }
-*/
 
   return (
     <>
@@ -232,14 +230,51 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               )
             })
           }
-          {/* <Pressable
+          <Text style={{
+            fontSize: 18,
+            fontFamily,
+            width: '75%',
+            textAlign: 'center',
+            marginTop: 20,
+            color: colorPalette.layer1,
+            fontStyle: 'italic'
+          }}>
+            You can select up to {userData.maxFavs.num} Favorites
+          </Text>
+          <Pressable
             style={{
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              marginTop: 50
+              marginTop: 20
             }}
             onPress={() => {
+              Alert.alert('Why only 5 favorites?', 'This app is still in development. The amount of possible ' +
+                'favorites will eventually increase as development progresses. \n\nThank you for your patience!')
+            }}
+            >
+            <Text style={{
+              fontSize: 18,
+              fontFamily,
+              textAlign: 'center',
+              color: colorPalette.layer1,
+              textDecorationLine: 'underline'
+            }}>Why?</Text>
+          </Pressable>
+          <Pressable
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginTop: 20
+            }}
+            onPress={() => {
+              if (userData?.maxFavs.num != null && userData.maxFavs.num >= 20) {
+                // Already at max num of favs
+                Alert.alert('You have reached the maximum number of favorite selections.')
+                return
+              }
+
               Alert.alert('Watch an ad to unlock more favorites?',
                 'Every ad you watch rewards you with 3 more favorite attraction selections for 24 hours. ' +
                 'Would you like to watch an ad now?',
@@ -256,42 +291,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               color: colorPalette.layer1,
               textDecorationLine: 'underline'
             }}>Want to save more favorites?</Text>
-          </Pressable> */}
-          {attractions.size === userData?.maxFavs.num
-            ? <>
-              <Text style={{
-                fontSize: 18,
-                fontFamily,
-                width: '75%',
-                textAlign: 'center',
-                marginTop: 20,
-                color: colorPalette.layer1,
-                fontStyle: 'italic'
-              }}>
-                You can only select up to {userData.maxFavs.num} Favorites
-              </Text>
-              <Pressable
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginTop: 20
-                }}
-                onPress={() => {
-                  Alert.alert('Why only 5 favorites?', 'This app is still in development. The amount of possible ' +
-                    'favorites will eventually increase as development progresses. \n\nThank you for your patience!')
-                }}
-              >
-                <Text style={{
-                  fontSize: 18,
-                  fontFamily,
-                  textAlign: 'center',
-                  color: colorPalette.layer1,
-                  textDecorationLine: 'underline'
-                }}>Why?</Text>
-              </Pressable>
-            </>
-            : null}
+          </Pressable>
         </View>
       </ScrollView>
     </>

@@ -1,4 +1,4 @@
-rootProject.name = 'ParkQueues-React'
+rootProject.name = 'ParkQueues'
 
 dependencyResolutionManagement {
   versionCatalogs {

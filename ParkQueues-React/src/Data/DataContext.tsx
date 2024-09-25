@@ -57,7 +57,7 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
   const [showTrends, setShowTrends] = useState<boolean>(false)
   const [sortAlpha, setSortAlpha] = useState<boolean>(true)
-  const [user, setUser] = useState<FirebaseUser | null>(auth.currentUser) // Initialize with current user
+  const [user, setUser] = useState<FirebaseUser | null>(auth != null ? auth.currentUser : null) // Initialize with current user
   const [userData, setUserData] = useState<UserData | null>(null)
 
   const toggleShowTrends = (): void => {
