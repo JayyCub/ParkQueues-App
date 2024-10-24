@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native'
-import { type Attraction, LiveStatusType } from '../Data/Attraction'
-import { styles } from '../styles'
-import { QueueType, ReturnTimeState } from '../Data/Queue'
+import { type Attraction, LiveStatusType } from '../../Data/Attraction'
+import { styles } from '../../styles'
+import { QueueType, ReturnTimeState } from '../../Data/Queue'
 import React from 'react'
 import { FontAwesome5 } from '@expo/vector-icons'
 

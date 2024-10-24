@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { colorPalette, styles } from '../styles'
-import LiveDataComponent from '../Components/LiveDataComponent'
-import { type Attraction } from '../Data/Attraction'
-import { useDataContext } from '../Data/DataContext'
-import { UserDataAttr } from '../Data/UserData'
+import { colorPalette, styles } from '../../styles'
+import LiveDataComponent from './LiveDataComponent'
+import { type Attraction } from '../../Data/Attraction'
+import { useDataContext } from '../../Data/DataContext'
+import { UserDataAttr } from '../../Data/UserData'
 import LoadingPopup from './LoadingPopup'
 
 interface AttractionCardProps {
@@ -17,10 +17,11 @@ interface AttractionCardProps {
   destId: string
   parkId: string
   navStack: string
+  hideFav?: boolean
 }
 
 const AttractionCard: React.FC<AttractionCardProps> = (
-  { attr, timezone, showAdditionalText, navigation, favorite, destId, parkId, navStack }) => {
+  { attr, timezone, showAdditionalText, navigation, favorite, destId, parkId, navStack, hideFav }) => {
   const { userData, updateUserData } = useDataContext()
   const [isAdding, setIsAdding] = useState(false)
   const [isRemoving, setIsRemoving] = useState(false)
@@ -89,13 +90,18 @@ const AttractionCard: React.FC<AttractionCardProps> = (
         onPress={() => navigation.navigate(navStack, { attr, timezone })}
       >
         <View style={styles.attractionTitle}>
-          <Text style={styles.attractionTitleText}>{attr.name}</Text>
-          <Pressable
-            style={{ width: '8%', justifyContent: 'center', alignItems: 'center' }}
-            onPress={handleFavorite}
-          >
-            <Ionicons name="star" color={isFavorite || (navStack === 'FavAttraction') ? colorPalette.layer3b : 'lightgray'} size={26} />
-          </Pressable>
+          <Text style={[styles.attractionTitleText, (hideFav === true) ? { width: '100%' } : null]}>{attr.name}</Text>
+          {(hideFav === true)
+            ? null
+            : <Pressable
+              style={{ width: '8%', justifyContent: 'center', alignItems: 'center' }}
+              onPress={handleFavorite}
+            >
+              <Ionicons name="star"
+                        color={isFavorite || (navStack === 'FavAttraction') ? colorPalette.layer3b : 'lightgray'}
+                        size={26}/>
+            </Pressable>
+          }
         </View>
         <LiveDataComponent attr={attr} timezone={timezone} showAdditionalText={showAdditionalText} />
       </Pressable>

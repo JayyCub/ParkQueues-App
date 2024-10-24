@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useDataContext } from '../Data/DataContext'
 import { type Attraction } from '../Data/Attraction'
 import { colorPalette, fontFamily, styles } from '../styles'
-import AttractionCard from '../Components/AttractionCard'
+import AttractionCard from '../Components/Rendered/AttractionCard'
 import { type UserDataAttr } from '../Data/UserData'
 
 const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
@@ -55,7 +55,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
   const watchAd = (): void => {
     console.log('Watching advertisement')
     if (userData?.maxFavs?.num != null) {
-      console.log('Here')
+      console.log('Watched an ad')
       // userData?.maxFavs.expirationStack.push({
       //   expiration: Date.now() + (1000 * 60 * 60 * 24),
       //   newMaxFav: userData?.maxFavs.num
@@ -148,7 +148,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
         }
       >
         <View style={styles.main}>
-          {attractions.size === 0
+          {/* {attractions.size === 0
             ? <>
               <Text style={{
                 fontSize: 18,
@@ -183,7 +183,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
                 }}>Why?</Text>
               </Pressable>
             </>
-            : null}
+            : null} */}
           {searchQuery !== ''
             ? filteredAttractions.map((attr: Attraction, index: number) => {
               const localDest = destinations.get(attrMap.get(attr.id)!.destId)
@@ -239,7 +239,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
             color: colorPalette.layer1,
             fontStyle: 'italic'
           }}>
-            You can select up to {userData.maxFavs.num} Favorites
+            You can select up to {userData!.maxFavs.num} Favorites
           </Text>
           <Pressable
             style={{
@@ -249,7 +249,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               marginTop: 20
             }}
             onPress={() => {
-              Alert.alert('Why only 5 favorites?', 'This app is still in development. The amount of possible ' +
+              Alert.alert(`Why only ${userData!.maxFavs.num} favorites?', 'This app is still in development. The amount of possible ` +
                 'favorites will eventually increase as development progresses. \n\nThank you for your patience!')
             }}
             >

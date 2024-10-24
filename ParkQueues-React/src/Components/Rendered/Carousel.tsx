@@ -1,19 +1,11 @@
 import React, { type FC, useCallback, useEffect, useRef, useState } from 'react'
-import {
-  Animated,
-  Dimensions,
-  FlatList,
-  StyleSheet,
-  View
-} from 'react-native'
-import { type ImageCarouselItem } from '../Pages/DestinationsList'
+import { Animated, Dimensions, FlatList, StyleSheet, View, Text } from 'react-native'
+import { type ImageCarouselItem } from '../Data/ImageCarouselItem'
 
 const { width } = Dimensions.get('window')
 
-const SPACING = 2
 const ITEM_LENGTH = width * 0.9 // Item is a square. Therefore, its height and width are of the same length.
 const EMPTY_ITEM_LENGTH = (width - ITEM_LENGTH) / 2
-const BORDER_RADIUS = 10
 const CURRENT_ITEM_TRANSLATE_Y = 0
 
 interface ImageCarouselProps {
@@ -23,15 +15,19 @@ interface ImageCarouselProps {
 const ImageCarousel: FC<ImageCarouselProps> = ({ data }) => {
   const scrollX = useRef(new Animated.Value(0)).current
   const [dataWithPlaceholders, setDataWithPlaceholders] = useState<ImageCarouselItem[]>([])
+  const [currentPosition, setCurrentPosition] = useState(1) // Track current position for "x of y"
   const currentIndex = useRef<number>(0)
   const flatListRef = useRef<FlatList<any>>(null)
+
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     setDataWithPlaceholders([{ id: -1 }, ...data, { id: data.length }])
     currentIndex.current = 1
   }, [data])
 
   const handleOnViewableItemsChanged = useCallback(
-    ({ viewableItems }) => {
+    ({ viewableItems }: any) => {
       const itemsInView = viewableItems.filter(
         ({ item }: { item: ImageCarouselItem }) => item.title
       )
@@ -41,6 +37,8 @@ const ImageCarousel: FC<ImageCarouselProps> = ({ data }) => {
       }
 
       currentIndex.current = itemsInView[0].index
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      setCurrentPosition(itemsInView[0].index) // Update current position based on viewable items
     },
     [data]
   )
@@ -57,7 +55,7 @@ const ImageCarousel: FC<ImageCarouselProps> = ({ data }) => {
         ref={flatListRef}
         data={dataWithPlaceholders}
         renderItem={({ item, index }) => {
-          if (!item.title) {
+          if (item.title == null) {
             return <View style={{ width: EMPTY_ITEM_LENGTH }} />
           }
 
@@ -113,6 +111,11 @@ const ImageCarousel: FC<ImageCarouselProps> = ({ data }) => {
           itemVisiblePercentThreshold: 100
         }}
       />
+      {/* Display the "x of y" text above the carousel */}
+      <Text style={styles.positionText}>
+        {currentPosition} of {data.length}
+      </Text>
+
     </View>
   )
 }
@@ -123,13 +126,20 @@ const styles = StyleSheet.create({
   container: {},
   flatListContent: {
     alignItems: 'center',
-    paddingBottom: 40
+    paddingBottom: 10
   },
   shadowContainer: {
     shadowColor: '#aeb5be',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
-    shadowRadius: 3,
+    shadowRadius: 1,
     elevation: 1
+  },
+  positionText: {
+    fontSize: 14,
+    // fontWeight: 'bold',
+    textAlign: 'right',
+    // marginVertical: 5, // Add space between the text and carousel
+    marginRight: 10
   }
 })

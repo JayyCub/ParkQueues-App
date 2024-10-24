@@ -1,9 +1,9 @@
 import { Alert, Pressable, Text, TextInput, View } from 'react-native'
-import { styles } from '../styles'
+import { styles } from '../../styles'
 import React, { useState, useRef, useEffect } from 'react'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
-import { auth } from '../../firebaseConfig'
-import { useDataContext } from '../Data/DataContext'
+import { auth } from '../../../firebaseConfig'
+import { useDataContext } from '../../Data/DataContext'
 import LoadingPopup from './LoadingPopup'
 
 const Register = (): React.JSX.Element => {

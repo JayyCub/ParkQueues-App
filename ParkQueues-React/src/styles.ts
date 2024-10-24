@@ -61,7 +61,7 @@ const iosStyles: PlatformStyles = {
     bgColor: colorPalette.layer13,
     height: '50',
     fontColor: colorPalette.layer2,
-    fontSize: 30,
+    fontSize: 26,
     fontFamily
   },
   parkCard: { bgColor: colorPalette.layer4 }
@@ -78,7 +78,7 @@ const webStyles: PlatformStyles = {
     bgColor: colorPalette.layer13,
     height: '50',
     fontColor: colorPalette.layer2,
-    fontSize: 30,
+    fontSize: 26,
     fontFamily
   },
   parkCard: { bgColor: colorPalette.layer4 }
@@ -147,39 +147,44 @@ export const styles = StyleSheet.create({
     width: platformStyle.destCard.width as DimensionValue,
     backgroundColor: platformStyle.destCard.bgColor,
     marginTop: 12,
-    padding: 20,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 25,
+    borderRadius: 15,
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 1,
-    zIndex: 999
+    zIndex: 999,
+    borderColor: '#ffffff',
+    borderWidth: 2,
+    borderStyle: 'solid'
   },
   destinationCardSelected: {
     // backgroundColor: '#dbf0ff',
     // shadowColor: '#aecaec',
-    shadowOffset: { width: 0, height: 2 }
+    shadowOffset: { width: 0, height: 2 },
+    borderColor: '#0033b3',
+    borderWidth: 2.5,
+    borderStyle: 'solid'
   },
   shadowWrapper: {
-    marginTop: -30,
-    paddingTop: 30,
-    width: '86%',
+    // marginTop: -30,
+    // paddingTop: 30,
+    width: '85%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
     shadowColor: '#aeb5be',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 1,
-    shadowRadius: 1,
+    shadowRadius: 2,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25
   },
   expandedParkList: {
     width: '100%',
-    marginTop: -30,
-    paddingTop: 30,
+    // marginTop: -30,
+    // paddingTop: 30,
     // paddingBottom: 5,
     // backgroundColor: '#e4effd',
     backgroundColor: '#ffffff',
@@ -195,16 +200,17 @@ export const styles = StyleSheet.create({
     borderTopColor: 'lightgray'
   },
   parkListCardFirst: {
-    width: '85%',
-    height: 60,
+    width: '88%',
+    minHeight: 48,
     justifyContent: 'center',
     alignItems: 'center'
   },
   parkListCardText: {
     textAlign: 'center',
-    color: '#133b74',
-    fontSize: 22,
-    fontWeight: '600',
+    color: '#00204d',
+    fontSize: 20,
+    overflow: 'scroll',
+    fontWeight: '400',
     fontFamily
   },
   parkCard: {
@@ -221,9 +227,10 @@ export const styles = StyleSheet.create({
     shadowRadius: 1
   },
   destinationTitle: {
-    color: platformStyle.destCard.fontColor,
-    fontSize: 24,
-    fontFamily
+    color: '#00204d',
+    fontSize: 22,
+    fontFamily,
+    fontWeight: '400'
   },
   attractionCard: {
     width: '96%',
@@ -372,7 +379,7 @@ export const styles = StyleSheet.create({
   },
   attrAvailSectionText: {
     width: '90%',
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: 'bold',
     color: platformStyle.statusBar.fontColor,
     fontFamily
@@ -390,11 +397,25 @@ export const styles = StyleSheet.create({
     width: '92%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 10,
     // marginBottom: 10,
     borderStyle: 'solid',
     borderBottomWidth: 2,
     borderColor: platformStyle.statusBar.fontColor
+  },
+  destinationSectionView2: {
+    width: '92%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 5
+  },
+  attrAvailSectionText2: {
+    width: '95%',
+    textAlign: 'left',
+    fontSize: 16,
+    // fontWeight: 'bold',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily
   },
   authContainer: {
     flex: 1,
@@ -579,5 +600,100 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
     // marginTop: 22
+  },
+  destSelectButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    backgroundColor: platformStyle.destCard.bgColor,
+    // marginTop: 20,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 1,
+    borderColor: '#ffffff',
+    borderWidth: 2.5,
+    borderStyle: 'solid'
+  },
+  destSelectButtonSelected: {
+    borderColor: '#0033b3',
+    borderWidth: 2.5,
+    borderStyle: 'solid'
+  },
+  destSelectText: {
+    color: '#00204d',
+    fontFamily,
+    fontSize: 24,
+    fontWeight: '400'
+  },
+  homePageSubSection: {
+    width: '89%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    // marginBottom: 10,
+    borderStyle: 'solid',
+    borderBottomWidth: 1,
+    borderColor: platformStyle.statusBar.fontColor,
+    flexDirection: 'row'
+  },
+  homePageSubSectionText: {
+    width: '93%',
+    fontSize: 24,
+    fontWeight: '500',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily
+  },
+  homePageSubSectionIcon: {
+    width: '7%'
+  },
+  closestDestinationCard: {
+    width: platformStyle.destCard.width as DimensionValue,
+    backgroundColor: platformStyle.destCard.bgColor,
+    marginTop: 12,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 1,
+    zIndex: 999,
+    borderColor: '#ffffff',
+    borderWidth: 2,
+    borderStyle: 'solid'
+  },
+  thing: {
+    color: '#0048fb'
+  },
+  homePageSubSubSection: {
+    flex: 1,
+    alignItems: 'center',
+    borderStyle: 'solid'
+  },
+  homePageSubSubSectionHeader: {
+    width: '86%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // backgroundColor: 'gray'
+    marginTop: 15,
+    marginBottom: -2,
+    borderStyle: 'solid',
+    borderBottomWidth: 1,
+    borderColor: platformStyle.statusBar.fontColor
+  },
+  homePageSubSubSectionText: {
+    width: '100%',
+    fontSize: 21,
+    fontWeight: '500',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily
+    // borderStyle: 'solid',
+    // borderBottomWidth: 5,
+    // borderColor: platformStyle.statusBar.fontColor
   }
 })

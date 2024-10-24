@@ -4,7 +4,7 @@ import { styles } from '../styles'
 import { type Park } from '../Data/Park'
 import { type Attraction, LiveStatusType } from '../Data/Attraction'
 import { useDataContext } from '../Data/DataContext'
-import AttractionCard from '../Components/AttractionCard'
+import AttractionCard from '../Components/Rendered/AttractionCard'
 
 const AttractionsList = ({ route, navigation }: any): React.JSX.Element => {
   const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData } = useDataContext()

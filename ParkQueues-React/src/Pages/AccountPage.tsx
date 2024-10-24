@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { View, TouchableWithoutFeedback, Keyboard, Text, ScrollView, Pressable, Alert, Linking } from 'react-native'
-import Register from '../Components/Register'
-import Login from '../Components/Login'
+import Register from '../Components/Rendered/Register'
+import Login from '../Components/Rendered/Login'
 import { fontFamily, styles } from '../styles'
 import { useDataContext } from '../Data/DataContext'
 import { auth } from '../../firebaseConfig'
@@ -28,7 +28,7 @@ const AccountPage = (): React.JSX.Element => {
         text: 'Yes',
         onPress: () => {
           setUser(null)
-          auth.signOut().then().catch((error) => {
+          auth.signOut().then().catch((error: any) => {
             console.log(error)
           })
         }

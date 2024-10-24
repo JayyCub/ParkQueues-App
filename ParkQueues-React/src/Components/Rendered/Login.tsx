@@ -1,9 +1,9 @@
 import { Alert, Pressable, Text, TextInput, View } from 'react-native'
-import { colorPalette, fontFamily, styles } from '../styles'
+import { colorPalette, fontFamily, styles } from '../../styles'
 import React, { useState, useRef, useEffect } from 'react'
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
-import { auth } from '../../firebaseConfig'
-import { useDataContext } from '../Data/DataContext'
+import { auth } from '../../../firebaseConfig'
+import { useDataContext } from '../../Data/DataContext'
 import LoadingPopup from './LoadingPopup'
 
 const Login = (): React.JSX.Element => {

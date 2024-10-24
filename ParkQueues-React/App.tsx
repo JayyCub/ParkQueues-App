@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import Header from './src/Components/CustomStatusBar'
+import Header from './src/Components/Rendered/CustomStatusBar'
 import { colorPalette, platformStyle } from './src/styles'
 import ParkPage from './src/Pages/ParkPage'
 import AttractionPage from './src/Pages/AttractionPage'

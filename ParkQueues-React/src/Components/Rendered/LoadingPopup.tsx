@@ -1,7 +1,7 @@
 // import { ActivityIndicator, Dimensions, Text, View } from 'react-native'
 import React from 'react'
 import { Modal, View, Text, ActivityIndicator } from 'react-native'
-import { styles } from '../styles'
+import { styles } from '../../styles'
 
 const LoadingPopup = ({ message }: { message: string }): React.JSX.Element => {
   return (

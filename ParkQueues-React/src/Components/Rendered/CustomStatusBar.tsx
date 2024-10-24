@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { fontFamily, platformStyle } from '../styles'
+import { fontFamily, platformStyle } from '../../styles'
 
 const Header = (props: any): React.JSX.Element => {
   // Determine font size based on the length of the title

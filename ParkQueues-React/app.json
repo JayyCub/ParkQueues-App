@@ -7,14 +7,6 @@
     "orientation": "portrait",
     "icon": "./assets/PQ_icon.png",
     "userInterfaceStyle": "light",
-    "plugins": [
-      [
-        "@rnmapbox/maps",
-        {
-          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiamFjb2J0aG9tc2VuIiwiYSI6ImNtMWhhdTJxdjBjd3IydnB5MDdnNHRpNHMifQ._mpJR7wgpDcXB24lx0QHYA"
-        }
-      ]
-    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -43,6 +35,14 @@
         "projectId": "1c8482f5-34bf-40f6-bd91-0a94c883431c"
       }
     },
-    "owner": "jayycub"
+    "owner": "jayycub",
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+        }
+      ]
+    ]
   }
 }

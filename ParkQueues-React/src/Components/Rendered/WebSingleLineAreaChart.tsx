@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { VictoryChart, VictoryArea, VictoryVoronoiContainer, VictoryLine } from 'victory'
 import { View, Text } from 'react-native'
-import { styles } from '../styles'
+import { styles } from '../../styles'
 
 export default function WebSingleLineAreaChart ({ data, timezone }:
 { data: Array<{ high: number | undefined, date: number }>, timezone: string }): React.JSX.Element {
