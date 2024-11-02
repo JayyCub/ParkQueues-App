@@ -1,4 +1,14 @@
-import { Alert, Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TextInput,
+  View
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useDataContext } from '../Data/DataContext'
 import { type Attraction } from '../Data/Attraction'
@@ -148,6 +158,8 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
         }
       >
         <View style={styles.main}>
+          {userData?.maxFavs != null
+            ? <>
           {/* {attractions.size === 0
             ? <>
               <Text style={{
@@ -239,7 +251,7 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
             color: colorPalette.layer1,
             fontStyle: 'italic'
           }}>
-            You can select up to {userData!.maxFavs.num} Favorites
+            You can select up to {userData.maxFavs.num} Favorites
           </Text>
           <Pressable
             style={{
@@ -249,17 +261,17 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
               marginTop: 20
             }}
             onPress={() => {
-              Alert.alert(`Why only ${userData!.maxFavs.num} favorites?', 'This app is still in development. The amount of possible ` +
+              Alert.alert(`Why only ${userData.maxFavs.num} favorites?', 'This app is still in development. The amount of possible ` +
                 'favorites will eventually increase as development progresses. \n\nThank you for your patience!')
             }}
             >
-            <Text style={{
+            {/*<Text style={{
               fontSize: 18,
               fontFamily,
               textAlign: 'center',
               color: colorPalette.layer1,
               textDecorationLine: 'underline'
-            }}>Why?</Text>
+            }}>Why?</Text>*/}
           </Pressable>
           <Pressable
             style={{
@@ -284,14 +296,21 @@ const FavoritesPage = ({ route, navigation }: any): React.JSX.Element => {
                 ])
             }}
           >
-            <Text style={{
+            {/*<Text style={{
               fontSize: 18,
               fontFamily,
               textAlign: 'center',
               color: colorPalette.layer1,
               textDecorationLine: 'underline'
-            }}>Want to save more favorites?</Text>
+            }}>Want to save more favorites?</Text>*/}
           </Pressable>
+          </>
+            : <View style={{ height: 100, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size='large'/>
+                <View style={{ height: 10 }}/>
+                <Text style={{ fontSize: 24 }}>Gathering favorite attractions...</Text>
+              </View>
+          }
         </View>
       </ScrollView>
     </>

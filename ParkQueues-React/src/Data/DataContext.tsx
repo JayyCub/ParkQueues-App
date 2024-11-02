@@ -36,6 +36,7 @@ interface DataContextProps {
   locationProcessingComplete: boolean
   locationPermission: PermissionResponse | null
   closestAttractions: AttractionWithDistance[]
+  locLastUpdated: number
 }
 
 const DataContext = createContext<DataContextProps>({
@@ -56,7 +57,8 @@ const DataContext = createContext<DataContextProps>({
   getLocationData: async () => {},
   locationProcessingComplete: false,
   locationPermission: null,
-  closestAttractions: []
+  closestAttractions: [],
+  locLastUpdated: 0
 })
 
 export const useDataContext = (): DataContextProps => useContext(DataContext)
@@ -76,6 +78,7 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
   const [destinations, setDestinations] = useState<Map<string, Destination>>(new Map<string, Destination>())
   const [parks, setParks] = useState<Map<string, Park>>(new Map<string, Park>())
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
+  const [locLastUpdated, setLocLastUpdated] = useState<number>(Date.now())
   const [showTrends, setShowTrends] = useState<boolean>(false)
   const [sortAlpha, setSortAlpha] = useState<boolean>(true)
   const [user, setUser] = useState<FirebaseUser | null>(auth?.currentUser || null)
@@ -224,16 +227,12 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
   }
 
   const getLocationData = async (): Promise<void> => {
-    // console.log('Beginning getLocationData...')
     setLocationProcessingComplete(false)
-    const startTime = Date.now()
+
     try {
-      // Check if permission is already granted, if not, request it
-      // console.log(locationPermission)
-      // console.log(`1: ${Date.now() - startTime} ms`)
+      // Request permission if not already granted
       if ((locationPermission == null) || locationPermission.status !== 'granted') {
         const permission = await Location.requestForegroundPermissionsAsync()
-        // console.log(`2: ${Date.now() - startTime} ms`)
         setLocationPermission(permission)
 
         if (permission.status !== 'granted') {
@@ -241,55 +240,94 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
           return
         }
       }
-      // console.log(`3: ${Date.now() - startTime} ms`)
-      const currentLocation = await Location.getCurrentPositionAsync({ accuracy: LocationAccuracy.High })
-      // console.log(`4: ${Date.now() - startTime} ms`)
+
+      // Fetch initial location with lower accuracy
+      console.log("Getting approximate location...")
+      let currentLocation = await Location.getCurrentPositionAsync({ accuracy: LocationAccuracy.Low })
       setLocation(currentLocation)
 
       const url = 'https://wait-times-data.s3.amazonaws.com/Locations.json'
       const resp = await fetch(url)
-      // console.log(`5: ${Date.now() - startTime} ms`)
       const locationData = await resp.json()
 
+      // Initialize an empty array to hold attractions with distances
       const updatedClosestAttractions: AttractionWithDistance[] = []
-      // console.log(`6: ${Date.now() - startTime} ms`)
+
+      // Check if any park is within 1 km using the low-accuracy location
+      let isNearPark = false
 
       destinations.forEach(dest => {
-        // Check destination is in locationData
-        if (locationData[dest.id] == null) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        if (locationData[dest.id]) {
           dest.addLocationData(locationData[dest.id].lat, locationData[dest.id].lon)
-        }
 
-        Object.values(dest.parks).forEach(park => {
-          // Check park is in locationData
-          if (locationData[dest.id][park.id] != null) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
-          }
+          Object.values(dest.parks).forEach(park => {
+            if (locationData[dest.id][park.id]) {
+              park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
 
-          Object.values(park.liveData).forEach(attr => {
-            // Check park is in locationData
-            if (locationData[dest.id][attr.id] != null) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              attr.addLocationData(locationData[dest.id][attr.id].lat, locationData[dest.id][attr.id].lon)
+              const distance = calculateDistance(currentLocation, locationData[dest.id][park.id])
+              if (distance < 1) {
+                isNearPark = true
+              }
             }
           })
-        })
+        }
       })
-      // console.log(`7: ${Date.now() - startTime} ms`)
+
+      // If near a park, get location with higher accuracy
+      if (isNearPark) {
+        console.log("Near a park. Getting accurate location...")
+        currentLocation = await Location.getCurrentPositionAsync({ accuracy: LocationAccuracy.High })
+        setLocation(currentLocation)
+      }
+
+      // Process all location data after final location check
+      destinations.forEach(dest => {
+        if (locationData[dest.id]) {
+          dest.addLocationData(locationData[dest.id].lat, locationData[dest.id].lon)
+
+          Object.values(dest.parks).forEach(park => {
+            if (locationData[dest.id][park.id]) {
+              park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
+
+              Object.values(park.liveData).forEach(attr => {
+                if (locationData[dest.id][attr.id]) {
+                  attr.addLocationData(locationData[dest.id][attr.id].lat, locationData[dest.id][attr.id].lon)
+                }
+              })
+            }
+          })
+        }
+      })
 
       setClosestAttractions(updatedClosestAttractions.sort((a, b) => a.distance - b.distance))
-      // console.log(`8: ${Date.now() - startTime} ms`)
-
-      calculateClosestAttractions() // Call here after location data has been processed
+      calculateClosestAttractions() // Calculate closest attractions after data has been processed
     } catch (e) {
       console.error('Error fetching location data:', e)
     }
+
     setLocationProcessingComplete(true)
-    // console.log(`FINAL time: ${Date.now() - startTime} ms`)
+    setLocLastUpdated(Date.now())
   }
 
+  // Helper function to calculate distance between two points
+  const calculateDistance = (location1: Location.LocationObject, location2: { lat: number, lon: number }): number => {
+    const R = 6371 // Radius of the Earth in km
+    const lat1 = location1.coords.latitude
+    const lon1 = location1.coords.longitude
+    const lat2 = location2.lat
+    const lon2 = location2.lon
+
+    const dLat = (lat2 - lat1) * (Math.PI / 180)
+    const dLon = (lon2 - lon1) * (Math.PI / 180)
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c // Distance in km
+  }
   return (
     <DataContext.Provider
       value={{
@@ -310,7 +348,8 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
         getLocationData,
         locationProcessingComplete,
         locationPermission,
-        closestAttractions
+        closestAttractions,
+        locLastUpdated
       }}
     >
       {children}

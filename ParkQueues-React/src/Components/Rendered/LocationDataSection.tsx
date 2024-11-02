@@ -9,7 +9,7 @@ import { ImageCarouselItem } from '../Data/ImageCarouselItem'
 import AttractionCard from './AttractionCard' // Assuming you have your styles imported
 
 export const LocationDataSection = ({ navigation }: any): React.JSX.Element => {
-  const { locationProcessingComplete, locationPermission, closestAttractions, getLocationData, userData } = useDataContext()
+  const { locLastUpdated, locationProcessingComplete, locationPermission, closestAttractions, getLocationData, userData } = useDataContext()
   const numAttrs = 5
   const favAttrs: string[] = []
   userData?.favs.forEach(attr => favAttrs.push(attr.id))
@@ -21,11 +21,11 @@ export const LocationDataSection = ({ navigation }: any): React.JSX.Element => {
 
     return (
       <View>
-        <View style={styles.favAttrDest}>
+        <View style={styles.nearbyAttrDest}>
           <Text style={styles.favAttrParkText}>
             {distanceInFeet <= 500
               ? `${Math.round(distanceInFeet)} feet away`
-              : `${distanceInMiles.toFixed(0)} miles away`}
+              : `${distanceInMiles.toFixed(1)} miles away`}
           </Text>
         </View>
         <AttractionCard
@@ -49,6 +49,16 @@ export const LocationDataSection = ({ navigation }: any): React.JSX.Element => {
         return (
           <View>
             <View style={{ alignItems: 'center', marginVertical: 5 }}>
+              <Text style={{
+                width: '88%',
+                color: '#585858',
+                fontSize: 12,
+                textAlign: 'right'
+              }}>{`Location updated: ${new Date(locLastUpdated).toLocaleString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+              })}`}</Text>
               <Pressable
                 key={closestAttractions[0].destination.slug}
                 style={styles.closestDestinationCard}

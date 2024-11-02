@@ -179,7 +179,11 @@ export const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 2,
     borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25
+    borderBottomRightRadius: 25,
+    borderColor: '#0033b3',
+    borderWidth: 2,
+    borderTopWidth: 0,
+    borderStyle: 'solid'
   },
   expandedParkList: {
     width: '100%',
@@ -378,7 +382,7 @@ export const styles = StyleSheet.create({
     marginRight: 10
   },
   attrAvailSectionText: {
-    width: '90%',
+    width: '95%',
     fontSize: 30,
     fontWeight: 'bold',
     color: platformStyle.statusBar.fontColor,
@@ -574,7 +578,7 @@ export const styles = StyleSheet.create({
   favAttrDest: {
     width: '100%',
     flexDirection: 'row',
-    backgroundColor: '#74abf1',
+    backgroundColor: '#4c91ea',
     paddingHorizontal: 10,
     paddingTop: 0,
     paddingBottom: 8,
@@ -631,29 +635,30 @@ export const styles = StyleSheet.create({
   },
   homePageSubSection: {
     width: '89%',
-    justifyContent: 'center',
+    justifyContent: 'space-between', // Distributes space between text and icons
     alignItems: 'center',
-    marginTop: 10,
-    // marginBottom: 10,
+    marginTop: 25,
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: platformStyle.statusBar.fontColor,
     flexDirection: 'row'
   },
   homePageSubSectionText: {
-    width: '93%',
     fontSize: 24,
     fontWeight: '500',
     color: platformStyle.statusBar.fontColor,
     fontFamily
+    // Removes width constraint to allow it to float left
   },
   homePageSubSectionIcon: {
-    width: '7%'
+    flexDirection: 'row', // Align icons horizontally
+    alignItems: 'center'
+    // Removes width constraint to allow it to float right
   },
   closestDestinationCard: {
     width: platformStyle.destCard.width as DimensionValue,
     backgroundColor: platformStyle.destCard.bgColor,
-    marginTop: 12,
+    marginTop: 5,
     padding: 5,
     alignItems: 'center',
     justifyContent: 'center',
@@ -667,9 +672,6 @@ export const styles = StyleSheet.create({
     borderWidth: 2,
     borderStyle: 'solid'
   },
-  thing: {
-    color: '#0048fb'
-  },
   homePageSubSubSection: {
     flex: 1,
     alignItems: 'center',
@@ -677,17 +679,18 @@ export const styles = StyleSheet.create({
   },
   homePageSubSubSectionHeader: {
     width: '86%',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     // backgroundColor: 'gray'
     marginTop: 15,
     marginBottom: -2,
     borderStyle: 'solid',
     borderBottomWidth: 1,
-    borderColor: platformStyle.statusBar.fontColor
+    borderColor: platformStyle.statusBar.fontColor,
+    flexDirection: 'row'
   },
   homePageSubSubSectionText: {
-    width: '100%',
+    // width: '100%',
     fontSize: 21,
     fontWeight: '500',
     color: platformStyle.statusBar.fontColor,
@@ -695,5 +698,27 @@ export const styles = StyleSheet.create({
     // borderStyle: 'solid',
     // borderBottomWidth: 5,
     // borderColor: platformStyle.statusBar.fontColor
+  },
+  nearbyAttrDest: {
+    width: '100%',
+    flexDirection: 'row',
+    backgroundColor: '#4c91ea',
+    paddingHorizontal: 10,
+    paddingTop: 0,
+    paddingBottom: 8,
+    marginTop: 10,
+    marginBottom: -18,
+    // alignItems: 'center',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 1,
+    shadowRadius: 1
+  },
+  destinationsBox: {
+    paddingBottom: 5,
+    width: '100%',
+    overflow: 'hidden'
   }
 })

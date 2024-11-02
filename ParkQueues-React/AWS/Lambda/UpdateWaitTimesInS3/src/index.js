@@ -290,7 +290,7 @@ async function dataUpdate (dest) {
                   status: item.status
                 })
 
-                // If history contains more than 6 hours worth of history entries, remove old entries
+                // If history contains more than 8 hours worth of history entries, remove old entries
                 // 12 per hour * 8 hours = 96 entries
                 const len = destData.parks[parkData.id].liveData[item.id].history.length
                 if (len > 96) {

@@ -1,30 +1,17 @@
-import React, { useRef, useState } from 'react'
-import {ActivityIndicator, Animated, Pressable, RefreshControl, ScrollView, Text, View} from 'react-native'
+import React, { useState } from 'react'
+import { ActivityIndicator, LayoutAnimation, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { styles } from '../styles'
 import { useDataContext } from '../Data/DataContext'
 import { type Destination } from '../Data/Destination'
 import { type Park } from '../Data/Park'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import useExpandableAnimation from '../Components/Data/UseExpandableAnimation'
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { LocationDataSection } from '../Components/Rendered/LocationDataSection'
 
 const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
-  const { destinations, locationPermission, userData, lastUpdated, refreshData } = useDataContext()
+  const { destinations, locationPermission, lastUpdated, refreshData, getLocationData } = useDataContext()
   const [refreshing, setRefreshing] = useState(false)
-
-  const onRefresh = (): void => {
-    setRefreshing(true)
-    refreshData().then(() => {
-      setRefreshing(false)
-    })
-  }
-
-  const favAttrs: string[] = []
-  userData?.favs.forEach(attr => favAttrs.push(attr.id))
-
   const [expandedDestinations, setExpandedDestinations] = useState<Record<string, boolean>>({})
-  const animations = useRef<Record<string, Animated.Value>>({})
-
   const [selectedCategory, setSelectedCategory] = useState<'Disney' | 'Universal' | null>(null)
 
   // Separate destinations into two lists: Disney and others
@@ -39,63 +26,53 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
     }
   })
 
-  const calculateTotalHeight = (expandedDestinations: Record<string, boolean>, category: 'Disney' | 'Universal' | null): number => {
-    if (category == null) return 0
-
-    const selectedDestinations = category === 'Disney' ? disneyDestinations : otherDestinations
-    let totalHeight = 10
-
-    selectedDestinations.forEach((destination: Destination) => {
-      const parksCount = Object.values(destination.parks).length
-      if (expandedDestinations[destination.slug]) {
-        totalHeight += 69 + (parksCount * 50)
-      } else {
-        totalHeight += 69 // Default height for a single destination card
-      }
+  const onRefresh = (): void => {
+    setRefreshing(true)
+    refreshData().then(() => {
+      setRefreshing(false)
     })
+  }
 
-    return totalHeight
+  const customLayoutAnimation = {
+    duration: 400, // Duration in milliseconds
+    create: {
+      type: LayoutAnimation.Types.easeInEaseOut, // Type of animation for creating elements
+      property: LayoutAnimation.Properties.opacity // Property to animate (e.g., opacity, scaleXY)
+    },
+    update: {
+      type: LayoutAnimation.Types.spring, // Type of animation for updates
+      springDamping: 0.85 // Controls the spring effect, higher value = less spring
+    },
+    delete: {
+      type: LayoutAnimation.Types.easeInEaseOut, // Type of animation for deleting elements
+      property: LayoutAnimation.Properties.scaleXY // Property to animate (e.g., scaleXY for zoom-out effect)
+    }
   }
 
   const toggleExpand = (destination: Destination): void => {
-    const isExpanded = !expandedDestinations[destination.slug]
-    setExpandedDestinations((prevState) => {
-      const newState = {
-        ...prevState,
-        [destination.slug]: isExpanded
-      }
-      // Calculate new height based on expanded/collapsed destinations
-      const newHeight = calculateTotalHeight(newState, selectedCategory)
-      animateExpansion(destination.slug, isExpanded, newHeight)
-      return newState
-    })
+    LayoutAnimation.configureNext(customLayoutAnimation)
+    setExpandedDestinations(prevState => ({
+      ...prevState,
+      [destination.slug]: !prevState[destination.slug]
+    }))
   }
 
-  const animateExpansion = (slug: string, isExpanded: boolean, newHeight: number): void => {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (!animations.current[slug]) {
-      animations.current[slug] = new Animated.Value(0)
-    }
+  const handleCategorySelect = (category: 'Disney' | 'Universal'): void => {
+    LayoutAnimation.configureNext(customLayoutAnimation)
 
-    Animated.parallel([
-      Animated.timing(animations.current[slug], {
-        toValue: isExpanded ? 1 : 0,
-        duration: 300,
-        useNativeDriver: false
-      }),
-      Animated.timing(heightAnim, {
-        toValue: newHeight, // Use the new height when animating
-        duration: 300,
-        useNativeDriver: false
-      })
-    ]).start()
+    // If changing or deselecting the category, reset expandedDestinations
+    setSelectedCategory(prev => {
+      const isSameCategory = prev === category
+      setExpandedDestinations({}) // Clear expanded destinations
+
+      // Toggle category selection
+      return isSameCategory ? null : category
+    })
   }
 
   const renderDestination = (destination: Destination): React.JSX.Element => {
     const parks = Object.values(destination.parks)
     const isExpanded = expandedDestinations[destination.slug]
-    const animation = animations.current[destination.slug] || new Animated.Value(0)
-    const height = animation.interpolate({ inputRange: [0, 1], outputRange: [0, parks.length * 50] })
 
     return (
       <View key={destination.slug} style={{ width: '100%', alignItems: 'center', justifyContent: 'center' }}>
@@ -109,9 +86,9 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
         >
           <Text style={styles.destinationTitle}>{formatParkName(parks.length === 1 ? parks[0].name : destination.name)}</Text>
         </Pressable>
-        {parks.length > 1 && (
+        {isExpanded && parks.length > 1 && (
           <View style={styles.shadowWrapper}>
-            <Animated.View style={[styles.expandedParkList, { height }]}>
+            <View style={styles.expandedParkList}>
               {parks.map((park: Park, index: number) => (
                 <Pressable
                   key={park.id}
@@ -121,7 +98,7 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
                   <Text style={styles.parkListCardText}>{formatParkName(park.name)}</Text>
                 </Pressable>
               ))}
-            </Animated.View>
+            </View>
           </View>
         )}
       </View>
@@ -129,32 +106,12 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
   }
 
   const showSelectedCategory = (): React.JSX.Element => {
-    if (selectedCategory != null) {
-      if (selectedCategory === 'Disney') {
-        return (<>{disneyDestinations.map(renderDestination)}</>)
-      } else if (selectedCategory === 'Universal') {
-        return (<>{otherDestinations.map(renderDestination)}</>)
-      } else {
-        return (<></>)
-      }
-    } else {
-      return (
-        <></>
-      )
+    if (selectedCategory === 'Disney') {
+      return (<>{disneyDestinations.map(renderDestination)}</>)
+    } else if (selectedCategory === 'Universal') {
+      return (<>{otherDestinations.map(renderDestination)}</>)
     }
-  }
-
-  const { fadeAnim, heightAnim, animate } = useExpandableAnimation()
-
-  const handleCategorySelect = (category: 'Disney' | 'Universal'): void => {
-    const newHeight = calculateTotalHeight(expandedDestinations, category)
-    if (category === selectedCategory) {
-      animate(0, 0)
-      setSelectedCategory(null)
-    } else {
-      animate(1, newHeight)
-      setSelectedCategory(category)
-    }
+    return <></>
   }
 
   const formatParkName = (name: string): string => {
@@ -193,7 +150,6 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
               <View style={styles.destinationSectionView2}>
                 <Text style={styles.attrAvailSectionText2}>Tap to find a park:</Text>
               </View>
-              {/* Category Selection: Disney or Universal */}
               <View style={{ display: 'flex', flexDirection: 'row', paddingHorizontal: 8, marginTop: 0 }}>
                 <Pressable
                   style={[styles.destSelectButton, selectedCategory === 'Disney' ? styles.destSelectButtonSelected : null]}
@@ -210,18 +166,9 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
                 </Pressable>
               </View>
 
-              {/* Render Destinations Based on Selected Category */}
-              <Animated.View
-                style={{
-                  width: '100%',
-                  opacity: fadeAnim,
-                  height: heightAnim, // Animate the height
-                  marginBottom: 20,
-                  overflow: 'hidden'
-                }}
-              >
+              <View style={styles.destinationsBox}>
                 {showSelectedCategory()}
-              </Animated.View>
+              </View>
             </>
             )}
 
@@ -230,10 +177,13 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
           <Text style={styles.homePageSubSectionText}>Nearby</Text>
           <View style={styles.homePageSubSectionIcon}>
             {((locationPermission?.granted) === true)
-              ? <Ionicons name="navigate" size={24} color={styles.thing.color} />
+              ? <>
+                <FontAwesome name="refresh" size={24} color={styles.homePageSubSectionText.color} onPress={getLocationData}/>
+                <View style={{ width: 15 }}></View>
+                <Ionicons name="navigate" size={24} color={styles.homePageSubSectionText.color} />
+              </>
               : <Ionicons name="navigate-outline" size={24} color="black" />
-          }
-
+            }
           </View>
         </View>
         <View style={{ flex: 1, backgroundColor: '#f3f4fb', width: '100%' }}>
