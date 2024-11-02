@@ -1,4 +1,4 @@
-import { type Attraction, LiveStatusType } from '../Data/Attraction'
+import { type Attraction } from '../Data/Attraction'
 import { styles } from '../styles'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import React, { useState } from 'react'
@@ -20,6 +20,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const [attr] = useState<Attraction>(route.params?.attr)
 
+  /*
   if (attr.status === LiveStatusType.REFURBISHMENT || attr.status === LiveStatusType.CLOSED) {
     return (
       <>
@@ -30,7 +31,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
           <View style={styles.main}>
             <View style={styles.attractionLiveDataCard}>
               <View style={styles.attractionTitle}>
-                <Text style={styles.attractionLiveText}>Now:</Text>
+                <Text style={styles.attractionLiveText}>Live:</Text>
               </View>
               <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
             </View>
@@ -39,6 +40,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
       </>
     )
   }
+*/
 
   const historicStandby: Array<{ high: number | undefined, date: number }> = []
   const historicSingleRider: Array<{ high: number | undefined, date: number }> = []
@@ -152,6 +154,58 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
     </View>
   )
 
+  const renderChartSection = (): React.JSX.Element => {
+    let showStandby = false
+    let showSingle = false
+    let showBoard = false
+    let showReservation = false
+
+    switch (attr.queue.queueType) {
+      case QueueType.open_status:
+        showStandby = true
+        break
+      case QueueType.standby:
+        showStandby = true
+        break
+      case QueueType.standby_reservation:
+        showStandby = true
+        showReservation = true
+        break
+      case QueueType.boarding_reservation:
+        showBoard = true
+        showReservation = true
+        break
+      case QueueType.standby_single_reservation:
+        showSingle = true
+        showReservation = true
+        showStandby = true
+        break
+      case QueueType.standby_single:
+        showSingle = true
+        showStandby = true
+        break
+      case QueueType.undetermined:
+        break
+      case QueueType.closed:
+        break
+      default:
+        break
+    }
+
+    return (
+      <>
+        {showStandby &&
+          renderChart('Standby Wait:', historicStandby, SingleLineAreaChart, tooltips.standby)}
+        {showSingle &&
+          renderChart('Single Rider Wait:', historicSingleRider, SingleLineAreaChart, tooltips.singleRider)}
+        {showBoard &&
+          renderChart('Boarding Group:', historicBoardingGroup, TwoLineAreaChart, tooltips.boardingGroups)}
+        {showReservation &&
+          renderChart('Next Reservation Time:', historicReturnTime, TimeAreaChart, tooltips.nextReservation)}
+      </>
+    )
+  }
+
   return (
     <>
       <View style={styles.subheaderView}>
@@ -159,20 +213,21 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
       </View>
       <ScrollView>
         <View style={styles.main}>
-          <View style={styles.attractionLiveDataCard}>
-            <View style={styles.attractionTitle}>
-              <Text style={styles.attractionLiveText}>Now:</Text>
-            </View>
-            <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
+          <View style={[styles.homePageSubSection, { marginTop: 5 }]}>
+            <Text style={styles.homePageSubSectionText}>Live</Text>
           </View>
-           {historicStandby.length === attr.history.length &&
-            renderChart('Standby Wait History:', historicStandby, SingleLineAreaChart, tooltips.standby)}
-           {historicSingleRider.length === attr.history.length &&
-            renderChart('Single Rider Wait History:', historicSingleRider, SingleLineAreaChart, tooltips.singleRider)}
-           {historicBoardingGroup.length === attr.history.length &&
-            renderChart('Boarding Group History:', historicBoardingGroup, TwoLineAreaChart, tooltips.boardingGroups)}
-          {(historicReturnTime.length === attr.history.length) &&
-            renderChart('Next Reservation Time History:', historicReturnTime, TimeAreaChart, tooltips.nextReservation)}
+
+          <View style={{ width: '100%', alignItems: 'center' }}>
+            <View style={styles.attractionLiveDataCard}>
+              <View style={{ height: 5 }}></View>
+              <LiveDataComponent attr={attr} timezone={route.params.timezone} showAdditionalText={false} />
+            </View>
+          </View>
+          <View style={styles.homePageSubSection}>
+            <Text style={styles.homePageSubSectionText}>History</Text>
+          </View>
+
+          {renderChartSection()}
         </View>
       </ScrollView>
     </>

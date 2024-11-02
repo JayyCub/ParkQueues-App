@@ -368,6 +368,8 @@ export const styles = StyleSheet.create({
     fontSize: 18
   },
   subheaderSortAlphaDesc: {
+    width: 40,
+    height: 40,
     backgroundColor: colorPalette.layer9b,
     borderRadius: 10,
     justifyContent: 'center',
@@ -375,6 +377,8 @@ export const styles = StyleSheet.create({
     marginRight: 10
   },
   subheaderSortAlphaAsc: {
+    width: 40,
+    height: 40,
     backgroundColor: colorPalette.layer7,
     borderRadius: 10,
     justifyContent: 'center',

@@ -6,6 +6,7 @@ import { type Attraction, LiveStatusType } from '../Data/Attraction'
 import { useDataContext } from '../Data/DataContext'
 import AttractionCard from '../Components/Rendered/AttractionCard'
 import Header from '../Components/Rendered/CustomStatusBar'
+import {FontAwesome5, Ionicons} from "@expo/vector-icons";
 
 const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
   const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData } = useDataContext()
@@ -94,32 +95,20 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
         <Pressable onPress={ () => { toggleSortAlpha() } }>
           {!sortAlpha
             ? <View style={styles.subheaderSortAlphaAsc}>
-              <Image
-                style={{ width: 40, height: 40 }}
-                source={require('../icon_imgs/sort-alph-asc.png')}
-              />
+              <FontAwesome5 name="sort-alpha-up" size={24} color="white" />
             </View>
             : <View style={styles.subheaderSortAlphaDesc}>
-              <Image
-                style={{ width: 40, height: 40 }}
-                source={require('../icon_imgs/sort-alph-desc.png')}
-              />
+              <FontAwesome5 name="sort-alpha-down" size={24} color="white" />
             </View>
           }
         </Pressable>
         <Pressable onPress={() => { toggleShowTrends() }}>
           {showTrends
             ? <View style={styles.subheaderShowDataTrue}>
-              <Image
-                style={{ width: 30, height: 30 }}
-                source={require('../icon_imgs/trends-icon.png')}
-              />
+              <Ionicons name={'trending-up'} size={30} color={'white'}/>
             </View>
             : <View style={styles.subheaderShowDataFalse}>
-              <Image
-                style={{ width: 30, height: 30 }}
-                source={require('../icon_imgs/trends-icon.png')}
-              />
+              <Ionicons name={'trending-up'} size={30} color={'white'}/>
             </View>
           }
         </Pressable>
