@@ -242,7 +242,7 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
       }
 
       // Fetch initial location with lower accuracy
-      console.log("Getting approximate location...")
+      // console.log("Getting approximate location...")
       let currentLocation = await Location.getCurrentPositionAsync({ accuracy: LocationAccuracy.Low })
       setLocation(currentLocation)
 
@@ -275,7 +275,7 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
 
       // If near a park, get location with higher accuracy
       if (isNearPark) {
-        console.log("Near a park. Getting accurate location...")
+        // console.log("Near a park. Getting accurate location...")
         currentLocation = await Location.getCurrentPositionAsync({ accuracy: LocationAccuracy.High })
         setLocation(currentLocation)
       }

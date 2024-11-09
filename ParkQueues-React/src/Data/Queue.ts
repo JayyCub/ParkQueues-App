@@ -13,6 +13,7 @@ enum BoardingGroupState {
 interface PriceData {
   amount: number
   currency: string
+  formatted: string | undefined
 }
 
 export enum QueueType {

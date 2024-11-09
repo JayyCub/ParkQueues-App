@@ -186,7 +186,7 @@ const DestinationsList = ({ route, navigation }: any): React.JSX.Element => {
             }
           </View>
         </View>
-        <View style={{ flex: 1, backgroundColor: '#f3f4fb', width: '100%' }}>
+        <View style={{ flex: 1, width: '100%' }}>
           <LocationDataSection navigation={navigation} />
         </View>
       </View>

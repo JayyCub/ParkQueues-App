@@ -142,7 +142,7 @@ const LiveDataComponent = (
         elements.push(renderWaitTimeElement('Standby:', currWait, diff, icon))
         elements.push(<View style={styles.liveDataDivider} />)
         if (attr.queue.SINGLE_RIDER?.waitTime !== null) {
-          renderElement('Single Rider:', attr.queue.SINGLE_RIDER?.waitTime)
+          elements.push(renderElement('Single Rider:', attr.queue.SINGLE_RIDER?.waitTime))
         } else if (attr.status === LiveStatusType.OPERATING) {
           elements.push(renderElement('Single Rider:', 'Open'))
         } else {
@@ -162,13 +162,15 @@ const LiveDataComponent = (
     const { title, nextTime, price } = (() => {
       const paid = attr.queue.PAID_RETURN_TIME?.returnStart
       const reg = attr.queue.RETURN_TIME?.returnStart
+      const getCurrencySymbol = (locale: string, currency: string): string => (0).toLocaleString(locale, { style: 'currency', currency, minimumFractionDigits: 0, maximumFractionDigits: 0 }).replace(/\d/g, '').trim()
+
       if (paid !== undefined) {
         const temp = new Date(paid)
         const nextTime = attr.queue.PAID_RETURN_TIME?.state === ReturnTimeState.AVAILABLE
           ? temp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
           : 'Unavailable'
         const price = ((attr.queue.PAID_RETURN_TIME?.price) != null)
-          ? `$${(attr.queue.PAID_RETURN_TIME.price.amount / 100).toString()}`
+          ? `${getCurrencySymbol('en-US', attr.queue.PAID_RETURN_TIME.price.currency)}${(attr.queue.PAID_RETURN_TIME.price.amount / 100).toString()}`
           : undefined
         return { title: 'Next Individual LL:', nextTime, price }
       }
@@ -177,9 +179,9 @@ const LiveDataComponent = (
         const nextTime = attr.queue.RETURN_TIME?.state === ReturnTimeState.AVAILABLE
           ? temp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: timezone })
           : 'Unavailable'
-        return { title: 'Next Genie+ Reservation:', nextTime, price: undefined }
+        return { title: 'Next Reservation:', nextTime, price: undefined }
       }
-      return { title: 'Next Reservable Time:', nextTime: 'Unavailable', price: undefined }
+      return { title: 'Next Reservation:', nextTime: 'Unavailable', price: undefined }
     })()
 
     if (nextTime === 'Unavailable') {

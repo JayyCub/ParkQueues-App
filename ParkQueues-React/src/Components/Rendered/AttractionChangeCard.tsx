@@ -82,6 +82,8 @@ const AttractionChangeCard: React.FC<AttractionCardProps> = (
         }
         setIsRemoving(false)
       }
+    } else {
+      Alert.alert('Sign in or create an account to save favorite attractions')
     }
   }
 

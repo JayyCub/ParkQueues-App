@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Image, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
-import { styles } from '../styles'
+import { Platform, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
+import { platformStyle, styles } from '../styles'
 import { type Park } from '../Data/Park'
 import { type Attraction, LiveStatusType } from '../Data/Attraction'
 import { useDataContext } from '../Data/DataContext'
 import AttractionCard from '../Components/Rendered/AttractionCard'
+import Header from '../Components/Rendered/CustomStatusBar'
+import { FontAwesome5, Ionicons } from '@expo/vector-icons'
 
 const AttractionsList = ({ route, navigation }: any): React.JSX.Element => {
   const { parks, lastUpdated, refreshData, showTrends, toggleShowTrends, sortAlpha, toggleSortAlpha, userData } = useDataContext()
@@ -22,6 +24,16 @@ const AttractionsList = ({ route, navigation }: any): React.JSX.Element => {
     if (updatedPark != null) {
       setPark(updatedPark)
     }
+
+    navigation.setOptions({
+      headerTitle: () => <Header platform={Platform.OS} title={park.name.replace(/Disney's | Water| Park| Theme/g, '')} />,
+      headerTitleAlign: 'center',
+      headerStyle: {
+        backgroundColor: platformStyle.statusBar.bgColor
+      },
+      headerShadowVisible: false,
+      presentation: 'card'
+    })
   }, [lastUpdated, parks, park.id])
 
   const openAttractions = Object.values(park.liveData).filter((attr: { status: LiveStatusType }) =>
@@ -69,16 +81,13 @@ const AttractionsList = ({ route, navigation }: any): React.JSX.Element => {
 
   return (
     <>
-      <View style={styles.subheaderView}>
-        <Text style={styles.subheaderText}>{park.name.replace(/Disney's | Water| Park| Theme/g, '')}</Text>
-      </View>
       <View style={styles.toolsHeaderView}>
         <View style={{ flex: 4 }}>
           <TextInput
             style={searchQuery !== '' ? styles.searchBarSelected : styles.searchBar}
             onChangeText={handleSearch}
             value={searchQuery}
-            placeholder="Search by name"
+            placeholder="Search"
             returnKeyType="done"
             clearButtonMode="always"
           />
@@ -86,32 +95,20 @@ const AttractionsList = ({ route, navigation }: any): React.JSX.Element => {
         <Pressable onPress={ () => { toggleSortAlpha() } }>
           {!sortAlpha
             ? <View style={styles.subheaderSortAlphaAsc}>
-              <Image
-                style={{ width: 40, height: 40 }}
-                source={require('../icon_imgs/sort-alph-asc.png')}
-              />
+              <FontAwesome5 name="sort-alpha-up" size={24} color="white" />
             </View>
             : <View style={styles.subheaderSortAlphaDesc}>
-              <Image
-                style={{ width: 40, height: 40 }}
-                source={require('../icon_imgs/sort-alph-desc.png')}
-              />
+              <FontAwesome5 name="sort-alpha-down" size={24} color="white" />
             </View>
           }
         </Pressable>
         <Pressable onPress={() => { toggleShowTrends() }}>
           {showTrends
             ? <View style={styles.subheaderShowDataTrue}>
-              <Image
-                style={{ width: 30, height: 30 }}
-                source={require('../icon_imgs/trends-icon.png')}
-              />
+              <Ionicons name={'trending-up'} size={30} color={'white'}/>
             </View>
             : <View style={styles.subheaderShowDataFalse}>
-              <Image
-                style={{ width: 30, height: 30 }}
-                source={require('../icon_imgs/trends-icon.png')}
-              />
+              <Ionicons name={'trending-up'} size={30} color={'white'}/>
             </View>
           }
         </Pressable>

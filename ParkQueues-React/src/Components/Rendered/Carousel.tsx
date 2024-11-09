@@ -52,6 +52,7 @@ const ImageCarousel: FC<ImageCarouselProps> = ({ data }) => {
   return (
     <View style={styles.container}>
       <FlatList
+        style={{paddingBottom: 5}}
         ref={flatListRef}
         data={dataWithPlaceholders}
         renderItem={({ item, index }) => {

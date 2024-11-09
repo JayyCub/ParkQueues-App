@@ -641,7 +641,7 @@ export const styles = StyleSheet.create({
     width: '89%',
     justifyContent: 'space-between', // Distributes space between text and icons
     alignItems: 'center',
-    marginTop: 25,
+    marginTop: 30,
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: platformStyle.statusBar.fontColor,
@@ -649,7 +649,7 @@ export const styles = StyleSheet.create({
   },
   homePageSubSectionText: {
     fontSize: 24,
-    fontWeight: '500',
+    fontWeight: '700',
     color: platformStyle.statusBar.fontColor,
     fontFamily
     // Removes width constraint to allow it to float left
@@ -663,7 +663,7 @@ export const styles = StyleSheet.create({
     width: platformStyle.destCard.width as DimensionValue,
     backgroundColor: platformStyle.destCard.bgColor,
     marginTop: 5,
-    padding: 5,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,
@@ -724,5 +724,28 @@ export const styles = StyleSheet.create({
     paddingBottom: 5,
     width: '100%',
     overflow: 'hidden'
+  },
+  carouselSubtextBox: {
+    width: '92%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginTop: 5
+  },
+  carouselSubtext: {
+    marginBottom: -8,
+    width: '95%',
+    textAlign: 'left',
+    fontSize: 16,
+    // fontWeight: 'bold',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily
+  },
+  parkPageDivider: {
+    width: '90%',
+    marginTop: 15,
+    // marginBottom: 5,
+    borderStyle: 'solid',
+    borderBottomWidth: 1,
+    borderColor: platformStyle.statusBar.fontColor
   }
 })
