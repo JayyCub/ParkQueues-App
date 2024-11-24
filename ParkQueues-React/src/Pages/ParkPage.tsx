@@ -224,18 +224,17 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
               </Pressable>
             </>
             : (<>
-              <View style={{ flex: 1, width: '100%', alignItems: 'center' }}>
-                <Pressable
-                  onPress={() => navigation.navigate('AttractionsList', { park: route.params.park, destId: route.params.destId })}
-                  style={[styles.closestDestinationCard, { borderWidth: 0, marginTop: 10 }]}>
-                  <Text style={[styles.parkListCardText, { fontWeight: '600' }]}>
-                    View all attractions
-                  </Text>
-                </Pressable>
-              </View>
               <View style={styles.homePageSubSection}>
                 <Text style={styles.homePageSubSectionText}>Attractions</Text>
               </View>
+              <Pressable
+                onPress={() => navigation.navigate('AttractionsList', { park: route.params.park, destId: route.params.destId })}
+                style={[styles.closestDestinationCard, { borderWidth: 0, marginTop: 12, marginBottom: 10 }]}>
+                <Text style={[styles.parkListCardText, { fontWeight: '600' }]}>
+                  View all attractions
+                </Text>
+              </Pressable>
+
               {longestWaits.length > 0 || attractionsWithDiff.length > 0
                 ? (<>
                   <View style={styles.carouselSubtextBox}>

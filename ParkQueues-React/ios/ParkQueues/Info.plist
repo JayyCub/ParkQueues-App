@@ -43,11 +43,11 @@
       <true/>
     </dict>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to use your location.</string>
+    <string>Allow $(PRODUCT_NAME) to use your location. This is used to find nearby parks and attractions.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>Allow $(PRODUCT_NAME) to use your location. This is used to find nearby parks and attractions.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>Allow $(PRODUCT_NAME) to use your location. This is used to find nearby parks and attractions.</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>

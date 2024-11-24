@@ -257,12 +257,12 @@ export const styles = StyleSheet.create({
     width: '100%',
     // justifyContent: 'center',
     borderStyle: 'solid',
-    borderBottomWidth: 1.5,
+    borderBottomWidth: 1.25,
     borderColor: 'lightgray'
   },
   attractionTitleText: {
     color: colorPalette.layer3b,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: 'bold',
     fontFamily,
     // backgroundColor: 'gray',
@@ -641,14 +641,14 @@ export const styles = StyleSheet.create({
     width: '89%',
     justifyContent: 'space-between', // Distributes space between text and icons
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 20,
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: platformStyle.statusBar.fontColor,
     flexDirection: 'row'
   },
   homePageSubSectionText: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
     color: platformStyle.statusBar.fontColor,
     fontFamily
