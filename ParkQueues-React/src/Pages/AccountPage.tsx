@@ -37,6 +37,22 @@ const AccountPage = (): React.JSX.Element => {
     ])
   }
 
+  const deleteAccount = async (): Promise<void> => {
+    Alert.alert('Are you sure you want to delete your ParkQueues account?', 'You cannot undo this action.', [
+      {
+        text: 'Delete',
+        onPress: () => {
+          user?.delete()
+          setUser(null)
+          auth.signOut().then().catch((error: any) => {
+            console.log(error)
+          })
+        }
+      },
+      { text: 'Cancel' }
+    ])
+  }
+
   const resetPassword = async (): Promise<void> => {
     Alert.alert('Are you sure you want to reset your password?', '', [
       {
@@ -113,6 +129,12 @@ const AccountPage = (): React.JSX.Element => {
             <Pressable onPress={logout} style={styles.signOutButton}>
               <Text style={styles.signOutButtonText}>
                 Log out
+              </Text>
+            </Pressable>
+            {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+            <Pressable onPress={deleteAccount} style={styles.signOutButton}>
+              <Text style={[styles.signOutButtonText, { color: 'darkred' }]}>
+                Delete account
               </Text>
             </Pressable>
 

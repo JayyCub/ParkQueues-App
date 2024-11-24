@@ -240,10 +240,10 @@ const Register = (): React.JSX.Element => {
           ? <Pressable style={styles.authButton} onPress={() => {
             Alert.alert('Please fill in all necessary fields.')
           }}>
-            <Text style={styles.authButtonText}>Register</Text>
+            <Text style={styles.authButtonText}>Create account</Text>
           </Pressable>
           : <Pressable onPress={handleRegister} style={styles.authButtonReady}>
-            <Text style={styles.authButtonReadyText}>Register</Text>
+            <Text style={styles.authButtonReadyText}>Create account</Text>
           </Pressable>
         }
       </View>
