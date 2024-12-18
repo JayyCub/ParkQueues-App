@@ -642,6 +642,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between', // Distributes space between text and icons
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 5,
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: platformStyle.statusBar.fontColor,
@@ -651,7 +652,7 @@ export const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     color: platformStyle.statusBar.fontColor,
-    fontFamily
+    fontFamily,
     // Removes width constraint to allow it to float left
   },
   homePageSubSectionIcon: {
@@ -728,7 +729,7 @@ export const styles = StyleSheet.create({
   carouselSubtextBox: {
     width: '92%',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
     // marginTop: 5
   },
   carouselSubtext: {
@@ -747,5 +748,68 @@ export const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderBottomWidth: 1,
     borderColor: platformStyle.statusBar.fontColor
+  },
+  filterButtonUnselected: {
+    // height: 40,
+    // width: 80,
+    marginHorizontal: 5,
+    backgroundColor: '#ffffff',
+    borderColor: '#b7b7b7',
+    borderWidth: 2,
+    padding: 8,
+    borderRadius: 20
+  },
+  filterButtonSelected: {
+    // height: 40,
+    // width: 80,
+    marginHorizontal: 5,
+    backgroundColor: '#ffffff',
+    borderColor: '#00b0ff',
+    borderWidth: 2,
+    padding: 8,
+    borderRadius: 20
+  },
+  filterButtonText: {
+    fontWeight: 'bold',
+    color: platformStyle.statusBar.fontColor,
+    fontFamily,
+    fontSize: 14
+  },
+  gestureHandler: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 3,
+    backgroundColor: 'navy'
+  },
+  bottomSheetContent: {
+    flex: 1,
+    // padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  bottomSheetMain: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%'
+    // paddingBottom: 50
+  },
+  parkPageMapContainer: {
+    width: '90%',
+    // height: 200,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    borderColor: '#ffffff',
+    borderWidth: 2,
+    padding: 5,
+    borderStyle: 'solid',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
+    shadowColor: '#aeb5be',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 1
   }
 })

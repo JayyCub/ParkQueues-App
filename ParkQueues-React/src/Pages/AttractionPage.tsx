@@ -1,6 +1,6 @@
 import { type Attraction } from '../Data/Attraction'
 import { styles } from '../styles'
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import {Alert, Platform, Pressable, ScrollView, Text, View} from 'react-native'
 import React, { useState } from 'react'
 import LiveDataComponent from '../Components/Rendered/LiveDataComponent'
 import { type Queue, QueueType, ReturnTimeState } from '../Data/Queue'
@@ -8,6 +8,7 @@ import SingleLineAreaChart from '../Components/Rendered/SingleLineAreaChart'
 import TwoLineAreaChart, { type DataItem } from '../Components/Rendered/TwoLineAreaChart'
 import TimeAreaChart, { type ReturnDataItem } from '../Components/Rendered/TimeAreaChart'
 import { Ionicons } from '@expo/vector-icons'
+import Header from '../Components/Rendered/CustomStatusBar'
 
 const tooltips = {
   standby: 'This graph shows the standby wait times from the past 8 hours, updated every five minutes. Use this to spot trends in today\'s data or check if an attraction has just reopened.\n\nIt\'s a great tool to help plan your day!',
@@ -208,9 +209,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
 
   return (
     <>
-      <View style={styles.subheaderView}>
-        <Text style={styles.subheaderText}>{attr.name}</Text>
-      </View>
+      <Header platform={Platform.OS} title={attr.name} />
       <ScrollView>
         <View style={styles.main}>
           <View style={[styles.homePageSubSection, { marginTop: 5 }]}>

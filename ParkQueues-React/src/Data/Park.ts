@@ -43,7 +43,18 @@ export class Park {
   }
 
   public addLocationData (lat: number | null, lon: number | null) {
-    this.lat = lat
-    this.lon = lon
+    // Calculate average from attractions if they have coordinates
+    let validCoordinates = Object.values(this.liveData)
+      .filter(attraction => attraction.lat !== null && attraction.lon !== null)
+      
+    if (validCoordinates.length > 0) {
+      // Calculate average lat/lon from attractions
+      this.lat = validCoordinates.reduce((sum, attr) => sum + (attr.lat ?? 0), 0) / validCoordinates.length
+      this.lon = validCoordinates.reduce((sum, attr) => sum + (attr.lon ?? 0), 0) / validCoordinates.length
+    } else {
+      // If no attractions have coordinates, use the provided lat/lon
+      this.lat = lat
+      this.lon = lon
+    }
   }
 }

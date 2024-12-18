@@ -13,6 +13,8 @@ import { Ionicons } from '@expo/vector-icons'
 import AccountPage from './src/Pages/AccountPage'
 import FavoritesPage from './src/Pages/FavoritesPage'
 import AttractionsList from './src/Pages/AttractionsList'
+import {FullParkMap} from "./src/Pages/FullParkMap";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
 
 const platform = Platform.OS
 const Tab = createBottomTabNavigator()
@@ -47,8 +49,12 @@ function PrimaryStackScreen (): React.JSX.Element {
       <PrimaryStack.Screen
         name="AttractionsList"
         component={AttractionsList}
+      />
+      <PrimaryStack.Screen
+        name="Attraction"
+        component={AttractionPage}
         options={{
-          headerTitle: () => <Header platform={platform} title="All Attractions" />,
+          headerTitle: () => <Header platform={platform} title="View Attraction:" />,
           headerTitleAlign: 'center',
           headerStyle: {
             backgroundColor: platformStyle.statusBar.bgColor
@@ -58,17 +64,8 @@ function PrimaryStackScreen (): React.JSX.Element {
         }}
       />
       <PrimaryStack.Screen
-        name="Attraction"
-        component={AttractionPage}
-        options={{
-          headerTitle: () => <Header platform={platform} title="View Attraction" />,
-          headerTitleAlign: 'center',
-          headerStyle: {
-            backgroundColor: platformStyle.statusBar.bgColor
-          },
-          headerShadowVisible: false,
-          presentation: 'card'
-        }}
+        name="FullMap"
+        component={FullParkMap}
       />
     </PrimaryStack.Navigator>
   )
@@ -143,9 +140,11 @@ function AccountStackScreen (): React.JSX.Element {
 
 export default function App (): React.JSX.Element {
   return (
-    <DataProvider>
-      <MainNavigation />
-    </DataProvider>
+    <GestureHandlerRootView>
+      <DataProvider>
+        <MainNavigation />
+      </DataProvider>
+    </GestureHandlerRootView>
   )
 }
 

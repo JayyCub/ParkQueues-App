@@ -58,7 +58,7 @@ const DataContext = createContext<DataContextProps>({
   locationProcessingComplete: false,
   locationPermission: null,
   closestAttractions: [],
-  locLastUpdated: 0
+  locLastUpdated: 0,
 })
 
 export const useDataContext = (): DataContextProps => useContext(DataContext)
@@ -262,12 +262,11 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
 
           Object.values(dest.parks).forEach(park => {
             if (locationData[dest.id][park.id]) {
-              park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
-
               const distance = calculateDistance(currentLocation, locationData[dest.id][park.id])
               if (distance < 1) {
                 isNearPark = true
               }
+              park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
             }
           })
         }
@@ -280,6 +279,10 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
         setLocation(currentLocation)
       }
 
+      const parkOffset = new Map()
+      parkOffset.set('ddc4357c-c148-4b36-9888-07894fe75e83', [-0.00402206306, -0.01078351069])
+      parkOffset.set('bd0eb47b-2f02-4d4d-90fa-cb3a68988e3b', [-0.003044251993, -0.01180091402])
+
       // Process all location data after final location check
       destinations.forEach(dest => {
         if (locationData[dest.id]) {
@@ -287,12 +290,12 @@ export const DataProvider = ({ children }: any): React.JSX.Element => {
 
           Object.values(dest.parks).forEach(park => {
             if (locationData[dest.id][park.id]) {
-              park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
-
+              let offset = parkOffset.get(park.id) ?? [0, 0]
               Object.values(park.liveData).forEach(attr => {
                 if (locationData[dest.id][attr.id]) {
-                  attr.addLocationData(locationData[dest.id][attr.id].lat, locationData[dest.id][attr.id].lon)
+                  attr.addLocationData(locationData[dest.id][attr.id].lat + offset[0], locationData[dest.id][attr.id].lon + offset[1])
                 }
+              park.addLocationData(locationData[dest.id][park.id].lat, locationData[dest.id][park.id].lon)
               })
             }
           })

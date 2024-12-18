@@ -9,9 +9,9 @@ const Header = (props: any): React.JSX.Element => {
     const length = title.length
 
     // Adjust the size based on the length of the title
-    if (length > 20) {
+    if (length > 30) {
       return baseSize * 0.8 // 80% of the base size for long titles
-    } else if (length > 15) {
+    } else if (length > 20) {
       return baseSize * 0.9 // 90% of the base size for medium titles
     } else {
       return baseSize // Use base size for shorter titles
@@ -21,7 +21,7 @@ const Header = (props: any): React.JSX.Element => {
   const fontSize = calculateFontSize(props.title)
 
   return (
-    <View>
+    <View style={{ backgroundColor: platformStyle.statusBar.bgColor }}>
       <Text
         style={{
           fontSize,

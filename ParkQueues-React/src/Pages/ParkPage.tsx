@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Platform, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Platform, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native'
 import { platformStyle, styles } from '../styles'
 import { type Park } from '../Data/Park'
 import { useDataContext } from '../Data/DataContext'
@@ -8,7 +8,10 @@ import type { Attraction } from '../Data/Attraction'
 import AttractionCard from '../Components/Rendered/AttractionCard'
 import { ImageCarouselItem } from '../Components/Data/ImageCarouselItem'
 import CustomCarousel from '../Components/Rendered/Carousel'
-import { ReturnTimeState } from '../Data/Queue'
+import { QueueType, ReturnTimeState } from '../Data/Queue'
+import MapView, { Marker } from 'react-native-maps'
+import AttractionMapMarker from '../Components/Rendered/AttractionMapMarker'
+import { LiveStatusType } from '../Data/Attraction'
 
 const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
   const { parks, lastUpdated, refreshData, userData } = useDataContext()
@@ -32,7 +35,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
 
     // Update header
     navigation.setOptions({
-      headerTitle: () => <Header platform={Platform.OS} title={park.name.replace(/Disney's | Water| Park| Theme/g, '')} />,
+      headerTitle: () => <Header platform={Platform.OS} title={park.name.replace(/Disney's|Water Park| Park| Theme|Universal's/g, '').replace(/Universal I/, 'I')} />,
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: platformStyle.statusBar.bgColor
@@ -224,21 +227,89 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
               </Pressable>
             </>
             : (<>
-              <View style={styles.homePageSubSection}>
-                <Text style={styles.homePageSubSectionText}>Attractions</Text>
-              </View>
-              <Pressable
-                onPress={() => navigation.navigate('AttractionsList', { park: route.params.park, destId: route.params.destId })}
-                style={[styles.closestDestinationCard, { borderWidth: 0, marginTop: 12, marginBottom: 10 }]}>
-                <Text style={[styles.parkListCardText, { fontWeight: '600' }]}>
-                  View all attractions
-                </Text>
+            <Pressable
+              onPress={() => navigation.navigate('AttractionsList', { park: route.params.park, destId: route.params.destId })}
+              style={[styles.closestDestinationCard, { borderWidth: 0, marginTop: 12, marginBottom: 10, borderRadius: 10 }]}>
+              <Text style={[styles.parkListCardText, { fontWeight: '600' }]}>
+                View all attractions
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => { navigation.navigate('FullMap', { park, destId: route.params.destId }) }}
+              style={styles.parkPageMapContainer}>
+                {park.lat == null || park.lon == null
+                  ? <View style={{
+                    width: '100%',
+                    height: 200,
+                    borderRadius: 10,
+                    backgroundColor: '#adadad'
+                  }}>
+                    <ActivityIndicator size="large" color="#ffffff" style={{ position: 'absolute', width: '100%', height: '100%' }} />
+                  </View>
+                  : <MapView
+                style={{
+                  width: '100%',
+                  height: 200,
+                  borderRadius: 10
+                }}
+                region={{
+                  latitude: park.lat,
+                  longitude: park.lon,
+                  latitudeDelta: 0.005,
+                  longitudeDelta: 0.005
+                }}
+                // mapType="mutedStandard"
+                mapType='satellite'
+                scrollEnabled={false}
+                zoomEnabled={false}
+                rotateEnabled={false}
+                pitchEnabled={false}
+                pointerEvents='none'
+              >
+                {Object.values(park.liveData).map((attr: Attraction, index: number) => {
+                  if (attr.status !== LiveStatusType.OPERATING || attr.queue.queueType === QueueType.open_status) {
+                    return null
+                  }
+                  return (
+                  <Marker
+                    key={index}
+                    coordinate={{ latitude: attr.lat ?? 0, longitude: attr.lon ?? 0 }}
+                  >
+                    <AttractionMapMarker
+                      attr={attr}
+                      showAdditionalText={false}
+                    />
+                  </Marker>
+                  )
+                })}
+
+                </MapView>
+                }
+
+              <View style={{
+                position: 'absolute',
+                bottom: 5,
+                alignItems: 'center',
+                width: '100%',
+                backgroundColor: 'rgba(255,255,255,0.85)',
+                paddingHorizontal: 15,
+                paddingVertical: 10
+              }}>
+                  <Text style={[styles.parkListCardText, { fontWeight: '600' }]}>
+                    View park map
+                  </Text>
+                </View>
               </Pressable>
+
+              <View style={styles.homePageSubSection}>
+                <Text style={styles.homePageSubSectionText}>Wait times</Text>
+              </View>
 
               {longestWaits.length > 0 || attractionsWithDiff.length > 0
                 ? (<>
                   <View style={styles.carouselSubtextBox}>
-                    <Text style={styles.carouselSubtext}>Longest wait times:</Text>
+                    <Text style={styles.carouselSubtext}>Longest:</Text>
                   </View>
                   {longestWaits.length > 0
                     ? (<>
@@ -254,7 +325,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
                       </View>
                       )}
                   <View style={styles.carouselSubtextBox}>
-                    <Text style={styles.carouselSubtext}>Waits changed in last 5 mins:</Text>
+                    <Text style={styles.carouselSubtext}>Changed in last 5 mins:</Text>
                   </View>
                   {attractionsWithDiff.length > 0
                     ? (<>

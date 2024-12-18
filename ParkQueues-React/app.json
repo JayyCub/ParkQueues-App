@@ -2,7 +2,6 @@
   "expo": {
     "name": "ParkQueues",
     "slug": "parkqueues",
-    "privacy": "unlisted",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/PQ_icon.png",
@@ -12,6 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -44,7 +44,8 @@
           "locationAlwaysPermission": "Allow $(PRODUCT_NAME) to use your location. This is used to find nearby parks and attractions.",
           "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location. This is used to find nearby parks and attractions."
         }
-      ]
+      ],
+      "expo-build-properties"
     ]
   }
 }
