@@ -118,18 +118,20 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
     filterAttractionsByRegion(initialRegion)
   }, [initialRegion])
 
-  const filterAttractionsByRegion = (region: Region): void => {
+  const filterAttractionsByRegion = useCallback((region: Region): void => {
     const filtered = Object.values(park.liveData).filter(attr => {
-      return (
+      const isInRegion =
         attr.lat >= region.latitude - region.latitudeDelta / 2 &&
         attr.lat <= region.latitude + region.latitudeDelta / 2 &&
         attr.lon >= region.longitude - region.longitudeDelta / 2 &&
-        attr.lon <= region.longitude + region.longitudeDelta / 2 &&
-        attr.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+        attr.lon <= region.longitude + region.longitudeDelta / 2
+
+      return isInRegion && attr.name.toLowerCase().includes(searchQuery.toLowerCase())
     }).sort((a, b) => a.name.localeCompare(b.name))
+
     setFilteredAttractions(filtered)
-  }
+    setSelectedAttraction(null)
+  }, [park.liveData, searchQuery])
 
   const renderAttractionList = (): any =>
     filteredAttractions.map((attr, index) => (
@@ -147,7 +149,7 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
       />
     ))
 
-  const snapPoints = useMemo(() => ['11%', '50%'], [])
+  const snapPoints = useMemo(() => ['11%', '40%'], [])
   const bottomSheetRef = useRef<BottomSheet>(null)
 
   const renderCustomCluster = (cluster: any): React.JSX.Element => {
@@ -169,11 +171,11 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
           style={{
             backgroundColor: 'rgba(132,71,255,0.7)', // Cluster background color
             borderRadius: 25, // Makes the cluster circular
-            width: 30, // Size of the cluster marker
-            height: 30, // Size of the cluster marker
+            width: 25, // Size of the cluster marker
+            height: 25, // Size of the cluster marker
             alignItems: 'center',
             justifyContent: 'center',
-            borderWidth: 2,
+            borderWidth: 1.5,
             borderColor: '#fff' // Optional: Border around the cluster
           }}
         >
@@ -182,6 +184,7 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
               color: '#fff', // Text color
               fontSize: 16,
               fontWeight: 'bold',
+              fontStyle: 'italic',
               fontFamily
             }}
           >
@@ -199,8 +202,6 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
         style={{ flex: 1 }}
         region={initialRegion}
         mapType="satellite"
-        clusterColor="white" // Default cluster color (for non-custom clusters)
-        clusterTextColor="#ffffff" // Default cluster text color
         radius={20}
         onRegionChangeComplete={filterAttractionsByRegion} // Re-filter attractions on region change
         renderCluster={renderCustomCluster} // Use the custom cluster rendering function
@@ -210,19 +211,13 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
       >
         {filteredAttractions.map((attr: Attraction, index: number) => (
           <Marker
-            key={index}
-            coordinate={{ latitude: attr.lat ?? 0, longitude: attr.lon ?? 0 }}
-          >
-            <AttractionMapMarker
+          key={index}
+          coordinate={{ latitude: attr.lat ?? 0, longitude: attr.lon ?? 0 }}
+        >
+          <AttractionMapMarker
               attr={attr}
               showAdditionalText={trendFilter}
-              // timezone={park.timezone}
-              // showAdditionalText={false}
-              // navigation={navigation}
-              // favorite={false}
-              // destId={route.params.destId}
-              // parkId={park.id}
-              // navStack={'FullMap'}
+              onPress={handleMarkerPress}
             />
           </Marker>
         ))}
@@ -240,6 +235,13 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
   const handleSearch = (query: string): void => {
     setSearchQuery(query)
     filterAttractions(query)
+  }
+
+  const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null)
+
+  const handleMarkerPress = (attraction: Attraction): void => {
+    setSelectedAttraction(attraction)
+    bottomSheetRef.current?.snapToIndex(1) // Expand bottom sheet to show attraction details
   }
 
   return (
@@ -297,19 +299,45 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
             backgroundStyle={{ backgroundColor: colorPalette.layer15 }}
           >
             <BottomSheetView style={styles.bottomSheetContent}>
-              <Text style={{ fontSize: 16, fontFamily, fontStyle: 'italic' }}>{filteredAttractions.length} Attractions</Text>
-              <View style={styles.bottomSheetMain}>
-                <ScrollView
-                  style={{ marginTop: 15 }}
-                  contentContainerStyle={{
-                    alignItems: 'center',
-                    paddingVertical: 0,
-                    paddingBottom: 500 // Add padding when half-expanded
-                  }}
-                >
-                  {filteredAttractions.length > 0 ? renderAttractionList() : <Text>No attractions in the visible region.</Text>}
-                </ScrollView>
-              </View>
+              {selectedAttraction != null
+                ? <View style={styles.bottomSheetMain}>
+                  <Text style={{ fontSize: 16, fontFamily, fontStyle: 'italic' }}>Selected Attraction</Text>
+                  <ScrollView
+                    style={{ marginTop: 15 }}
+                    contentContainerStyle={{
+                      alignItems: 'center'
+                    }}
+                  >
+                      <AttractionCard
+                        key={9999}
+                        attr={selectedAttraction}
+                        timezone={park.timezone}
+                        showAdditionalText={true}
+                        navigation={navigation}
+                        favorite={favAttrs.includes(selectedAttraction.id)}
+                        destId={route.params.destId}
+                        parkId={park.id}
+                        navStack='Attraction'
+                        hideFav={true}
+                        />
+                      </ScrollView>
+                  </View>
+                : <>
+                <Text style={{ fontSize: 16, fontFamily, fontStyle: 'italic' }}>{filteredAttractions.length} Attractions</Text>
+                <View style={styles.bottomSheetMain}>
+                  <ScrollView
+                    style={{ marginTop: 15 }}
+                    contentContainerStyle={{
+                      alignItems: 'center',
+                      paddingVertical: 0,
+                      paddingBottom: 500 // Add padding when half-expanded
+                    }}
+                  >
+                    {filteredAttractions.length > 0 ? renderAttractionList() : <Text>No attractions in the visible region.</Text>}
+                  </ScrollView>
+                </View>
+                </>
+              }
             </BottomSheetView>
           </BottomSheet>
         </GestureHandlerRootView>

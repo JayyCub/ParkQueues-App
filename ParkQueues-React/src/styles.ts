@@ -799,7 +799,7 @@ export const styles = StyleSheet.create({
     width: '90%',
     // height: 200,
     backgroundColor: 'white',
-    borderRadius: 15,
+    borderRadius: 25,
     borderColor: '#ffffff',
     borderWidth: 2,
     padding: 5,
@@ -811,5 +811,17 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 1
+  },
+  mapMarker: {
+    backgroundColor: 'white',
+    paddingVertical: 0,
+    paddingHorizontal: 8,
+    minWidth: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2
   }
 })

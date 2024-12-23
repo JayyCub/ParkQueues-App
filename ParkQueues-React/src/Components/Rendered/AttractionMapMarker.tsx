@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native'
 import { type Attraction, LiveStatusType } from '../../Data/Attraction'
 import { QueueType } from '../../Data/Queue'
 import { FontAwesome5 } from '@expo/vector-icons'
+import { styles } from '../../styles'
 
 interface AttractionCardProps {
   attr: Attraction
@@ -21,10 +22,11 @@ const upArrow = <FontAwesome5 name={'caret-up'} size={16} color="white" />
 
 const AttractionMapMarker: React.FC<AttractionCardProps> = ({
   attr,
-  showAdditionalText
+  showAdditionalText,
+  onPress
 }) => {
   const pressedAttraction = (attr: Attraction): void => {
-    // console.log('Pressed', attr.name)
+    onPress(attr)
   }
 
   const getFirstLiveDataItem = (): React.JSX.Element => {
@@ -42,21 +44,7 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
         main = (
           <View style={{}}>
             <Pressable
-              style={{
-                backgroundColor: 'white',
-                paddingVertical: 2,
-                paddingHorizontal: 6,
-                borderRadius: 50,
-                borderWidth: 1.5,
-                borderColor: 'gray',
-                justifyContent: 'center',
-                alignItems: 'center',
-                shadowColor: 'black',
-                shadowRadius: 2,
-                shadowOffset: { width: 0, height: 3 },
-                minWidth: 40,
-                zIndex: 2
-              }}
+              style={styles.mapMarker}
               onPress={() => { pressedAttraction(attr) }}
 
             >
@@ -78,7 +66,7 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderWidth: 1.5,
-                  borderColor: 'white',
+                  borderColor: diff > 0 ? 'rgb(243,0,0)' : 'rgb(0,186,0)',
                   zIndex: 0
                 }}
               >
@@ -93,20 +81,7 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
       case QueueType.boarding_reservation:
         main = (
           <Pressable
-            style={{
-              backgroundColor: 'white',
-              paddingVertical: 2,
-              paddingHorizontal: 6,
-              borderRadius: 50,
-              borderWidth: 1.5,
-              borderColor: 'gray',
-              justifyContent: 'center',
-              alignItems: 'center',
-              shadowColor: 'black',
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 3 },
-              minWidth: 40
-            }}
+            style={styles.mapMarker}
             onPress={() => { pressedAttraction(attr) }}
           >
             <View style={{ alignItems: 'center' }}>
@@ -123,20 +98,7 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
       case QueueType.undetermined:
         main = (
           <Pressable
-            style={{
-              backgroundColor: 'white',
-              paddingVertical: 2,
-              paddingHorizontal: 6,
-              borderRadius: 50,
-              borderWidth: 1.5,
-              borderColor: 'gray',
-              justifyContent: 'center',
-              alignItems: 'center',
-              shadowColor: 'black',
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 3 },
-              minWidth: 40
-            }}
+            style={styles.mapMarker}
             onPress={() => { pressedAttraction(attr) }}
           >
             <View style={{ alignItems: 'center' }}>
