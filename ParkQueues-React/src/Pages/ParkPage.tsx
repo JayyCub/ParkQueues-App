@@ -251,7 +251,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
                 style={{
                   width: '100%',
                   height: 200,
-                  borderRadius: 10
+                  borderRadius: 20
                 }}
                 region={{
                   latitude: park.lat,
@@ -265,6 +265,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
                 zoomEnabled={false}
                 rotateEnabled={false}
                 pitchEnabled={false}
+                cacheEnabled={true}
                 pointerEvents='none'
               >
                 {Object.values(park.liveData).map((attr: Attraction, index: number) => {
@@ -292,7 +293,7 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
                 bottom: 5,
                 alignItems: 'center',
                 width: '100%',
-                backgroundColor: 'rgba(255,255,255,0.85)',
+                backgroundColor: 'rgba(255,255,255,0.90)',
                 paddingHorizontal: 15,
                 paddingVertical: 10
               }}>

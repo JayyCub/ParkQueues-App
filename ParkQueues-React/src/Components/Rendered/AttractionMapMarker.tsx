@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native'
 import { type Attraction, LiveStatusType } from '../../Data/Attraction'
 import { QueueType } from '../../Data/Queue'
 import { FontAwesome5 } from '@expo/vector-icons'
+import { styles } from '../../styles'
 
 interface AttractionCardProps {
   attr: Attraction
@@ -14,17 +15,22 @@ interface AttractionCardProps {
   // parkId: string
   // navStack: string
   // hideFav?: boolean
+  isSelected?: boolean
+  onPress: (attraction: Attraction) => void
 }
 
 const downArrow = <FontAwesome5 name={'caret-down'} size={16} color="white" />
 const upArrow = <FontAwesome5 name={'caret-up'} size={16} color="white" />
+const selectedColor = '#1520ed'
 
 const AttractionMapMarker: React.FC<AttractionCardProps> = ({
   attr,
-  showAdditionalText
+  showAdditionalText,
+  isSelected,
+  onPress
 }) => {
   const pressedAttraction = (attr: Attraction): void => {
-    // console.log('Pressed', attr.name)
+    onPress(attr)
   }
 
   const getFirstLiveDataItem = (): React.JSX.Element => {
@@ -42,27 +48,22 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
         main = (
           <View style={{}}>
             <Pressable
-              style={{
-                backgroundColor: 'white',
-                paddingVertical: 2,
-                paddingHorizontal: 6,
-                borderRadius: 50,
-                borderWidth: 1.5,
-                borderColor: 'gray',
-                justifyContent: 'center',
-                alignItems: 'center',
-                shadowColor: 'black',
-                shadowRadius: 2,
-                shadowOffset: { width: 0, height: 3 },
-                minWidth: 40,
-                zIndex: 2
-              }}
+              style={[
+                styles.mapMarker,
+                (isSelected ?? false) && {
+                  borderColor: selectedColor
+                  // borderWidth: 2
+                }
+              ]}
               onPress={() => { pressedAttraction(attr) }}
-
             >
               <View style={{ alignItems: 'center' }}>
                 <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-                  <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{currentWait}</Text>
+                  <Text style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: (isSelected ?? false) ? selectedColor : 'black'
+                  }}>{currentWait}</Text>
                 </View>
               </View>
             </Pressable>
@@ -78,7 +79,7 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   borderWidth: 1.5,
-                  borderColor: 'white',
+                  borderColor: diff > 0 ? 'rgb(243,0,0)' : 'rgb(0,186,0)',
                   zIndex: 0
                 }}
               >
@@ -93,26 +94,19 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
       case QueueType.boarding_reservation:
         main = (
           <Pressable
-            style={{
-              backgroundColor: 'white',
-              paddingVertical: 2,
-              paddingHorizontal: 6,
-              borderRadius: 50,
-              borderWidth: 1.5,
-              borderColor: 'gray',
-              justifyContent: 'center',
-              alignItems: 'center',
-              shadowColor: 'black',
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 3 },
-              minWidth: 40
-            }}
+            style={[
+              styles.mapMarker,
+              (isSelected ?? false) && {
+                borderColor: selectedColor
+                // borderWidth: 2
+              }
+            ]}
             onPress={() => { pressedAttraction(attr) }}
           >
             <View style={{ alignItems: 'center' }}>
               <Text>Boarding:</Text>
               <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{attr.queue.BOARDING_GROUP?.currentGroupStart} - {attr.queue.BOARDING_GROUP?.currentGroupEnd}</Text>
+                <Text style={{ fontSize: 16, fontWeight: 'bold', color: (isSelected ?? false) ? selectedColor : 'black' }}>{attr.queue.BOARDING_GROUP?.currentGroupStart} - {attr.queue.BOARDING_GROUP?.currentGroupEnd}</Text>
               </View>
             </View>
           </Pressable>
@@ -123,27 +117,20 @@ const AttractionMapMarker: React.FC<AttractionCardProps> = ({
       case QueueType.undetermined:
         main = (
           <Pressable
-            style={{
-              backgroundColor: 'white',
-              paddingVertical: 2,
-              paddingHorizontal: 6,
-              borderRadius: 50,
-              borderWidth: 1.5,
-              borderColor: 'gray',
-              justifyContent: 'center',
-              alignItems: 'center',
-              shadowColor: 'black',
-              shadowRadius: 2,
-              shadowOffset: { width: 0, height: 3 },
-              minWidth: 40
-            }}
+            style={[
+              styles.mapMarker,
+              (isSelected ?? false) && {
+                borderColor: selectedColor
+                // borderWidth: 2
+              }
+            ]}
             onPress={() => { pressedAttraction(attr) }}
           >
             <View style={{ alignItems: 'center' }}>
               <View style={{ alignItems: 'center', flexDirection: 'row' }}>
                 {attr.status === LiveStatusType.OPERATING
-                  ? <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Open</Text>
-                  : <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#484848' }}>Closed</Text>
+                  ? <Text style={{ fontSize: 14, fontWeight: 'bold', color: (isSelected ?? false) ? selectedColor : 'black' }}>Open</Text>
+                  : <Text style={{ fontSize: 14, fontWeight: 'bold', color: (isSelected ?? false) ? selectedColor : '#484848' }}>Closed</Text>
                 }
               </View>
             </View>

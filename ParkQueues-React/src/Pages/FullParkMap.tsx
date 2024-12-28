@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDataContext } from '../Data/DataContext'
 import type { Park } from '../Data/Park'
 import Header from '../Components/Rendered/CustomStatusBar'
-import { Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
+import { Platform, Pressable, ScrollView, Text, TextInput, View, Animated, LayoutAnimation, Switch } from 'react-native'
 import { colorPalette, fontFamily, platformStyle, styles } from '../styles'
 import MapView from 'react-native-map-clustering'
 import { Marker, type Region } from 'react-native-maps'
@@ -12,6 +12,8 @@ import AttractionMapMarker from '../Components/Rendered/AttractionMapMarker'
 import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import AttractionCard from '../Components/Rendered/AttractionCard'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { Provider as PaperProvider } from 'react-native-paper'
 
 export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
   const { parks, lastUpdated, refreshData, userData, location, closestAttractions } = useDataContext()
@@ -118,18 +120,19 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
     filterAttractionsByRegion(initialRegion)
   }, [initialRegion])
 
-  const filterAttractionsByRegion = (region: Region): void => {
+  const filterAttractionsByRegion = useCallback((region: Region): void => {
     const filtered = Object.values(park.liveData).filter(attr => {
-      return (
+      const isInRegion =
         attr.lat >= region.latitude - region.latitudeDelta / 2 &&
         attr.lat <= region.latitude + region.latitudeDelta / 2 &&
         attr.lon >= region.longitude - region.longitudeDelta / 2 &&
-        attr.lon <= region.longitude + region.longitudeDelta / 2 &&
-        attr.name.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+        attr.lon <= region.longitude + region.longitudeDelta / 2
+
+      return isInRegion && attr.name.toLowerCase().includes(searchQuery.toLowerCase())
     }).sort((a, b) => a.name.localeCompare(b.name))
+
     setFilteredAttractions(filtered)
-  }
+  }, [park.liveData, searchQuery])
 
   const renderAttractionList = (): any =>
     filteredAttractions.map((attr, index) => (
@@ -169,11 +172,11 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
           style={{
             backgroundColor: 'rgba(132,71,255,0.7)', // Cluster background color
             borderRadius: 25, // Makes the cluster circular
-            width: 30, // Size of the cluster marker
-            height: 30, // Size of the cluster marker
+            width: 25, // Size of the cluster marker
+            height: 25, // Size of the cluster marker
             alignItems: 'center',
             justifyContent: 'center',
-            borderWidth: 2,
+            borderWidth: 1.5,
             borderColor: '#fff' // Optional: Border around the cluster
           }}
         >
@@ -182,6 +185,7 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
               color: '#fff', // Text color
               fontSize: 16,
               fontWeight: 'bold',
+              fontStyle: 'italic',
               fontFamily
             }}
           >
@@ -199,8 +203,6 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
         style={{ flex: 1 }}
         region={initialRegion}
         mapType="satellite"
-        clusterColor="white" // Default cluster color (for non-custom clusters)
-        clusterTextColor="#ffffff" // Default cluster text color
         radius={20}
         onRegionChangeComplete={filterAttractionsByRegion} // Re-filter attractions on region change
         renderCluster={renderCustomCluster} // Use the custom cluster rendering function
@@ -216,13 +218,8 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
             <AttractionMapMarker
               attr={attr}
               showAdditionalText={trendFilter}
-              // timezone={park.timezone}
-              // showAdditionalText={false}
-              // navigation={navigation}
-              // favorite={false}
-              // destId={route.params.destId}
-              // parkId={park.id}
-              // navStack={'FullMap'}
+              isSelected={selectedAttraction?.id === attr.id}
+              onPress={handleMarkerPress}
             />
           </Marker>
         ))}
@@ -242,78 +239,209 @@ export const FullParkMap = ({ route, navigation }: any): React.JSX.Element => {
     filterAttractions(query)
   }
 
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Top filter bar */}
-      <View style={{ width: '100%' }}>
-        <View style={styles.toolsHeaderView}>
-          <View style={{ flex: 4 }}>
-            <TextInput
-              style={styles.searchBarSelected}
-              onChangeText={handleSearch}
-              value={searchQuery}
-              placeholder="Search for an attraction"
-              returnKeyType="done"
-              clearButtonMode="always"
+  const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null)
+
+  const [cardAnimation] = useState(new Animated.Value(0))
+
+  const handleMarkerPress = (attraction: Attraction): void => {
+    cardAnimation.setValue(0)
+
+    setSelectedAttraction(attraction)
+    bottomSheetRef.current?.close()
+
+    Animated.spring(cardAnimation, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 50,
+      friction: 7
+    }).start()
+  }
+
+  const renderSelectedAttractionCard = (): React.JSX.Element | null => {
+    if (!selectedAttraction) return null
+
+    return (
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            bottom: 10,
+            width: '100%',
+            alignItems: 'center',
+            transform: [{
+              translateY: cardAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [50, 0]
+              })
+            }],
+            opacity: cardAnimation
+          }
+        ]}
+      >
+        <AttractionCard
+          key={9999}
+          attr={selectedAttraction}
+          timezone={park.timezone}
+          showAdditionalText={true}
+          navigation={navigation}
+          favorite={favAttrs.includes(selectedAttraction.id)}
+          destId={route.params.destId}
+          parkId={park.id}
+          navStack='Attraction'
+          hideFav={true}
+        />
+        <Ionicons
+          name='close-circle'
+          size={24}
+          color='gray'
+          onPress={(): void => {
+            Animated.timing(cardAnimation, {
+              toValue: 0,
+              duration: 100,
+              useNativeDriver: true
+            }).start(() => {
+              bottomSheetRef.current?.snapToIndex(0)
+              setSelectedAttraction(null)
+            })
+          }}
+          style={{ position: 'absolute', top: 14, right: 15 }}
+        />
+      </Animated.View>
+    )
+  }
+
+  const [filterMenuVisible, setFilterMenuVisible] = useState(false)
+
+  const renderFilterDropdown = (): React.JSX.Element => {
+    const toggleFilterMenu = (): void => {
+      LayoutAnimation.configureNext({
+        duration: 200, // Animation duration in ms
+        create: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
+        update: { type: LayoutAnimation.Types.spring, springDamping: 0.7 },
+        delete: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity }
+      })
+      setFilterMenuVisible(!filterMenuVisible)
+    }
+
+    return (
+      <>
+      <View style={{
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        borderRadius: 10,
+        overflow: 'hidden',
+        backgroundColor: 'white',
+        alignItems: 'flex-end'
+        // minWidth: 120
+      }}>
+        {/* Main button */}
+        <Pressable
+          style={{
+            flexDirection: 'row',
+            padding: 5,
+            // width: '100%',
+            justifyContent: 'flex-end'
+          }}
+          onPress={toggleFilterMenu}
+        >
+          <Ionicons
+            name='filter'
+            size={26}
+            color='black'
+          />
+        </Pressable>
+      </View>
+      {/* Dropdown menu */}
+      {filterMenuVisible && (
+        <View style={{
+          position: 'absolute',
+          top: 55,
+          right: 10,
+          borderRadius: 10,
+          overflow: 'hidden',
+          backgroundColor: 'white',
+          padding: 10,
+          minWidth: 150
+        }}>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <Text style={{
+              fontFamily,
+              marginRight: 10,
+              fontSize: 18
+            }}>
+              5-min. changes
+            </Text>
+            <Switch
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
+              thumbColor={trendFilter ? '#1520ed' : '#f4f3f4'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={() => { setTrendFilter(!trendFilter) }}
+              value={trendFilter}
             />
           </View>
         </View>
+      )}
+      </>
+    )
+  }
 
-        <ScrollView
-          horizontal={true}
-          style={{
-            width: '100%',
-            backgroundColor: 'rgb(255,255,255)',
-            zIndex: 2
-          }}
-          contentContainerStyle={{
-            paddingVertical: 5,
-            paddingHorizontal: 5,
-            alignItems: 'center' // Centers content vertically if needed
-          }}
-          showsHorizontalScrollIndicator={false} // Optional: Hides the scroll indicator
-        >
-          <Pressable style={trendFilter ? styles.filterButtonSelected : styles.filterButtonUnselected} onPress={(): void => { setTrendFilter(!trendFilter) }}>
-            <Text style={styles.filterButtonText}>5 min. Trend</Text>
-          </Pressable>
-          {/* {['Filter 2', 'Filter 3', 'Filter 4', 'Filter 5', 'Filter 6'].map((filter, index) => ( */}
-          {/*  <View key={index} style={styles.filterButtonUnselected}> */}
-          {/*    <Text style={styles.filterButtonText}>{filter}</Text> */}
-          {/*  </View> */}
-          {/* ))} */}
-        </ScrollView>
-      </View>
-
-      {/* MapView with BottomSheet */}
+  return (
+    <PaperProvider>
       <View style={{ flex: 1 }}>
-        <GestureHandlerRootView style={styles.gestureHandler}>
-          {mapComponent()}
-          <BottomSheet
-            style={{ marginTop: 20 }}
-            snapPoints={snapPoints}
-            ref={bottomSheetRef}
-            onChange={handleSheetChanges}
-            // handleStyle={{ backgroundColor: 'gray' }}
-            backgroundStyle={{ backgroundColor: colorPalette.layer15 }}
-          >
-            <BottomSheetView style={styles.bottomSheetContent}>
-              <Text style={{ fontSize: 16, fontFamily, fontStyle: 'italic' }}>{filteredAttractions.length} Attractions</Text>
-              <View style={styles.bottomSheetMain}>
-                <ScrollView
-                  style={{ marginTop: 15 }}
-                  contentContainerStyle={{
-                    alignItems: 'center',
-                    paddingVertical: 0,
-                    paddingBottom: 500 // Add padding when half-expanded
-                  }}
-                >
-                  {filteredAttractions.length > 0 ? renderAttractionList() : <Text>No attractions in the visible region.</Text>}
-                </ScrollView>
-              </View>
-            </BottomSheetView>
-          </BottomSheet>
-        </GestureHandlerRootView>
+        {/* Search bar section */}
+        <View style={{ width: '100%' }}>
+          <View style={styles.toolsHeaderView}>
+            <View style={{ flex: 4 }}>
+              <TextInput
+                style={styles.searchBarSelected}
+                onChangeText={handleSearch}
+                value={searchQuery}
+                placeholder="Search for an attraction"
+                returnKeyType="done"
+                clearButtonMode="always"
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* MapView with BottomSheet */}
+        <View style={{ flex: 1 }}>
+          <GestureHandlerRootView style={styles.gestureHandler}>
+            {mapComponent()}
+            {renderFilterDropdown()}
+            {renderSelectedAttractionCard()}
+            <BottomSheet
+              style={{ marginTop: 20 }}
+              snapPoints={snapPoints}
+              ref={bottomSheetRef}
+              onChange={handleSheetChanges}
+              // handleStyle={{ backgroundColor: 'gray' }}
+              backgroundStyle={{ backgroundColor: colorPalette.layer15 }}
+            >
+              <BottomSheetView style={styles.bottomSheetContent}>
+                <Text style={{ fontSize: 16, fontFamily, fontStyle: 'italic' }}>{filteredAttractions.length} Attractions</Text>
+                <View style={styles.bottomSheetMain}>
+                  <ScrollView
+                    style={{ marginTop: 15 }}
+                    contentContainerStyle={{
+                      alignItems: 'center',
+                      paddingVertical: 0,
+                      paddingBottom: 500 // Add padding when half-expanded
+                    }}
+                  >
+                    {filteredAttractions.length > 0 ? renderAttractionList() : <Text>No attractions in the visible region.</Text>}
+                  </ScrollView>
+                </View>
+              </BottomSheetView>
+            </BottomSheet>
+          </GestureHandlerRootView>
+        </View>
       </View>
-    </View>
+    </PaperProvider>
   )
 }
