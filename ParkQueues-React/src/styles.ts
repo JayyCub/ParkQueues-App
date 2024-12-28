@@ -652,7 +652,7 @@ export const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '700',
     color: platformStyle.statusBar.fontColor,
-    fontFamily,
+    fontFamily
     // Removes width constraint to allow it to float left
   },
   homePageSubSectionIcon: {
