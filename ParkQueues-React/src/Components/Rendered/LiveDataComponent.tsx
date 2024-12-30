@@ -124,9 +124,22 @@ const LiveDataComponent = (
     return { diff: 0, icon: null }
   }
 
-  const prev = attr.history[attr.history.length - 2]
-  const prevWait = prev?.queue?.STANDBY?.waitTime
+  // Find the history entry from 5 minutes ago
+  const findPreviousWaitTime = (): number | undefined => {
+    const fiveMinutesAgo = Date.now() - (5 * 60 * 1000)
+    
+    // Find the history entry closest to 5 minutes ago
+    for (let i = attr.history.length - 1; i >= 0; i--) {
+      const entryTime = new Date(attr.history[i].time).getTime()
+      if (entryTime <= fiveMinutesAgo) {
+        return attr.history[i].queue?.STANDBY?.waitTime
+      }
+    }
+    return undefined
+  }
+
   const currWait = attr.queue.STANDBY?.waitTime
+  const prevWait = findPreviousWaitTime()
   const { diff, icon } = getWaitTimeDiff(currWait, prevWait)
 
   const renderQueueElement = (queueType: QueueType): void => {

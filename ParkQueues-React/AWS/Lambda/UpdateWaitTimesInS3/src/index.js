@@ -280,23 +280,32 @@ async function dataUpdate (dest) {
                 }]
               } else {
                 // Compare existing info with API data
+                const existingAttr = destData.parks[parkData.id].liveData[item.id]
+                const hasQueueChanged = JSON.stringify(existingAttr.queue) !== JSON.stringify(item.queue)
+                const hasStatusChanged = existingAttr.status !== item.status
+          
+                // Only update history if queue or status has changed
+                if (hasQueueChanged || hasStatusChanged) {
+                  destData.parks[parkData.id].liveData[item.id].history.push({
+                    time,
+                    queue: item.queue,
+                    status: item.status
+                  })
+          
+                  // If history contains more than 8 hours worth of history entries, remove old entries
+                  // 12 per hour * 8 hours = 96 entries
+                  const len = destData.parks[parkData.id].liveData[item.id].history.length
+                  if (len > 96) {
+                    destData.parks[parkData.id].liveData[item.id].history =
+                      destData.parks[parkData.id].liveData[item.id].history.slice(len - 96, len)
+                  }
+                }
+          
+                // Always update the current values
                 destData.parks[parkData.id].liveData[item.id].name = item.name
                 destData.parks[parkData.id].liveData[item.id].status = item.status
                 destData.parks[parkData.id].liveData[item.id].queue = item.queue
                 destData.parks[parkData.id].liveData[item.id].lastUpdated = item.lastUpdated
-                destData.parks[parkData.id].liveData[item.id].history.push({
-                  time,
-                  queue: item.queue,
-                  status: item.status
-                })
-
-                // If history contains more than 8 hours worth of history entries, remove old entries
-                // 12 per hour * 8 hours = 96 entries
-                const len = destData.parks[parkData.id].liveData[item.id].history.length
-                if (len > 96) {
-                  destData.parks[parkData.id].liveData[item.id].history =
-                    destData.parks[parkData.id].liveData[item.id].history.slice(len - 96, len)
-                }
               }
             } catch (e) {
               console.log('Error adding/checking data. Attraction: ', item.id)

@@ -121,23 +121,40 @@ const ParkPage = ({ route, navigation }: any): React.JSX.Element => {
 
     setLongestWaits(longestWaitTimes)
 
-    const getWaitTimeDiff = (currentWait, previousWait) => {
+    const getWaitTimeDiff = (currentWait: number | undefined, previousWait: number | undefined): {
+      diff: number
+      icon: 'up' | 'down' | null
+    } => {
       if (currentWait !== undefined && previousWait !== undefined) {
         const diff = currentWait - previousWait
-        if (diff !== 0) {
-          return { diff, icon: diff > 0 ? 'up' : 'down' } // or use `upArrow` / `downArrow` as in your component
-        }
+        if (diff < 0) return { diff, icon: 'down' }
+        if (diff > 0) return { diff, icon: 'up' }
       }
       return { diff: 0, icon: null }
     }
 
+    const findPreviousWaitTime = (attr: Attraction): number | undefined => {
+      const fiveMinutesAgo = Date.now() - (5 * 60 * 1000)
+      
+      // Find the history entry closest to 5 minutes ago
+      for (let i = attr.history.length - 1; i >= 0; i--) {
+        const entryTime = new Date(attr.history[i].time).getTime()
+        if (entryTime <= fiveMinutesAgo) {
+          return attr.history[i].queue?.STANDBY?.waitTime
+        }
+      }
+      return undefined
+    }
+
     // Filter attractions with non-zero wait time difference
-    const attractionsWithNonZeroDiff = Object.values(park.liveData).filter(attr => {
-      const prevWait = attr.history[attr.history.length - 2]?.queue?.STANDBY?.waitTime
-      const currWait = attr.queue.STANDBY?.waitTime
-      const { diff } = getWaitTimeDiff(currWait, prevWait)
-      return diff !== 0
-    })
+    const attractionsWithNonZeroDiff = Object.values(park.liveData)
+      .filter(attr => {
+        const prevWait = findPreviousWaitTime(attr)
+        const currWait = attr.queue.STANDBY?.waitTime
+        const { diff } = getWaitTimeDiff(currWait, prevWait)
+        return diff !== 0
+      })
+      .sort((a, b) => a.name.localeCompare(b.name)) // Sort alphabetically by name
 
     setAttractionsWithDiff(attractionsWithNonZeroDiff)
   }, [lastUpdated, parks, park.id])

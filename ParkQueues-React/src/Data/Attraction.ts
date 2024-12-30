@@ -61,31 +61,115 @@ export class Attraction implements AttractionInterface {
     this.status = attractionData.status
     this.lastUpdated = attractionData.lastUpdated
     this.queue = new Queue(this.status === LiveStatusType.OPERATING ? attractionData.queue : undefined)
-
-    if (this.queue.queueType === QueueType.boarding_reservation &&
-      (this.queue.BOARDING_GROUP?.currentGroupStart === null && this.queue.BOARDING_GROUP?.currentGroupEnd === null)) {
-      this.status = LiveStatusType.DOWN
-    }
-
     this.showtimes = attractionData.showtimes
     this.operatingHours = attractionData.operatingHours
     this.diningAvailability = attractionData.diningAvailability
 
-    // Populate history data
-    attractionData.history.forEach((histItem) => {
-      const newQueue = new Queue(histItem.queue)
-      if (histItem.status === LiveStatusType.REFURBISHMENT ||
-        histItem.status === LiveStatusType.DOWN ||
-        histItem.status === LiveStatusType.CLOSED) {
-        newQueue.queueType = QueueType.closed
-      }
+    // Initialize empty history array
+    this.history = []
 
-      this.history.push({
-        time: histItem.time,
-        status: histItem.status,
-        queue: newQueue
-      })
-    })
+    // console.log(attractionData.name, attractionData.history.length)
+    if (attractionData.history.length > 0) {
+      const sortedHistory = [...attractionData.history].sort((a, b) =>
+        new Date(a.time).getTime() - new Date(b.time).getTime()
+      )
+
+      // console.log('Sorted History:', sortedHistory)
+
+      const BUFFER = 30 * 1000 // 30 seconds in milliseconds
+      const interval = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+      // Round start and end times to nearest 5-minute interval
+      const startTime = Math.round(new Date(sortedHistory[0].time).getTime() / interval) * interval
+      const endTime = Math.round(new Date(sortedHistory[sortedHistory.length - 1].time).getTime() / interval) * interval
+
+      // Create map with rounded timestamps
+      const historyMap = new Map(
+        sortedHistory.map(item => {
+          const timestamp = new Date(item.time).getTime()
+          const roundedTime = Math.round(timestamp / interval) * interval
+          return [roundedTime, item]
+        })
+      )
+
+      // Generate timestamps every 5 minutes using rounded times
+      let lastKnownData = sortedHistory[0] // Keep track of last known data point
+      
+      for (let timestamp = startTime; timestamp <= endTime; timestamp += interval) {
+        if (historyMap.has(timestamp) || 
+            historyMap.has(timestamp - BUFFER) || 
+            historyMap.has(timestamp + BUFFER)) {
+          // If we have real data within the buffer window, use it
+          const actualTimestamp = historyMap.has(timestamp)
+            ? timestamp
+            : historyMap.has(timestamp - BUFFER)
+              ? timestamp - BUFFER
+              : timestamp + BUFFER
+          const item = historyMap.get(actualTimestamp)!
+          lastKnownData = item // Update last known data
+          this.history.push({
+            time: new Date(timestamp),
+            status: item.status,
+            queue: new Queue(item.queue)
+          })
+        } else {
+          // Use the last known data point
+          this.history.push({
+            time: new Date(timestamp),
+            status: lastKnownData.status,
+            queue: new Queue(lastKnownData.queue)
+          })
+        }
+      }
+    }
+
+    if (this.queue.queueType === QueueType.boarding_reservation &&
+      (this.queue.BOARDING_GROUP?.currentGroupStart === null &&
+       this.queue.BOARDING_GROUP?.currentGroupEnd === null)) {
+      this.status = LiveStatusType.DOWN
+    }
+  }
+
+  private interpolateData (
+    prevData: HistoryData,
+    nextData: HistoryData,
+    currentTime: number,
+    prevTime: number,
+    nextTime: number
+  ): HistoryData {
+    // For status, use the previous status (no interpolation for enum values)
+    const status = prevData.status
+
+    // Interpolate queue data
+    const queue = { ...prevData.queue }
+
+    // Linear interpolation for wait times
+    if (queue.STANDBY?.waitTime !== undefined &&
+        nextData.queue.STANDBY?.waitTime !== undefined) {
+      const prevWait = queue.STANDBY.waitTime
+      const nextWait = nextData.queue.STANDBY.waitTime
+      const ratio = (currentTime - prevTime) / (nextTime - prevTime)
+      queue.STANDBY.waitTime = Math.round(
+        prevWait + (nextWait - prevWait) * ratio
+      )
+    }
+
+    // Do the same for SINGLE_RIDER if it exists
+    if (queue.SINGLE_RIDER?.waitTime !== undefined &&
+        nextData.queue.SINGLE_RIDER?.waitTime !== undefined) {
+      const prevWait = queue.SINGLE_RIDER.waitTime
+      const nextWait = nextData.queue.SINGLE_RIDER.waitTime
+      const ratio = (currentTime - prevTime) / (nextTime - prevTime)
+      queue.SINGLE_RIDER.waitTime = Math.round(
+        prevWait + (nextWait - prevWait) * ratio
+      )
+    }
+
+    return {
+      time: new Date(currentTime),
+      status,
+      queue
+    }
   }
 
   public addLocationData (lat: number | null, lon: number | null) {
