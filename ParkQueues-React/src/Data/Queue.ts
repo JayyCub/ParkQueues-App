@@ -27,6 +27,13 @@ export enum QueueType {
   'closed' = 7,
 }
 
+enum LiveStatusType {
+  OPERATING = 'OPERATING',
+  DOWN = 'DOWN',
+  CLOSED = 'CLOSED',
+  REFURBISHMENT = 'REFURBISHMENT'
+}
+
 export interface QueueInterface {
   STANDBY?: { waitTime: number }
   SINGLE_RIDER?: { waitTime: number }
@@ -79,7 +86,7 @@ export class Queue implements QueueInterface {
 
   queueType: QueueType
 
-  constructor (queue: QueueInterface | undefined) {
+  constructor (queue: QueueInterface | undefined, status: LiveStatusType) {
     if (queue === undefined) {
       this.STANDBY = undefined
       this.SINGLE_RIDER = undefined
@@ -97,6 +104,11 @@ export class Queue implements QueueInterface {
     this.PAID_RETURN_TIME = queue.PAID_RETURN_TIME
     this.BOARDING_GROUP = queue.BOARDING_GROUP
     this.PAID_STANDBY = queue.PAID_STANDBY
+
+    if (status !== LiveStatusType.OPERATING) {
+      this.queueType = 7
+      return
+    }
 
     if (this.STANDBY !== undefined &&
       this.SINGLE_RIDER !== undefined &&

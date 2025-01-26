@@ -60,7 +60,7 @@ export class Attraction implements AttractionInterface {
     this.entityType = attractionData.entityType
     this.status = attractionData.status
     this.lastUpdated = attractionData.lastUpdated
-    this.queue = new Queue(this.status === LiveStatusType.OPERATING ? attractionData.queue : undefined)
+    this.queue = new Queue(attractionData.queue, this.status)
     this.showtimes = attractionData.showtimes
     this.operatingHours = attractionData.operatingHours
     this.diningAvailability = attractionData.diningAvailability
@@ -68,16 +68,57 @@ export class Attraction implements AttractionInterface {
     // Initialize empty history array
     this.history = []
 
+    const interval = 5 * 60 * 1000 // 5 minutes in milliseconds
+
+    if (attractionData.history.length === 0) {
+      // Add two data points if history is empty
+      const currentTime = Math.round(Date.now() / interval) * interval
+      const yesterdayTime = currentTime - (24 * 60 * 60 * 1000) // 24 hours ago
+      const yesterdayRounded = Math.round(yesterdayTime / interval) * interval
+
+      // Add data point from 24 hours ago
+      attractionData.history.push({
+        time: new Date(yesterdayRounded),
+        status: this.status,
+        queue: this.queue
+      })
+
+      // Add current data point
+      attractionData.history.push({
+        time: new Date(currentTime),
+        status: this.status,
+        queue: this.queue
+      })
+    } else {
+      // Sort history to find oldest entry
+      const sortedHistory = [...attractionData.history].sort((a, b) =>
+        new Date(a.time).getTime() - new Date(b.time).getTime()
+      )
+
+      const oldestTime = new Date(sortedHistory[0].time).getTime()
+      const currentTime = Date.now()
+      const twentyFourHoursAgo = currentTime - (24 * 60 * 60 * 1000)
+
+      // If oldest data point is newer than 24 hours ago
+      if (oldestTime > twentyFourHoursAgo) {
+        const yesterdayRounded = Math.round(twentyFourHoursAgo / interval) * interval
+
+        // Add data point from 24 hours ago using oldest known data
+        attractionData.history.unshift({
+          time: new Date(yesterdayRounded),
+          status: sortedHistory[0].status,
+          queue: sortedHistory[0].queue
+        })
+      }
+    }
+
     // console.log(attractionData.name, attractionData.history.length)
     if (attractionData.history.length > 0) {
       const sortedHistory = [...attractionData.history].sort((a, b) =>
         new Date(a.time).getTime() - new Date(b.time).getTime()
       )
 
-      // console.log('Sorted History:', sortedHistory)
-
       const BUFFER = 30 * 1000 // 30 seconds in milliseconds
-      const interval = 5 * 60 * 1000 // 5 minutes in milliseconds
 
       // Round start and end times to nearest 5-minute interval
       const startTime = Math.round(new Date(sortedHistory[0].time).getTime() / interval) * interval
@@ -94,11 +135,13 @@ export class Attraction implements AttractionInterface {
 
       // Generate timestamps every 5 minutes using rounded times
       let lastKnownData = sortedHistory[0] // Keep track of last known data point
-      
+
       for (let timestamp = startTime; timestamp <= endTime; timestamp += interval) {
-        if (historyMap.has(timestamp) || 
-            historyMap.has(timestamp - BUFFER) || 
-            historyMap.has(timestamp + BUFFER)) {
+        if (
+          historyMap.has(timestamp) ||
+          historyMap.has(timestamp - BUFFER) ||
+          historyMap.has(timestamp + BUFFER)
+        ) {
           // If we have real data within the buffer window, use it
           const actualTimestamp = historyMap.has(timestamp)
             ? timestamp
@@ -110,14 +153,28 @@ export class Attraction implements AttractionInterface {
           this.history.push({
             time: new Date(timestamp),
             status: item.status,
-            queue: new Queue(item.queue)
+            queue: new Queue(item.queue, item.status)
           })
         } else {
           // Use the last known data point
           this.history.push({
             time: new Date(timestamp),
             status: lastKnownData.status,
-            queue: new Queue(lastKnownData.queue)
+            queue: new Queue(lastKnownData.queue, lastKnownData.status)
+          })
+        }
+      }
+
+      // Fill gaps from the last history entry to the current time
+      const currentTime = Math.round(Date.now() / interval) * interval // Current time rounded to nearest interval
+      const lastHistoryTime = Math.round(new Date(this.history[this.history.length - 1].time).getTime() / interval) * interval
+
+      if (lastHistoryTime < currentTime - (1000 * 60 * 5)) {
+        for (let timestamp = lastHistoryTime + interval; timestamp <= currentTime; timestamp += interval) {
+          this.history.push({
+            time: new Date(timestamp),
+            status: lastKnownData.status,
+            queue: new Queue(lastKnownData.queue, lastKnownData.status)
           })
         }
       }

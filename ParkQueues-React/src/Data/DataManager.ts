@@ -14,7 +14,9 @@ export class DataManager {
     } else {
       // console.log(slug + ': Local data is missing or expired.')
       try {
+        // console.log(url)
         const response = await fetch(url)
+        // console.log('here')
         const data = await response.json()
 
         // Save the raw data directly to AsyncStorage
@@ -46,7 +48,7 @@ export class DataManager {
       })
 
       if (response.status !== 200) {
-        console.log('Error fetching account data')
+        console.error('Error fetching account data')
         return null
       }
 

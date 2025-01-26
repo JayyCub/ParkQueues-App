@@ -283,7 +283,7 @@ async function dataUpdate (dest) {
                 const existingAttr = destData.parks[parkData.id].liveData[item.id]
                 const hasQueueChanged = JSON.stringify(existingAttr.queue) !== JSON.stringify(item.queue)
                 const hasStatusChanged = existingAttr.status !== item.status
-          
+
                 // Only update history if queue or status has changed
                 if (hasQueueChanged || hasStatusChanged) {
                   destData.parks[parkData.id].liveData[item.id].history.push({
@@ -291,16 +291,13 @@ async function dataUpdate (dest) {
                     queue: item.queue,
                     status: item.status
                   })
-          
-                  // If history contains more than 8 hours worth of history entries, remove old entries
-                  // 12 per hour * 8 hours = 96 entries
-                  const len = destData.parks[parkData.id].liveData[item.id].history.length
-                  if (len > 96) {
-                    destData.parks[parkData.id].liveData[item.id].history =
-                      destData.parks[parkData.id].liveData[item.id].history.slice(len - 96, len)
-                  }
+
+                  // If history contains entries older than 24 hours, remove old entries
+                  const twentyFourHoursAgo = time - (24 * 60 * 60 * 1000) // 24 hours in milliseconds
+                  destData.parks[parkData.id].liveData[item.id].history = 
+                    destData.parks[parkData.id].liveData[item.id].history.filter(entry => entry.time >= twentyFourHoursAgo)
                 }
-          
+
                 // Always update the current values
                 destData.parks[parkData.id].liveData[item.id].name = item.name
                 destData.parks[parkData.id].liveData[item.id].status = item.status

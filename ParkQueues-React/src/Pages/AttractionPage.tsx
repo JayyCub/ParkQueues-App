@@ -1,6 +1,6 @@
 import { type Attraction } from '../Data/Attraction'
 import { styles } from '../styles'
-import {Alert, Platform, Pressable, ScrollView, Text, View} from 'react-native'
+import { Alert, Platform, Pressable, ScrollView, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import LiveDataComponent from '../Components/Rendered/LiveDataComponent'
 import { type Queue, QueueType, ReturnTimeState } from '../Data/Queue'
@@ -43,6 +43,8 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
   }
 */
 
+  const filteredHistory = attr.history
+
   const historicStandby: Array<{ high: number | undefined, date: number }> = []
   const historicSingleRider: Array<{ high: number | undefined, date: number }> = []
   const historicBoardingGroup: DataItem[] = []
@@ -80,47 +82,67 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
     return undefined
   }
 
-  attr.history.forEach((value) => {
+  filteredHistory.forEach((value) => {
     const date = new Date(value.time).getTime()
-    switch (value.queue.queueType) {
+    const queue = value.queue
+    const baseData = { date, high: getWaitTime(queue, 'STANDBY') }
+
+    switch (queue.queueType) {
       case QueueType.open_status:
         historicStandby.push({ high: 1, date })
         break
+
       case QueueType.standby:
-        historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
+      case QueueType.standby_single:
+        historicStandby.push(baseData)
+        if (queue.queueType === QueueType.standby_single) {
+          historicSingleRider.push({ high: getWaitTime(queue, 'SINGLE_RIDER'), date })
+        }
         break
+
       case QueueType.standby_reservation:
-        historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
-        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
+      case QueueType.standby_single_reservation:
+        historicStandby.push(baseData)
+        if (queue.queueType === QueueType.standby_single_reservation) {
+          historicSingleRider.push({ high: getWaitTime(queue, 'SINGLE_RIDER'), date })
+        }
+        historicReturnTime.push({
+          histTime: date - (1000 * 60 * 5),
+          returnTime: getReturnTime(queue),
+          date
+        })
         break
+
       case QueueType.boarding_reservation:
-        if (value.queue.BOARDING_GROUP !== undefined) {
+        if (queue.BOARDING_GROUP != null) {
           historicBoardingGroup.push({
-            start: value.queue.BOARDING_GROUP.currentGroupStart ?? undefined,
-            end: value.queue.BOARDING_GROUP.currentGroupEnd ?? undefined,
+            start: queue.BOARDING_GROUP.currentGroupStart ?? undefined,
+            end: queue.BOARDING_GROUP.currentGroupEnd ?? undefined,
             date
           })
         }
-        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
+        historicReturnTime.push({
+          histTime: date - (1000 * 60 * 5),
+          returnTime: getReturnTime(queue),
+          date
+        })
         break
-      case QueueType.standby_single_reservation:
-        historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
-        historicSingleRider.push({ high: getWaitTime(value.queue, 'SINGLE_RIDER'), date })
-        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
-        break
-      case QueueType.standby_single:
-        historicStandby.push({ high: getWaitTime(value.queue, 'STANDBY'), date })
-        historicSingleRider.push({ high: getWaitTime(value.queue, 'SINGLE_RIDER'), date })
-        break
+
       case QueueType.undetermined:
         historicStandby.push({ high: -6, date })
         break
+
       case QueueType.closed:
         historicStandby.push({ high: undefined, date })
         historicSingleRider.push({ high: undefined, date })
         historicBoardingGroup.push({ start: undefined, end: undefined, date })
-        historicReturnTime.push({ histTime: date - (1000 * 60 * 5), returnTime: getReturnTime(value.queue), date })
+        historicReturnTime.push({
+          histTime: date - (1000 * 60 * 5),
+          returnTime: getReturnTime(queue),
+          date
+        })
         break
+
       default:
         break
     }
@@ -129,6 +151,10 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
   const graphTooltip = (tooltip: string): any => {
     Alert.alert('What is this graph?', tooltip)
   }
+
+  const oldestData = new Date(filteredHistory[0].time)
+  const newestData = new Date(filteredHistory[filteredHistory.length - 1].time)
+  const hoursAgo = ((newestData.getTime() - oldestData.getTime()) / (1000 * 60 * 60)).toFixed(0) // Calculate hours ago
 
   const renderChart = (title: string, data: any, Component: any, tooltip: string): React.JSX.Element => (
     <View style={styles.attractionLiveDataCard}>
@@ -146,7 +172,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
       </View>
       <View style={{ flexDirection: 'row', marginBottom: 5 }}>
         <View style={{ width: '50%', paddingLeft: 2 }}>
-          <Text>8 hours ago</Text>
+          <Text>{`${hoursAgo} hours ago`}</Text>
         </View>
         <View style={{ width: '50%', paddingRight: 2, alignItems: 'flex-end' }}>
           <Text>Now</Text>
@@ -228,6 +254,7 @@ const AttractionPage = ({ route }: any): React.JSX.Element => {
 
           {renderChartSection()}
         </View>
+        {/* {filteredHistory.map((value) => <Text key={Math.random()}>{value.time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true, timeZone: route.params.timezone })} - {value.status} - {value.queue.queueType}</Text>)} */}
       </ScrollView>
     </>
   )

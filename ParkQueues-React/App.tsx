@@ -13,8 +13,8 @@ import { Ionicons } from '@expo/vector-icons'
 import AccountPage from './src/Pages/AccountPage'
 import FavoritesPage from './src/Pages/FavoritesPage'
 import AttractionsList from './src/Pages/AttractionsList'
-import {FullParkMap} from "./src/Pages/FullParkMap";
-import {GestureHandlerRootView} from "react-native-gesture-handler";
+import { FullParkMap } from './src/Pages/FullParkMap'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 const platform = Platform.OS
 const Tab = createBottomTabNavigator()
