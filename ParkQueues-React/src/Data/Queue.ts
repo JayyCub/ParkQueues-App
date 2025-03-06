@@ -87,7 +87,7 @@ export class Queue implements QueueInterface {
   queueType: QueueType
 
   constructor (queue: QueueInterface | undefined, status: LiveStatusType) {
-    if (queue === undefined) {
+    if (queue == null) {
       this.STANDBY = undefined
       this.SINGLE_RIDER = undefined
       this.RETURN_TIME = undefined

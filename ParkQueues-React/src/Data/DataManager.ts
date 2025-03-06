@@ -14,7 +14,7 @@ export class DataManager {
     } else {
       // console.log(slug + ': Local data is missing or expired.')
       try {
-        // console.log(url)
+        console.log('Getting new data from', url)
         const response = await fetch(url)
         // console.log('here')
         const data = await response.json()
