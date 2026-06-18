@@ -3,8 +3,6 @@
 
 A React Native application made by Jacob Thomsen, 2024.
 
-## [🔗 Now available through iOS public beta!](https://testflight.apple.com/join/J4RfysUu)
-
 &nbsp;
 
 * **Live theme park wait times for 18 parks in 8 global destinations.**
